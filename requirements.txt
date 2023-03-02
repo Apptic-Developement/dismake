@@ -1,0 +1,6 @@
+fastapi
+pydantic
+httpx
+uvicorn
+PyNaCl
+loguru
