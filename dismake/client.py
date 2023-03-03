@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import json
 
-from fastapi import FastAPI
-from dismake.middleware import VerificationMiddleware
+from fastapi import FastAPI, Request
 from loguru import logger as log
-
-
+from nacl.signing import VerifyKey
+from nacl.exceptions import BadSignatureError
+from .http import HttpClient
+from .types import InteractionType, InteractionResponseType
 
 
 __all__ = ("Client",)
@@ -20,37 +21,36 @@ class Client:
         self._client_id = client_id
         self._app = app
         self._client_public_key = client_public_key
-        self._app.add_middleware(
-            VerificationMiddleware,
-            client_public_key=self._client_public_key
-        )
+        self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
+        self._http = HttpClient(token=token)
 
     # @property
     # def user(self) -> User:
     #     ...
 
-    # def verify_key(self, body: bytes, signature: str, timestamp: str):
-    #     message = timestamp.encode() + body
-    #     try:
-    #         # self.http.verify_key.verify(message, bytes.fromhex(signature))
-    #         return True
-    #     except Exception as e:
-    #         log.error(e)
-    #         return False
+    def verify_key(self, body: bytes, signature: str, timestamp: str):
+        message = timestamp.encode() + body
+        try:
+            self.verification_key.verify(message, bytes.fromhex(signature))
+            return True
+        except BadSignatureError as e:
+            pass
+        except Exception as e:
+            log.exception(e)
+            return False
 
-    # @log.catch
-    # async def handle_interactions(self, request: Request):
-    #     signature = request.headers["X-Signature-Ed25519"]
-    #     timestamp = request.headers["X-Signature-Timestamp"]
+    async def handle_interactions(self, request: Request):
+        signature = request.headers["X-Signature-Ed25519"]
+        timestamp = request.headers["X-Signature-Timestamp"]
 
-    #     if (
-    #         signature is None
-    #         or timestamp is None
-    #         or not self.verify_key(await request.body(), signature, timestamp)
-    #     ):
-    #         return log.error("Bad request signature")
+        if (
+            signature is None
+            or timestamp is None
+            or not self.verify_key(await request.body(), signature, timestamp)
+        ):
+            return
 
-    #     request_body = json.loads(await request.body())
-    #     if request_body["type"] == InteractionType.PING:
-    #         return {"type": InteractionResponseType.PONG}
-    #     print(request_body)
+        request_body = json.loads(await request.body())
+        if request_body["type"] == InteractionType.PING:
+            log.success("Successfully responded to discord.")
+            return {"type": InteractionResponseType.PONG}
