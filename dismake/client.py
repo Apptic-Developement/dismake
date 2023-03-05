@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request
 from loguru import logger as log
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+
 from .http import HttpClient
 from .types import InteractionType, InteractionResponseType
 
@@ -34,7 +35,7 @@ class Client:
             self.verification_key.verify(message, bytes.fromhex(signature))
             return True
         except BadSignatureError as e:
-            pass
+            log.error("Bad signature request.")
         except Exception as e:
             log.exception(e)
             return False
@@ -54,3 +55,4 @@ class Client:
         if request_body["type"] == InteractionType.PING:
             log.success("Successfully responded to discord.")
             return {"type": InteractionResponseType.PONG}
+
