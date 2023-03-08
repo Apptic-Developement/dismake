@@ -1,17 +1,19 @@
 from __future__ import annotations
-from enum import Enum
+from collections.abc import Callable
+from typing import TypedDict
 
 __all__ = (
     "CommandTypes",
     "OptionTypes",
+    "SubCommandDict"
 )
-class CommandTypes(int, Enum):
+class CommandTypes:
     SLASH = 1
     USER = 2
     MESSAGE = 3
 
 
-class OptionTypes(int, Enum):
+class OptionTypes:
     SUB_COMMAND = 1
     SUB_COMMAND_GROUP = 2
     STRING = 3
@@ -22,4 +24,10 @@ class OptionTypes(int, Enum):
     ROLE = 8
     MENTIONABLE = 9
     NUMBER = 10
+    
+    
+class SubCommandDict(TypedDict):
+    name: str
+    description: str
+    callback: Callable
 

@@ -1,4 +1,3 @@
-# App Commands Reges: ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 from __future__ import annotations
 
 import json
@@ -7,6 +6,7 @@ from fastapi import FastAPI, Request
 from loguru import logger as log
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+from .models import SlashCommand, SubCommand
 
 from .http import HttpClient
 from .types import InteractionType, InteractionResponseType
@@ -24,6 +24,7 @@ class Client:
         self._client_public_key = client_public_key
         self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
         self._http = HttpClient(token=token)
+        self._slash_commands = {}
 
     # @property
     # def user(self) -> User:
@@ -56,3 +57,18 @@ class Client:
             log.success("Successfully responded to discord.")
             return {"type": InteractionResponseType.PONG}
 
+    def register_slash_command(self, command: SlashCommand):
+        pass
+    def listen(self, command: SlashCommand):
+        def decorator(callback):
+            self._slash_commands[command.name] = callback
+            print(self._slash_commands)
+            print(command.dict(exclude_none=True))
+        return decorator
+    
+    # def listen_for_subcommand(self, command: SubCommand):
+    #     def decorator(callback):
+    #         self._slash_commands[command.get_name] = callback
+    #         print(self._slash_commands)
+    #         print(command.dict(exclude_none=True))
+    #     return decorator
