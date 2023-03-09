@@ -6,7 +6,7 @@ from functools import wraps
 from dismake.types.command import OptionType
 from .types import AsyncFunction, CommandTypes
 
-__all__ = ("SlashCommand",)
+__all__ = ("SlashCommand", "Option", "Choice")
 
 
 async def _default_slash_command_callback(*args, **kwargs):
@@ -59,7 +59,7 @@ class Option:
         description: str,
         type: int = OptionType.STRING,
         required: bool = False,
-        autocomplete: bool | None = None,
+        autocomplete: bool = False,
         autocompleter: Optional[AsyncFunction] = None,
         choices: list[Choice] | None= None,
         min_value: int | None = None,
@@ -95,6 +95,23 @@ class Option:
             return
         self._callback = value
 
+    def to_dict(self) -> dict:
+        _as_dict = {
+            "name": self._name,
+            "description": self._description,
+            "type": self._type,
+            "required": self._required,
+            "autocomplete": self._autocomplete
+        }
+        if self._choices:
+            _as_choices = []
+            for choice in self._choices:
+                _as_choices.append(
+                    {"name": choice._name, "value": choice._value}
+                )
+            _as_dict["choices"] = _as_choices
+
+        return _as_dict
         
 
 
@@ -128,7 +145,6 @@ class SlashCommand:
         self._nsfw = nsfw
         self._version = version
         self._options = []
-        self._payload = {}
         self._subcommands = []
         self._callback: AsyncFunction = _default_slash_command_callback
 
@@ -146,6 +162,20 @@ class SlashCommand:
             return
         self._callback = value
 
+    def to_dict(self) -> dict:
+        _as_dict = {
+            "name": self._name,
+            "description": self._description,
+            "type": self._type,
+            "dm_permission": self._dm_permission
+        }
+        _as_options = []
+        if self._options:
+            for option in self._options:
+                _as_options.append(option.to_dict())
+        if _as_options:
+            _as_dict["options"] = _as_options
+        return _as_dict
 
-
+    
     

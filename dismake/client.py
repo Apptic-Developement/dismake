@@ -32,7 +32,7 @@ class Client:
         self._client_public_key = client_public_key
         self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
         self._http = HttpClient(token=token)
-        self._slash_commands = {}
+        self._slash_commands: dict[str, SlashCommand] = {}
 
     # @property
     # def user(self) -> User:
@@ -65,20 +65,36 @@ class Client:
             log.success("Successfully responded to discord.")
             return {"type": InteractionResponseType.PONG}
 
-    def command(self, name: str, description: Optional[str]):
+    def command(
+        self,
+        name: str,
+        description: Optional[str],
+        options: Optional[list[Option]] = None,
+        guild_id: Optional[int] = None,
+    ):
         if name in self._slash_commands.keys():
             raise ValueError(
                 f"{name!r} already registered as a slash command please use a different name."
             )
-        command = SlashCommand(name=name, description=description)
+
+        command = SlashCommand(name=name, description=description, guild_id=guild_id)
+        if options:
+            for option in options:
+                if (
+                    option._type != OptionType.SUB_COMMAND
+                    or option._type != OptionType.SUB_COMMAND_GROUP
+                ):
+                    command._options.append(option)
 
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*args, **kwargs):
                 command.callback = coro
-                self._slash_commands[command._name] = command.callback
+                self._slash_commands[command._name] = command
                 return command
 
             return wrapper()
 
         return decorator
+
+
