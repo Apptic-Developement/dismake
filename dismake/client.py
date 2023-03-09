@@ -1,15 +1,23 @@
 from __future__ import annotations
 
-import json
+import json, asyncio
+from typing import Optional
 
 from fastapi import FastAPI, Request
 from loguru import logger as log
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-from .models import SlashCommand, SubCommand
+
+from dismake.types.command import OptionType
+from .command import SlashCommand, Option
+from functools import wraps
 
 from .http import HttpClient
-from .types import InteractionType, InteractionResponseType
+from .types import (
+    AsyncFunction,
+    InteractionType,
+    InteractionResponseType,
+)
 
 
 __all__ = ("Client",)
@@ -57,18 +65,20 @@ class Client:
             log.success("Successfully responded to discord.")
             return {"type": InteractionResponseType.PONG}
 
-    def register_slash_command(self, command: SlashCommand):
-        pass
-    def listen(self, command: SlashCommand):
-        def decorator(callback):
-            self._slash_commands[command.name] = callback
-            print(self._slash_commands)
-            print(command.dict(exclude_none=True))
+    def command(self, name: str, description: Optional[str]):
+        if name in self._slash_commands.keys():
+            raise ValueError(
+                f"{name!r} already registered as a slash command please use a different name."
+            )
+        command = SlashCommand(name=name, description=description)
+
+        def decorator(coro: AsyncFunction):
+            @wraps(coro)
+            def wrapper(*args, **kwargs):
+                command.callback = coro
+                self._slash_commands[command._name] = command.callback
+                return command
+
+            return wrapper()
+
         return decorator
-    
-    # def listen_for_subcommand(self, command: SubCommand):
-    #     def decorator(callback):
-    #         self._slash_commands[command.get_name] = callback
-    #         print(self._slash_commands)
-    #         print(command.dict(exclude_none=True))
-    #     return decorator

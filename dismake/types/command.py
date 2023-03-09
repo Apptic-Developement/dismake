@@ -4,7 +4,7 @@ from typing import TypedDict
 
 __all__ = (
     "CommandTypes",
-    "OptionTypes",
+    "OptionType",
     "SubCommandDict"
 )
 class CommandTypes:
@@ -13,7 +13,7 @@ class CommandTypes:
     MESSAGE = 3
 
 
-class OptionTypes:
+class OptionType:
     SUB_COMMAND = 1
     SUB_COMMAND_GROUP = 2
     STRING = 3

@@ -5,5 +5,6 @@ from .snowflake import *
 
 
 from collections.abc import Coroutine
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable
 AsyncFunction = Callable[..., Coroutine[Any, Any, Any]]
+

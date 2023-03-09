@@ -1,39 +1,151 @@
 from __future__ import annotations
-from typing import Callable
-import re
 
-from .types.command import SubCommandDict
+from typing import Any, Optional
+from inspect import signature
+from functools import wraps
+from dismake.types.command import OptionType
+from .types import AsyncFunction, CommandTypes
 
-__all__ = (
-    "SlashCommand",
-)
-
-
-
-def validate_name(name: str):
-    SLASH_COMMAND_NAME_REGEX = r'^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$'
-    if re.match(SLASH_COMMAND_NAME_REGEX, name, re.UNICODE):
-        return name
-    raise ValueError()
+__all__ = ("SlashCommand",)
 
 
-class SlashCommand:
+async def _default_slash_command_callback(*args, **kwargs):
+    # TODO: Response 
+    pass
+
+
+class Choice:
+    def __init__(
+        self,
+        name: str ,
+        value: str | int | float,
+        name_localizations: list[dict] | None = None
+    ) -> None:
+        self._name = name
+        self._value = value
+        self._name_localizations = name_localizations
+
+
+    def _to_dict(self) -> dict[str, Any]:
+        return {
+            'name': self._name,
+            'value': self._value,
+            'name_localizations': self._name_localizations,
+        }
+
+# class SlashOption(BaseModel):
+#     type: int
+#     name: str
+#     description: str
+#     name_localizations: Optional[dict[str, str]] = None
+#     description_localizations: Optional[dict[str, str]] = None
+#     required: Optional[bool] = False
+#     choices: Optional[list[Choice]] = None
+#     options: list[SlashOption] = list()
+#     channel_types: Optional[list[str]] = None
+#     min_value: Optional[float] = None
+#     max_value: Optional[float] = None
+#     min_length: Optional[int] = None
+#     max_length: Optional[int] = None
+#     autocomplete: Optional[bool] = None
+#     autocomplete_callback: Optional[AsyncFunction] = None
+#     callback: Optional[AsyncFunction] = None
+
+class Option:
+    _level: int = 1
     def __init__(
         self,
         name: str,
-        *,
-        description: str = "No description provided."
+        description: str,
+        type: int = OptionType.STRING,
+        required: bool = False,
+        autocomplete: bool | None = None,
+        autocompleter: Optional[AsyncFunction] = None,
+        choices: list[Choice] | None= None,
+        min_value: int | None = None,
+        max_value: int | None = None,
+        channel_types: int | None = None,
+        options: list[Option] | None = None 
     ) -> None:
-        self._name = validate_name(name)
+        self._name = name
         self._description = description
-        self.subcommands: list[SubCommandDict | None] = []
+        self._type = type
+        self._required = required
+        self._autocomplete = autocomplete
+        self._autocompleter = autocompleter
+        self._choices = choices
+        self._min_value = min_value
+        self._max_value = max_value
+        self._channel_types = channel_types
+        self._options = options
 
-    def add_subcommand(self, name: str, description: str, callback: Callable) -> None:
-        self.subcommands.append(
-            {
-                "name": name, "description": description, "callback": callback
-            }
-        )
+        self._callback: AsyncFunction = _default_slash_command_callback
 
-    async def callback(self, interaction):
-        pass
+
+    def __str__(self) -> str:
+        return f"<dismake.Option name='{self._name}'>"
+    @property
+    def callback(self) -> Optional[AsyncFunction]:
+        return self._callback
+
+    @callback.setter
+    def callback(self, value: AsyncFunction | None):
+        if value is None:
+            self._callback = _default_slash_command_callback
+            return
+        self._callback = value
+
+        
+
+
+class SlashCommand:
+    _level: int = 1
+    def __init__(
+        self,
+        name: str,
+        description: Optional[str],
+        application_id: Optional[int] = None,
+        guild_id: Optional[int] = None,
+        name_localizations: Optional[dict[str, str]] = None,
+        description_localizations: Optional[dict[str, str]] = None,
+        default_member_permissions: Optional[str] = None,
+        dm_permission: Optional[bool] = True,
+        default_permission: Optional[bool] = True,
+        nsfw: Optional[bool] = False,
+        version: Optional[int] = 1,
+    ) -> None:
+        self._name = name
+        self._description = description or "No description provided."
+        self._type = CommandTypes.SLASH
+        self._application_id = application_id
+        self._guild_id = guild_id
+        self._name_localizations = name_localizations
+        self._description_localizations = description_localizations
+        self._options: list[Option] = list()
+        self._default_member_permissions = default_member_permissions
+        self._dm_permission = dm_permission
+        self._default_permission = default_permission
+        self._nsfw = nsfw
+        self._version = version
+        self._options = []
+        self._payload = {}
+        self._subcommands = []
+        self._callback: AsyncFunction = _default_slash_command_callback
+
+    def __str__(self) -> str:
+        return f"<Command name='{self._name}' description='{self._description}'>"
+
+    @property
+    def callback(self) -> AsyncFunction:
+        return self._callback
+    
+    @callback.setter
+    def callback(self, value: AsyncFunction | None):
+        if value is None:
+            self._callback = _default_slash_command_callback
+            return
+        self._callback = value
+
+
+
+    

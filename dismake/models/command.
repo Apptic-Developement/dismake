@@ -3,7 +3,7 @@ import re
 
 from pydantic import BaseModel, validator
 from typing import Any, Optional
-from ..types import CommandTypes, OptionTypes, SnowFlake
+from ..types import CommandTypes, OptionType, SnowFlake
 
 __all__ = ("Option", "Choice", "SlashCommand")
 # SLASH_COMMAND_REGEX = re.compile(r"^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$")
@@ -19,7 +19,7 @@ class Option(BaseModel):
     min_length: Optional[int] = None
     max_length: Optional[int] = None
     required: Optional[bool] = False
-    type: int = OptionTypes.STRING
+    type: int = OptionType.STRING
     autocomplete: Optional[bool] = None
 
     class Config:

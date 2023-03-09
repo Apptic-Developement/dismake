@@ -1,33 +1,30 @@
 from fastapi import FastAPI, Request
-from dismake import Client, SlashCommand, Option, SlashCommand
+from dismake import Client
 from config import *
-from dismake.models.command import SubCommand
-
-
+from dismake.command import SlashCommand, Option
+from dismake import Interaction
+from dismake.types.command import OptionType
+import uuid
 app = FastAPI()
 
-client = Client(
+dismake = Client(
     token=token,
     client_public_key=public_key,
     client_id=client_id,
     app=app
 )
 
-giveaway = SlashCommand(
-    name="giveaway",
-    description="Giveaway a bra with free panty for goa trip.")
 
-start = SubCommand(
-    parent=giveaway,
-    name="start",
-    description="Starts a bra's giveaway."
-)
-@client.listen(start)
-async def callback(*args):
+@dismake.command(name="command_name",description="Description of the command")
+async def test_collback(interaction: Interaction,name: Option(name="ok", description="Okkk")):
     pass
+
+
+print(dismake._slash_commands)
 
 
 @app.post("/interactions")
 async def handle_interactions(request: Request):
-    return await client.handle_interactions(request)
+    return await dismake.handle_interactions(request)
+
 
