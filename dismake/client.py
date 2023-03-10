@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import json, asyncio
+import json
+import logging
 from typing import Optional
 
-from fastapi import FastAPI, Request
-from loguru import logger as log
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+
 
 from dismake.types.command import OptionType
 from .command import SlashCommand, Option
@@ -20,23 +22,32 @@ from .types import (
 )
 
 
-__all__ = ("Client",)
+log = logging.getLogger("uvicorn")
+
+__all__ = ("Bot",)
 
 
-class Client:
+class Bot(FastAPI):
     def __init__(
-        self, token: str, client_public_key: str, client_id: int, app: FastAPI
+        self,
+        token: str,
+        client_public_key: str,
+        client_id: int,
+        route: str = "/interactions",
+        **kwargs,
     ) -> None:
+        super().__init__(**kwargs)
         self._client_id = client_id
-        self._app = app
         self._client_public_key = client_public_key
         self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
-        self._http = HttpClient(token=token)
+        self._http = HttpClient(token=token, client_id=client_id)
         self._slash_commands: dict[str, SlashCommand] = {}
+        self.add_route(path=route, route=self.handle_interactions, methods=["POST"])
+        self._listeners = {}
 
-    # @property
-    # def user(self) -> User:
-    #     ...
+    def get_commands(self) -> Optional[list[SlashCommand]]:
+        if self._slash_commands:
+            return list(command for _, command in self._slash_commands.items())
 
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
@@ -58,15 +69,16 @@ class Client:
             or timestamp is None
             or not self.verify_key(await request.body(), signature, timestamp)
         ):
-            return
+            return Response(content="Bad Signature", status_code=401)
 
         request_body = json.loads(await request.body())
         if request_body["type"] == InteractionType.PING:
-            log.success("Successfully responded to discord.")
-            return {"type": InteractionResponseType.PONG}
-
+            log.info("Successfully responded to discord.")
+            return JSONResponse({"type": InteractionResponseType.PONG})
+    
     def command(
         self,
+        id: str | int,
         name: str,
         description: Optional[str],
         options: Optional[list[Option]] = None,
@@ -77,7 +89,9 @@ class Client:
                 f"{name!r} already registered as a slash command please use a different name."
             )
 
-        command = SlashCommand(name=name, description=description, guild_id=guild_id)
+        command = SlashCommand(
+            id=id, name=name, description=description, guild_id=guild_id
+        )
         if options:
             for option in options:
                 if (
@@ -96,5 +110,10 @@ class Client:
             return wrapper()
 
         return decorator
+
+    def include_router(self, router,**kwargs) -> None:
+        setattr(router, "bot", self)
+        return super().include_router(router, **kwargs)
+
 
 

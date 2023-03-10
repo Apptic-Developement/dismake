@@ -1,69 +1,7 @@
-from fastapi import FastAPI, Request
-from dismake import Client
-from config import *
-from dismake import Interaction, Option, OptionType
-import uvicorn
+import dismake, config
 
-from dismake.command import Choice
-
-app = FastAPI()
-
-dismake = Client(
-    token=token, client_public_key=public_key, client_id=client_id, app=app
+app = dismake.Bot(
+    token=config.token,
+    client_public_key=config.public_key,
+    client_id=config.client_id
 )
-
-options: list[Option] = [
-    Option(name="name", description="Enter your name"),
-    Option(name="age", description="Enter your age", type=OptionType.INTEGER),
-    Option(
-        name="gender",
-        description="Choose your gender",
-        choices=[
-            Choice(name="Male", value="male"),
-            Choice(name="Female", value="Female"),
-        ],
-    ),
-]
-
-
-@dismake.command(
-    name="test_command",
-    description="Description of the command",
-)
-async def test_command(interaction: Interaction, name: str):
-    pass
-
-
-@test_command.command(
-    name="test_sub_command", description="This is a sub command", options=options
-)
-async def test_sub_command(interaction: Interaction, name: str):
-    pass
-
-
-@test_sub_command.command(name="sub_group_command", description="Sub group command")
-async def sg_callback(interaction: Interaction):
-    pass
-
-
-@test_sub_command.command(name="sub_group_command2", description="Sub group command")
-async def sg_callback2(interaction: Interaction):
-    pass
-
-
-# @sg_callback.command(name="hmm", description="Sub group command")
-# async def hmm(interaction: Interaction):
-#     pass
-
-
-print(test_command.to_dict())
-
-
-@app.post("/interactions")
-async def handle_interactions(request: Request):
-    return await dismake.handle_interactions(request)
-
-
-# if __name__ == "__main__":
-#     uvicorn.run(app="main:app", reload=True)
-

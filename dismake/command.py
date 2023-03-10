@@ -100,7 +100,7 @@ class Option:
                     _as_options.append(option.to_dict())
 
         if self._group_commands:
-            for name, gcommand in self._group_commands.items():
+            for _, gcommand in self._group_commands.items():
                 if gcommand._type != OptionType.SUB_COMMAND_GROUP:
                     _as_options.append(gcommand.to_dict())
         _as_dict["options"] = _as_options
@@ -115,7 +115,7 @@ class Option:
         command = Option(
             name=name, description=description, type=OptionType.SUB_COMMAND
         )
-        command._level += 1
+        command._level = self._level + 1
         if options:
             for option in options:
                 if (
@@ -124,8 +124,9 @@ class Option:
                 ):
                     command._options.append(option)
 
-        # if command._level == 2:
-        #     raise RuntimeError("A slash command can not be more than 3 level.")
+        if self._level >= 2:
+            raise RuntimeError("Sub commands cannot be three levels deep")
+        
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*args, **kwargs):
@@ -146,6 +147,7 @@ class SlashCommand:
 
     def __init__(
         self,
+        id: str | int,
         name: str,
         description: Optional[str],
         application_id: Optional[int] = None,
@@ -158,6 +160,7 @@ class SlashCommand:
         nsfw: Optional[bool] = False,
         version: Optional[int] = 1,
     ) -> None:
+        self._id = id
         self._name = name
         self._description = description or "No description provided."
         self._type = CommandTypes.SLASH
@@ -230,6 +233,7 @@ class SlashCommand:
 
     def to_dict(self) -> dict:
         _as_dict = {
+            "id": self._id,
             "name": self._name,
             "description": self._description,
             "type": self._type,
