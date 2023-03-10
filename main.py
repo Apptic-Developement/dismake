@@ -14,7 +14,7 @@ dismake = Client(
 
 options: list[Option] = [
     Option(name="name", description="Enter your name"),
-    Option(name="age", description="Enter your age"),
+    Option(name="age", description="Enter your age", type=OptionType.INTEGER),
     Option(
         name="gender",
         description="Choose your gender",
@@ -34,13 +34,27 @@ async def test_command(interaction: Interaction, name: str):
     pass
 
 
-@test_command.subcommand(
-    name="test_sub_command",
-    description="This is a sub command",
-    options=options
+@test_command.command(
+    name="test_sub_command", description="This is a sub command", options=options
 )
 async def test_sub_command(interaction: Interaction, name: str):
     pass
+
+
+@test_sub_command.command(name="sub_group_command", description="Sub group command")
+async def sg_callback(interaction: Interaction):
+    pass
+
+
+@test_sub_command.command(name="sub_group_command2", description="Sub group command")
+async def sg_callback2(interaction: Interaction):
+    pass
+
+
+# @sg_callback.command(name="hmm", description="Sub group command")
+# async def hmm(interaction: Interaction):
+#     pass
+
 
 print(test_command.to_dict())
 
@@ -48,3 +62,8 @@ print(test_command.to_dict())
 @app.post("/interactions")
 async def handle_interactions(request: Request):
     return await dismake.handle_interactions(request)
+
+
+# if __name__ == "__main__":
+#     uvicorn.run(app="main:app", reload=True)
+
