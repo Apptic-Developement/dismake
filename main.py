@@ -27,14 +27,22 @@ options: list[Option] = [
 
 
 @dismake.command(
-    name="command_name",
+    name="test_command",
     description="Description of the command",
-    options=options
 )
-async def callback(interaction: Interaction, name: str):
+async def test_command(interaction: Interaction, name: str):
     pass
 
-print(callback.to_dict())
+
+@test_command.subcommand(
+    name="test_sub_command",
+    description="This is a sub command",
+    options=options
+)
+async def test_sub_command(interaction: Interaction, name: str):
+    pass
+
+print(test_command.to_dict())
 
 
 @app.post("/interactions")

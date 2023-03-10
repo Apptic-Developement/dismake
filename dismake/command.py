@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Any, Optional
-from inspect import signature
 from functools import wraps
 from dismake.types.command import OptionType
 from .types import AsyncFunction, CommandTypes
@@ -51,12 +50,13 @@ class Choice:
 #     autocomplete_callback: Optional[AsyncFunction] = None
 #     callback: Optional[AsyncFunction] = None
 
+
 class Option:
-    _level: int = 1
+    _level: int = 0
     def __init__(
         self,
         name: str,
-        description: str,
+        description: Optional[str],
         type: int = OptionType.STRING,
         required: bool = False,
         autocomplete: bool = False,
@@ -65,10 +65,9 @@ class Option:
         min_value: int | None = None,
         max_value: int | None = None,
         channel_types: int | None = None,
-        options: list[Option] | None = None 
     ) -> None:
         self._name = name
-        self._description = description
+        self._description = description or "No description provided."
         self._type = type
         self._required = required
         self._autocomplete = autocomplete
@@ -77,7 +76,7 @@ class Option:
         self._min_value = min_value
         self._max_value = max_value
         self._channel_types = channel_types
-        self._options = options
+        self._options: list[Option] = list()
 
         self._callback: AsyncFunction = _default_slash_command_callback
 
@@ -116,7 +115,7 @@ class Option:
 
 
 class SlashCommand:
-    _level: int = 1
+    _level: int = 0
     def __init__(
         self,
         name: str,
@@ -144,15 +143,15 @@ class SlashCommand:
         self._default_permission = default_permission
         self._nsfw = nsfw
         self._version = version
-        self._options = []
-        self._subcommands = []
-        self._callback: AsyncFunction = _default_slash_command_callback
+        self._options: list[Option] = list()
+        self._subcommands: dict[str, Option] = {}
+        self._callback: AsyncFunction | None = _default_slash_command_callback
 
     def __str__(self) -> str:
         return f"<Command name='{self._name}' description='{self._description}'>"
 
     @property
-    def callback(self) -> AsyncFunction:
+    def callback(self) -> Optional[AsyncFunction]:
         return self._callback
     
     @callback.setter
@@ -161,6 +160,45 @@ class SlashCommand:
             self._callback = _default_slash_command_callback
             return
         self._callback = value
+
+    def subcommand(
+        self,
+        name: str,
+        description: Optional[str],
+        options: Optional[list[Option]] = None,
+    ):
+
+        if name in self._subcommands.keys():
+            raise ValueError(
+                f"{name!r} already registered as a slash command please use a different name."
+            )
+
+        command = Option(
+            name=name,
+            description=description,
+            type=OptionType.SUB_COMMAND
+        )
+        if options:
+            for option in options:
+                if option._type != OptionType.SUB_COMMAND or option._type != OptionType.SUB_COMMAND:
+                    command._options.append(option)
+        
+        def decorator(coro: AsyncFunction):
+            @wraps(coro)
+            def wrapper(*args, **kwargs):
+                command._callback = coro
+                
+                command._level = 1
+
+                #Reset some value of self
+                self._options.clear()
+                self._callback = None
+                self._subcommands[name] = command
+                return command
+            return wrapper()
+        return decorator
+        
+
 
     def to_dict(self) -> dict:
         _as_dict = {
@@ -173,9 +211,10 @@ class SlashCommand:
         if self._options:
             for option in self._options:
                 _as_options.append(option.to_dict())
+            
+        elif self._subcommands:
+            for _, _sub_command in self._subcommands.items():
+                _as_options.append(_sub_command.to_dict())
         if _as_options:
             _as_dict["options"] = _as_options
         return _as_dict
-
-    
-    
