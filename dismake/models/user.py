@@ -29,15 +29,18 @@ FLAGS_MAPPING = {
 class User(BaseModel):
     id: int
     username: str
+    display_name: Optional[str]
     discriminator: int
-    avatar: str
+    avatar: Optional[str]
+    avatar_decoration: Optional[str]
     bot: bool
-    system: bool
-    banner: str
-    ancent_color: int
+    bio: str
+    system: Optional[bool]
+    banner: Optional[str]
+    ancent_color: Optional[int]
     locale: str
     verified: bool
-    email: bool
+    email: str | None
     flags: int
     premium_type: int
     public_flags: int
@@ -52,4 +55,7 @@ class User(BaseModel):
         return _flag_names
     @property
     def display_avatar(self) -> Asset:
-        return Asset.from_avatar(self.avatar, self.id)
+        return Asset.from_avatar(self.avatar, self)
+
+class Member(User):
+    ...

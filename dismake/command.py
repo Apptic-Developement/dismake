@@ -147,6 +147,7 @@ class SlashCommand:
 
     def __init__(
         self,
+        *,
         name: str,
         description: Optional[str],
         application_id: Optional[int] = None,
@@ -159,7 +160,7 @@ class SlashCommand:
         nsfw: Optional[bool] = False,
         version: Optional[int] = 1,
     ) -> None:
-        self._id: int | None = None
+        self._id: Optional[str | int] = None
         self._name = name
         self._description = description or "No description provided."
         self._type = CommandTypes.SLASH
@@ -180,6 +181,14 @@ class SlashCommand:
     def __str__(self) -> str:
         return f"<Command name='{self._name}' description='{self._description}'>"
 
+    @property
+    def id(self) -> int | str | None:
+        return self._id
+    
+    @id.setter
+    def id(self, value):
+        self._id = value
+    
     @property
     def callback(self) -> Optional[AsyncFunction]:
         return self._callback

@@ -2,24 +2,22 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Literal, Optional
+from typing import Optional
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-
-
 from dismake.types.command import OptionType
 from .command import SlashCommand, Option
 from functools import wraps
-
-from .http import HttpClient
+from .api import API
 from .types import (
     AsyncFunction,
     InteractionType,
     InteractionResponseType,
 )
+from .models import User
 
 
 log = logging.getLogger("uvicorn")
@@ -34,23 +32,25 @@ class Bot(FastAPI):
         client_public_key: str,
         client_id: int,
         route: str = "/interactions",
-        auto_sync: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self._client_id = client_id
         self._client_public_key = client_public_key
         self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
-        self._http = HttpClient(token=token, client_id=client_id)
+        self._http = API(token=token, client_id=client_id)
         self._slash_commands: dict[str, SlashCommand] = {}
         self.add_route(path=route, route=self.handle_interactions, methods=["POST"])
-        self._listeners = {}
-        if auto_sync:
-            ...
 
+    @property
+    def user(self) -> User:
+        return self._http._user
+
+    @property
     def get_commands(self) -> Optional[list[SlashCommand]]:
         if self._slash_commands:
             return list(command for _, command in self._slash_commands.items())
+
 
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
@@ -78,6 +78,8 @@ class Bot(FastAPI):
         if request_body["type"] == InteractionType.PING:
             log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG})
+        elif request_body["type"] == InteractionType.APPLICATION_COMMAND:
+            ...
         return JSONResponse({"type": InteractionResponseType.PONG})
     
     def command(
@@ -85,7 +87,6 @@ class Bot(FastAPI):
         name: str,
         description: Optional[str],
         options: Optional[list[Option]] = None,
-        guild_id: Optional[int] = None,
     ):
         if name in self._slash_commands.keys():
             raise ValueError(
@@ -93,7 +94,7 @@ class Bot(FastAPI):
             )
 
         command = SlashCommand(
-            name=name, description=description, guild_id=guild_id
+            name=name, description=description
         )
         if options:
             for option in options:
@@ -114,15 +115,22 @@ class Bot(FastAPI):
 
         return decorator
 
-    async def auto_sync_commands(self):
-        _names = await self._http.get_global_commands(only_names=True)
-
-        # Check if the self commands not in global commands then add that command
-        if not _names:
-            return
+    async def init_commands(self):
+        registered_commands = await self._http.get_global_commands()
         if self._slash_commands:
-            for _, command in self._slash_commands.items():
-                if command._name not in _names:
-                    await self._http.register_command(command)
-                
+            if registered_commands:
+                for name, command in self._slash_commands.items():
+                    for registered_command in registered_commands:
+                            if name == registered_command.name:
+                                command.id = registered_command.id
+
+            
+    async def sync_commands(
+        self,
+        *,
+        guild_id: Optional[int] = None
+    ):
+        if not guild_id:
+            res = await self._http.bulk_override_commands([command for _, command in self._slash_commands.items()])
+            return res.json()
 
