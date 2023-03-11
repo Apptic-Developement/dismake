@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -34,6 +34,7 @@ class Bot(FastAPI):
         client_public_key: str,
         client_id: int,
         route: str = "/interactions",
+        auto_sync: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -44,6 +45,8 @@ class Bot(FastAPI):
         self._slash_commands: dict[str, SlashCommand] = {}
         self.add_route(path=route, route=self.handle_interactions, methods=["POST"])
         self._listeners = {}
+        if auto_sync:
+            ...
 
     def get_commands(self) -> Optional[list[SlashCommand]]:
         if self._slash_commands:
@@ -75,10 +78,10 @@ class Bot(FastAPI):
         if request_body["type"] == InteractionType.PING:
             log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG})
+        return JSONResponse({"type": InteractionResponseType.PONG})
     
     def command(
         self,
-        id: str | int,
         name: str,
         description: Optional[str],
         options: Optional[list[Option]] = None,
@@ -90,7 +93,7 @@ class Bot(FastAPI):
             )
 
         command = SlashCommand(
-            id=id, name=name, description=description, guild_id=guild_id
+            name=name, description=description, guild_id=guild_id
         )
         if options:
             for option in options:
@@ -111,9 +114,15 @@ class Bot(FastAPI):
 
         return decorator
 
-    def include_router(self, router,**kwargs) -> None:
-        setattr(router, "bot", self)
-        return super().include_router(router, **kwargs)
+    async def auto_sync_commands(self):
+        _names = await self._http.get_global_commands(only_names=True)
 
-
+        # Check if the self commands not in global commands then add that command
+        if not _names:
+            return
+        if self._slash_commands:
+            for _, command in self._slash_commands.items():
+                if command._name not in _names:
+                    await self._http.register_command(command)
+                
 

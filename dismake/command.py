@@ -147,7 +147,6 @@ class SlashCommand:
 
     def __init__(
         self,
-        id: str | int,
         name: str,
         description: Optional[str],
         application_id: Optional[int] = None,
@@ -160,7 +159,7 @@ class SlashCommand:
         nsfw: Optional[bool] = False,
         version: Optional[int] = 1,
     ) -> None:
-        self._id = id
+        self._id: int | None = None
         self._name = name
         self._description = description or "No description provided."
         self._type = CommandTypes.SLASH
@@ -202,7 +201,7 @@ class SlashCommand:
             raise ValueError(
                 f"{name!r} already registered as a slash command please use a different name."
             )
-
+        
         command = Option(
             name=name, description=description, type=OptionType.SUB_COMMAND
         )
@@ -233,11 +232,11 @@ class SlashCommand:
 
     def to_dict(self) -> dict:
         _as_dict = {
-            "id": self._id,
             "name": self._name,
             "description": self._description,
             "type": self._type,
             "dm_permission": self._dm_permission,
+            "guild_id": self._guild_id,
         }
         _as_options = []
         if self._options:
