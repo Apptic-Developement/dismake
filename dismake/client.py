@@ -41,6 +41,8 @@ class Bot(FastAPI):
         self._http = API(token=token, client_id=client_id)
         self._slash_commands: dict[str, SlashCommand] = {}
         self.add_route(path=route, route=self.handle_interactions, methods=["POST"])
+        self.add_event_handler("startup", self._init)
+        self.add_event_handler("startup", self._http.fetch_me)
 
     @property
     def user(self) -> User:
@@ -50,7 +52,6 @@ class Bot(FastAPI):
     def get_commands(self) -> Optional[list[SlashCommand]]:
         if self._slash_commands:
             return list(command for _, command in self._slash_commands.items())
-
 
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
@@ -81,7 +82,7 @@ class Bot(FastAPI):
         elif request_body["type"] == InteractionType.APPLICATION_COMMAND:
             ...
         return JSONResponse({"type": InteractionResponseType.PONG})
-    
+
     def command(
         self,
         name: str,
@@ -93,9 +94,7 @@ class Bot(FastAPI):
                 f"{name!r} already registered as a slash command please use a different name."
             )
 
-        command = SlashCommand(
-            name=name, description=description
-        )
+        command = SlashCommand(name=name, description=description)
         if options:
             for option in options:
                 if (
@@ -115,22 +114,18 @@ class Bot(FastAPI):
 
         return decorator
 
-    async def init_commands(self):
+    async def _init(self):
         registered_commands = await self._http.get_global_commands()
         if self._slash_commands:
             if registered_commands:
                 for name, command in self._slash_commands.items():
                     for registered_command in registered_commands:
-                            if name == registered_command.name:
-                                command.id = registered_command.id
+                        if name == registered_command.name:
+                            command.id = registered_command.id
 
-            
-    async def sync_commands(
-        self,
-        *,
-        guild_id: Optional[int] = None
-    ):
+    async def sync_commands(self, *, guild_id: Optional[int] = None):
         if not guild_id:
-            res = await self._http.bulk_override_commands([command for _, command in self._slash_commands.items()])
+            res = await self._http.bulk_override_commands(
+                [command for _, command in self._slash_commands.items()]
+            )
             return res.json()
-

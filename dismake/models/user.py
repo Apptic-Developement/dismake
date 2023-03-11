@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Optional
+
+from dismake.enums import DefaultAvatar
 from ..asset import Asset
 
 from pydantic import BaseModel
@@ -55,7 +57,9 @@ class User(BaseModel):
         return _flag_names
     @property
     def display_avatar(self) -> Asset:
-        return Asset.from_avatar(self.avatar, self)
+        if not self.avatar:
+            return Asset.from_default_avatar(self.discriminator % len(DefaultAvatar))
+        return Asset.from_avatar(self.avatar, self.id)
 
 class Member(User):
     ...

@@ -10,7 +10,6 @@ app = dismake.Bot(
 @app.on_event("startup")
 async def on_startup():
     # print(await app.sync_commands())
-    await app._http.fetch_me()
     print(app.user.display_avatar)
     
 
