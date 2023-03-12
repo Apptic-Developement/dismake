@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Optional
 from functools import wraps
 from dismake.types.command import OptionType
+from dismake.types.snowflake import SnowFlake
 from .types import AsyncFunction, CommandTypes
 
 __all__ = ("SlashCommand", "Option", "Choice")
@@ -151,16 +152,15 @@ class SlashCommand:
         name: str,
         description: Optional[str],
         application_id: Optional[int] = None,
-        guild_id: Optional[int] = None,
+        guild_id: Optional[SnowFlake] = None,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
         default_member_permissions: Optional[str] = None,
         dm_permission: Optional[bool] = True,
         default_permission: Optional[bool] = True,
         nsfw: Optional[bool] = False,
-        version: Optional[int] = 1,
     ) -> None:
-        self._id: Optional[str | int] = None
+        self._id: Optional[SnowFlake] = None
         self._name = name
         self._description = description or "No description provided."
         self._type = CommandTypes.SLASH
@@ -173,7 +173,6 @@ class SlashCommand:
         self._dm_permission = dm_permission
         self._default_permission = default_permission
         self._nsfw = nsfw
-        self._version = version
         self._options: list[Option] = list()
         self._subcommands: dict[str, Option] = {}
         self._callback: AsyncFunction | None = _default_slash_command_callback

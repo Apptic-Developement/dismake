@@ -7,7 +7,7 @@ from ..asset import Asset
 from pydantic import BaseModel
 
 
-__all__ = ("User",)
+__all__ = ("User", "Member")
 
 FLAGS_MAPPING = {
     1 << 0: "STAFF",

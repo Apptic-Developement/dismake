@@ -78,6 +78,5 @@ class API:
             )
         res.raise_for_status()
         self._user = User(**res.json())
-        print(res.json())
 
     
