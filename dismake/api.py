@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from httpx import AsyncClient, Response
 
-from dismake.models.user import User
+from .models.user import User
 
 
 from .command import SlashCommand

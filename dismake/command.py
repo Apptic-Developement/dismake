@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Optional
 from functools import wraps
-from dismake.types.command import OptionType
+from .enums import OptionType, CommandType
 from dismake.types.snowflake import SnowFlake
-from .types import AsyncFunction, CommandTypes
+from .types import AsyncFunction
 
 __all__ = ("SlashCommand", "Option", "Choice")
 
@@ -40,7 +40,7 @@ class Option:
         self,
         name: str,
         description: Optional[str],
-        type: int = OptionType.STRING,
+        type: int = OptionType.STRING.value,
         required: bool = False,
         autocomplete: bool = False,
         autocompleter: Optional[AsyncFunction] = None,
@@ -114,7 +114,7 @@ class Option:
         options: Optional[list[Option]] = None,
     ):
         command = Option(
-            name=name, description=description, type=OptionType.SUB_COMMAND
+            name=name, description=description, type=OptionType.SUB_COMMAND.value
         )
         command._level = self._level + 1
         if options:
@@ -163,7 +163,7 @@ class SlashCommand:
         self._id: Optional[SnowFlake] = None
         self._name = name
         self._description = description or "No description provided."
-        self._type = CommandTypes.SLASH
+        self._type = CommandType.SLASH.value
         self._application_id = application_id
         self._guild_id = guild_id
         self._name_localizations = name_localizations
@@ -211,7 +211,7 @@ class SlashCommand:
             )
         
         command = Option(
-            name=name, description=description, type=OptionType.SUB_COMMAND
+            name=name, description=description, type=OptionType.SUB_COMMAND.value
         )
         if options:
             for option in options:

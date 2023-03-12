@@ -1,5 +1,3 @@
-from .interactions import *
-from .command import *
 from .snowflake import *
 
 

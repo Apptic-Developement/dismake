@@ -1,7 +1,7 @@
 import dismake, config
 from dismake.command import Option
-from dismake.interaction import Interaction
-from dismake.types.command import OptionType
+from dismake.models import Interaction
+from dismake import OptionType
 
 app = dismake.Bot(
     token=config.token, client_public_key=config.public_key, client_id=config.client_id
@@ -15,13 +15,14 @@ async def on_startup():
     print(app.user.username)
     
 
+
 options = [
-    Option(name="name", description="Enter your name", type=OptionType.STRING),
-    Option(name="age", description="Enter your age", type=OptionType.INTEGER),
+    Option(name="name", description="Enter your name", type=OptionType.STRING.value),
+    Option(name="age", description="Enter your age", type=OptionType.INTEGER.value),
 ]
 
 @app.command(name="ping", description="Ping Command", options=options)
-async def ping_cb(interaction: Interaction):
-    print(interaction.user.username)
+async def ping(interaction: Interaction):
+    print(interaction.member)
 
 

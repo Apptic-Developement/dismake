@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Any, Optional
 
 from dismake.enums import DefaultAvatar
 from ..asset import Asset
@@ -35,17 +35,18 @@ class User(BaseModel):
     discriminator: int
     avatar: Optional[str]
     avatar_decoration: Optional[str]
-    bot: bool
-    bio: str
+    bot: Optional[bool]
+    bio: Optional[str]
     system: Optional[bool]
+    mfa_enabled: Optional[bool]
     banner: Optional[str]
     ancent_color: Optional[int]
-    locale: str
-    verified: bool
-    email: str | None
-    flags: int
-    premium_type: int
-    public_flags: int
+    locale: Optional[str]
+    verified: Optional[bool]
+    email: Optional[str | None]
+    flags: Optional[int]
+    premium_type: Optional[int]
+    public_flags: Optional[int]
 
     @property
     def get_flags(self) -> Optional[list[str | None]]:
@@ -61,5 +62,16 @@ class User(BaseModel):
             return Asset.from_default_avatar(self.discriminator % len(DefaultAvatar))
         return Asset.from_avatar(self.avatar, self.id)
 
-class Member(User):
-    ...
+class Member(BaseModel):
+    user: Optional[User]
+    nick: Optional[str]
+    avatar: Optional[str]
+    roles: list[Any]
+    joined_at: Any
+    premium_since: Optional[Any]
+    deaf: bool
+    mute: bool
+    flags: Any
+    pending: Optional[bool]
+    permissions: Any
+    communication_disabled_until: Optional[Any]
