@@ -140,3 +140,7 @@ class Bot(FastAPI):
                 [command for _, command in self._slash_commands.items()]
             )
             return res.json()
+
+    def run(self, **kwargs):
+        import uvicorn
+        uvicorn.run(**kwargs)

@@ -7,15 +7,12 @@ app = dismake.Bot(
     token=config.token, client_public_key=config.public_key, client_id=config.client_id
 )
 
-
 @app.on_event("startup")
 async def on_startup():
     # print(await app.sync_commands())
     # print(app.user.display_avatar)
     print(app.user.username)
     
-
-
 options = [
     Option(name="name", description="Enter your name", type=OptionType.STRING.value),
     Option(name="age", description="Enter your age", type=OptionType.INTEGER.value),
@@ -23,5 +20,11 @@ options = [
 
 @app.command(name="ping", description="Ping Command", options=options)
 async def ping(interaction: Interaction):
-    await interaction.respond("Responded! Dismake :)", ephemeral=True)
+    await interaction.defer(thinking=False)
+    await interaction.send_followup("This is a followup message!")
+    # await interaction.respond("Responded! Dismake :)", ephemeral=True)
+
+if __name__ == "__main__":
+    app.run(app="main:app", reload=True)
+
 
