@@ -20,11 +20,16 @@ options = [
 
 @app.command(name="ping", description="Ping Command", options=options)
 async def ping(interaction: Interaction):
-    await interaction.defer(thinking=False)
+    await interaction.defer(thinking=True)
+    await interaction.respond("Responded! Dismake :)", ephemeral=True)
     await interaction.send_followup("This is a followup message!")
-    # await interaction.respond("Responded! Dismake :)", ephemeral=True)
+    await interaction.send_followup("This is a followup message!", ephemeral=True)
+    
+
+
+
+
 
 if __name__ == "__main__":
-    app.run(app="main:app", reload=True)
-
+    app.run(app=f"main:app", reload=True)
 

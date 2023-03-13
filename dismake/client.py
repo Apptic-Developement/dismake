@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json, logging
+import json, logging, asyncio
 from typing import Optional
 
 from fastapi import FastAPI, Request, Response
@@ -49,6 +49,9 @@ class Bot(FastAPI):
 
         self._global_application_commands = {}
         self._guild_application_commands = {}
+        
+        self._listeners = {}
+        
 
     @property
     def user(self) -> User:
@@ -144,3 +147,24 @@ class Bot(FastAPI):
     def run(self, **kwargs):
         import uvicorn
         uvicorn.run(**kwargs)
+
+    
+    def listen(self, event_name: str):
+        def decorator(coro: AsyncFunction):
+            @wraps(coro)
+            def wrapper(*args, **kwargs):
+                if event_name in self._listeners.keys():
+                    self._listeners[event_name].append(coro)
+                else:
+                    self._listeners[event_name] = [coro]
+                return
+            return wrapper()
+        return decorator
+
+    def dispatch(self, event_name: str, **kwargs):
+        for name, listeners in self._listeners.items():
+            if name == event_name:
+                for i in listeners:
+                    asyncio.create_task(i())
+                    
+                

@@ -4,10 +4,12 @@ from fastapi import Request
 
 from pydantic import BaseModel
 
-from dismake.enums import InteractionResponseType
+
+from .params import handle_send_params
+from .enums import InteractionResponseType
 from .types import SnowFlake
 from .models import Member
-from .api import API
+from .enums import MessageFlags
 
 
 __all__ = ("Interaction", "CommandData", "ComponentData")
@@ -51,22 +53,21 @@ class Interaction(BaseModel):
     locale: Optional[str]
     data: CommandData
     channel_id: SnowFlake
-    _responded = False
 
     async def respond(
         self, content: str, *, tts: bool = False, ephemeral: bool = False
     ):
-        if not self._responded:
-            return await self.request.app._http.client.request(
-                method="POST",
-                url=f"/interactions/{self.id}/{self.token}/callback",
-                json={
-                    "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
-                    "data": {"content": content, "tts": tts},
-                },
-                headers=self.request.app._http.headers,
-            )
-        return await self.send_followup(content, tts=tts, ephemeral=ephemeral)
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": handle_send_params(
+                    content=content, tts=tts, ephemeral=ephemeral
+                ),
+            },
+            headers=self.request.app._http.headers,
+        )
 
     async def defer(self, thinking: bool = True):
         return await self.request.app._http.client.request(
@@ -74,7 +75,7 @@ class Interaction(BaseModel):
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
-                "data": {"thinking": thinking},
+                "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
             },
             headers=self.request.app._http.headers,
         )
@@ -82,16 +83,12 @@ class Interaction(BaseModel):
     async def send_followup(
         self, content: str, *, tts: bool = False, ephemeral: bool = False
     ):
-
         return await self.request.app._http.client.request(
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
-            json={"content": content, "tts": tts},
+            json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
             headers=self.request.app._http.headers,
         )
 
-
     class Config:
         arbitrary_types_allowed = True
-
-
