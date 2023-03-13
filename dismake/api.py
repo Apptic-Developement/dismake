@@ -2,9 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from httpx import AsyncClient, Response
 
-from .models.user import User
-
-
+from .models import User
 from .command import SlashCommand
 from .models import ApplicationCommand
 __all__ = ("API",)

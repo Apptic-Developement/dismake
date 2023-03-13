@@ -32,7 +32,7 @@ class User(BaseModel):
     id: int
     username: str
     display_name: Optional[str]
-    discriminator: int
+    discriminator: str
     avatar: Optional[str]
     avatar_decoration: Optional[str]
     bot: Optional[bool]
@@ -48,6 +48,11 @@ class User(BaseModel):
     premium_type: Optional[int]
     public_flags: Optional[int]
 
+
+    def __str__(self):
+        return f"{self.username}#{self.discriminator}"
+
+
     @property
     def get_flags(self) -> Optional[list[str | None]]:
         _flag_names = list()
@@ -59,7 +64,7 @@ class User(BaseModel):
     @property
     def display_avatar(self) -> Asset:
         if not self.avatar:
-            return Asset.from_default_avatar(self.discriminator % len(DefaultAvatar))
+            return Asset.from_default_avatar(int(self.discriminator) % len(DefaultAvatar))
         return Asset.from_avatar(self.avatar, self.id)
 
 class Member(BaseModel):
@@ -75,3 +80,6 @@ class Member(BaseModel):
     pending: Optional[bool]
     permissions: Any
     communication_disabled_until: Optional[Any]
+
+    def __str__(self) -> str:
+        return f"{self.user}"

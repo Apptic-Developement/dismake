@@ -1,95 +1,117 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Any, Optional
 from fastapi import Request
-from .models import Interaction as InteractionData
-from .models import User, Member
 
-__all__ = ("Interaction",)
+from pydantic import BaseModel
 
-
-class Interaction:
-    def __init__(self, request: Request, data: InteractionData):
-        self._request = request
-        self._id = data.id
-        self._application_id = data.application_id
-        self._type = data.type
-        self._data = data.data
-        self._guild_id = data.guild_id
-        self._channel_id = data.channel_id
-        self._member = data.member
-        self._user = data.user
-        self._token = data.token
-        self._version = data.version
-        self._message = data.message
-        self._app_permissions = data.app_permissions
-        self._locale = data.locale
-        self._guild_locale = data.guild_locale
-
-    @property
-    def user(self) -> User:
-        return self._user
-
-    @property
-    def member(self) -> Optional[Member]:
-        return self._member
-
-    @classmethod
-    def _from_app_command(cls, request: Request, data: InteractionData):
-        return cls(request=request, data=data)
+from dismake.enums import InteractionResponseType
+from .types import SnowFlake
+from .models import Member
+from .api import API
 
 
-make = {
-    "app_permissions": "4398046511103",
-    "application_id": "1071851326234951770",
-    "channel_id": "1050631408693030973",
-    "data": {
-        "id": "1084106102708375653",
-        "name": "ping",
-        "options": [{"name": "sub", "options": [], "type": 1}],
-        "type": 1,
-    },
-    "entitlement_sku_ids": [],
-    "guild_id": "1047495912089473054",
-    "guild_locale": "en-US",
-    "id": "1084504735874285742",
-    "locale": "en-GB",
-    "member": {
-        "avatar": None,
-        "communication_disabled_until": None,
-        "deaf": False,
-        "flags": 0,
-        "is_pending": False,
-        "joined_at": "2022-11-30T12:54:47.035000+00:00",
-        "mute": False,
-        "nick": None,
-        "pending": False,
-        "permissions": "4398046511103",
-        "premium_since": None,
-        "roles": [
-            "1057154747339128902",
-            "1057154942281982055",
-            "1057154857166979082",
-            "1057154822266179695",
-            "1057154622776688720",
-            "1057154666250641488",
-            "1057154900716441743",
-            "1057154978457866291",
-            "1047852687405895700",
-            "1066238596190834708",
-            "1057154781145215038",
-            "1057154715193983007",
-        ],
-        "user": {
-            "avatar": "94de12ce96deb607397ade18d6989ed2",
-            "avatar_decoration": None,
-            "discriminator": "0140",
-            "display_name": None,
-            "id": "942683245106065448",
-            "public_flags": 4194560,
-            "username": "Pranoy",
-        },
-    },
-    "token": "aW50ZXJhY3Rpb246MTA4NDUwNDczNTg3NDI4NTc0MjpHTzczSUZBZWNjdGkzZUo2clkyRkRhVEx0WVM1bmkzU3JJR0kyT3ZSeDJmcWV1SlNDb3hpcVF4SEVJS29WWTZnSEs5eDFRTjk1QjJuUDV4d0FWTkNBdmhSQmp3RVlzMlFIRzBub3luTTlpSHREdWw2dHAxbGFFTWNQbWtZenlUYQ",
-    "type": 2,
-    "version": 1,
-}
+__all__ = ("Interaction", "CommandData", "ComponentData")
+
+
+class ResolvedData(BaseModel):
+    users: Optional[Any]
+    members: Optional[Any]
+    channels: Optional[Any]
+    roles: Optional[Any]
+    messages: Optional[Any]
+    attachments: Optional[Any]
+
+
+class CommandData(BaseModel):
+    id: SnowFlake
+    name: str
+    type: int
+    resolved: Optional[ResolvedData]
+    options: Optional[list[CommandData]]
+    guild_id: Optional[int]
+    target_id: Optional[int]
+
+
+class ComponentData(BaseModel):
+    custom_id: SnowFlake
+    component_type: int
+    values: Optional[list[Any]]
+
+
+class Interaction(BaseModel):
+    request: Request
+    type: int
+    token: str
+    member: Optional[Member]
+    id: SnowFlake
+    guild_id: SnowFlake
+    app_permissions: str
+    guild_locale: Optional[str]
+    locale: Optional[str]
+    data: CommandData
+    channel_id: SnowFlake
+
+    _responded = False
+
+    async def respond(
+        self, content: str, *, tts: bool = False, ephemeral: bool = False
+    ):
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": {"content": content, "tts": tts},
+            },
+            headers=self.request.app._http.headers,
+        )
+
+    async def defer(self, thinking: bool = True):
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": {},
+            },
+            headers=self.request.app._http.headers,
+        )
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+# make = {
+#     "type": 2,
+#     "token": "A_UNIQUE_TOKEN",
+#     "member": {
+#         "user": {
+#             "id": "53908232506183680",
+#             "username": "Mason",
+#             "avatar": "a_d5efa99b3eeaa7dd43acca82f5692432",
+#             "discriminator": "1337",
+#             "public_flags": 131141,
+#         },
+#         "roles": ["539082325061836999"],
+#         "premium_since": None,
+#         "permissions": "2147483647",
+#         "pending": False,
+#         "nick": None,
+#         "mute": False,
+#         "joined_at": "2017-03-13T19:19:14.040000+00:00",
+#         "is_pending": False,
+#         "deaf": False,
+#     },
+#     "id": "786008729715212338",
+#     "guild_id": "290926798626357999",
+#     "app_permissions": "442368",
+#     "guild_locale": "en-US",
+#     "locale": "en-US",
+#     "data": {
+#         "options": [{"type": 3, "name": "cardname", "value": "The Gitrog Monster"}],
+#         "type": 1,
+#         "name": "cardsearch",
+#         "id": "771825006014889984",
+#     },
+#     "channel_id": "645027906669510667",
+# }

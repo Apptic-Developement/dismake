@@ -1,6 +1,6 @@
 import dismake, config
 from dismake.command import Option
-from dismake.models import Interaction
+from dismake import Interaction
 from dismake import OptionType
 
 app = dismake.Bot(
@@ -23,6 +23,5 @@ options = [
 
 @app.command(name="ping", description="Ping Command", options=options)
 async def ping(interaction: Interaction):
-    print(interaction.member)
-
+    await interaction.respond("Responded! Dismake :)", ephemeral=True)
 

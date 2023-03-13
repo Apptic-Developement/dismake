@@ -14,13 +14,13 @@ from .enums import OptionType, InteractionType, InteractionResponseType
 from .command import SlashCommand, Option
 from .api import API
 from .types import AsyncFunction
-from .models import User, Interaction
+from .models import User
+from .interaction import Interaction
 
 
 log = logging.getLogger("uvicorn")
 
 __all__ = ("Bot",)
-
 
 
 class Bot(FastAPI):
@@ -46,7 +46,6 @@ class Bot(FastAPI):
         )
         self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
-
 
         self._global_application_commands = {}
         self._guild_application_commands = {}
@@ -88,15 +87,12 @@ class Bot(FastAPI):
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         elif request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
             for name, command in self._slash_commands.items():
-                if _json['data']["name"] == name:
+                if _json["data"]["name"] == name:
                     if command._callback:
-                        interaction = Interaction(**_json)
+                        interaction = Interaction(request=request, **_json)
                         await command._callback(interaction)
-                        return JSONResponse({
-                            "type": InteractionResponseType.UPDATE_MESSAGE.value,
-                            "content": "Okiee"
-                        })
-            pass
+        
+        return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
     def command(
         self,
@@ -144,5 +140,3 @@ class Bot(FastAPI):
                 [command for _, command in self._slash_commands.items()]
             )
             return res.json()
-
-
