@@ -43,13 +43,13 @@ class InteractionResponseType(Enum):
 class InteractionResponseFlags(Enum):
     EPHEMERAL = 1 << 6
 
-class CommandType(Enum):
+class CommandType(int):
     SLASH = 1
     USER = 2
     MESSAGE = 3
 
 
-class OptionType(Enum):
+class OptionType(int):
     SUB_COMMAND = 1
     SUB_COMMAND_GROUP = 2
     STRING = 3

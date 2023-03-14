@@ -1,31 +1,29 @@
 import dismake, config
-from dismake.command import Option
-from dismake import Interaction
-from dismake import OptionType
+from dismake.app_commands import SlashCommand, Option, Choice
 
 app = dismake.Bot(
     token=config.token, client_public_key=config.public_key, client_id=config.client_id
 )
 
-@app.on_event("startup")
-async def on_startup():
-    # print(await app.sync_commands())
-    # print(app.user.display_avatar)
-    print(app.user.username)
-    
-options = [
-    Option(name="name", description="Enter your name", type=OptionType.STRING.value, required=True),
-]
+s = SlashCommand(
+    name="sdfbb",
+    description="Okiee",
+    options=[
+        Option(
+            name="o1",
+            description="Option 1's description",
+            choices=[
+                Choice(name="ok", value="Okiee"),
+                Choice(name="ok2", value="Okie2"),
+                Choice(name="o3", value="Okiee3"),
+            ],
+        ),
+        Option(name="o2", description="Option 2's description"),
+        Option(name="o3", description="Option 3's description", required=True),
+    ],
+)
+print(s.dict(exclude_none=True))
 
-@app.command(name="hello", description="I will echo your name.", options=options)
-async def ping(interaction: Interaction):
-    await interaction.respond(f"Hello {interaction.data.options[0].value}!")
-    
 
-
-
-
-
-if __name__ == "__main__":
-    app.run(app=f"main:app", reload=True)
-
+# if __name__ == "__main__":
+#     app.run(app=f"main:app", reload=True)

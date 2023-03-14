@@ -1,30 +1,33 @@
 from __future__ import annotations
 from typing import Optional
-
-from pydantic import BaseModel
+from pydantic import validator
 
 from ..types import SnowFlake
+from .option import Option
+from ..enums import CommandType
+from .base import BaseSlashCommand
 
-from ..enums import CommandType, OptionType
-
-
-class CommandChoice(BaseModel):
-    name: str
-    value: str | int | float
+__all__ = ("SlashCommand",)
 
 
-class CommandOption(BaseModel):
-    name: str
-    description: str
-    type: int = OptionType.STRING.value
-    required: bool = False
-
-class Group(BaseModel):
-    name: str
-
-class Command(BaseModel):
+class SlashCommand(BaseSlashCommand):
+    type: int = CommandType.SLASH
     name: str
     description: str
-    type: int = CommandType.SLASH.value
-    guild_id: SnowFlake
-    options: Optional[list[CommandOption]]
+    guild_id: Optional[SnowFlake] = None
+    name_localizations: Optional[dict[str, str]] = None
+    description_localizations: Optional[dict[str, str]] = None
+    options: Optional[list[Option]] = None
+    default_member_permissions: Optional[str] = None
+    dm_permission: Optional[bool] = True
+    nsfw: Optional[bool] = False
+
+    def callback(self, interaction):
+        print(interaction)
+
+    @validator("type")
+    def validate_type(cls, value: int):
+        if value != CommandType.SLASH:
+            raise TypeError("You can not override slash command type.")
+        return value
+    

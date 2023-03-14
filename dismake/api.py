@@ -3,7 +3,6 @@ from typing import Optional
 from httpx import AsyncClient, Response
 
 from .models import User
-from .command import SlashCommand
 from .models import ApplicationCommand
 __all__ = ("API",)
 
@@ -30,13 +29,13 @@ class API:
     def headers(self) -> dict:
         return {"Authorization": "Bot %s" % self.token}
 
-    async def register_command(self, command: SlashCommand):
-        return await self.client.request(
-            method="POST",
-            url="/applications/%s/commands" % self.client_id,
-            json=command.to_dict(),
-            headers=self.headers,
-        )
+    # async def register_command(self, command: SlashCommand):
+    #     return await self.client.request(
+    #         method="POST",
+    #         url="/applications/%s/commands" % self.client_id,
+    #         json=command.to_dict(),
+    #         headers=self.headers,
+    #     )
 
     async def get_global_commands(self) -> Optional[list[ApplicationCommand]]:
         res = await self.client.request(
@@ -51,14 +50,14 @@ class API:
 
         return [ApplicationCommand(**command) for command in _json]
 
-    async def bulk_override_commands(self, commands: list[SlashCommand], guild_id: Optional[int] = None) -> Response:
+    # async def bulk_override_commands(self, commands: list[SlashCommand], guild_id: Optional[int] = None) -> Response:
 
-        return await self.client.request(
-                method="PUT",
-                url=f"/applications/{self.client_id}/commands",
-                json=[command.to_dict() for command in commands],
-                headers=self.headers
-            )
+    #     return await self.client.request(
+    #             method="PUT",
+    #             url=f"/applications/{self.client_id}/commands",
+    #             json=[command.to_dict() for command in commands],
+    #             headers=self.headers
+    #         )
     async def remove_all_commands(self):
         return await self.client.request(
             method="PUT",
