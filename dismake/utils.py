@@ -7,5 +7,6 @@ __all__ = (
     "get_args",
 )
 
-async def get_args(coro: AsyncFunction):
+def get_args(coro: AsyncFunction):
     signature = inspect.signature(coro)
+    return signature.parameters

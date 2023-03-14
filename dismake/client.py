@@ -16,7 +16,7 @@ from .api import API
 from .types import AsyncFunction
 from .models import User
 from .interaction import Interaction
-
+from .utils import get_args
 
 log = logging.getLogger("uvicorn")
 
@@ -47,8 +47,8 @@ class Bot(FastAPI):
         self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
 
-        self._global_application_commands = {}
-        self._guild_application_commands = {}
+        self._global_application_commands = {} # TODO
+        self._guild_application_commands = {} # TODO
         
         self._listeners = {}
         
@@ -85,6 +85,7 @@ class Bot(FastAPI):
 
         request_body = json.loads(await request.body())
         _json = await request.json()
+        # print(_json)
         if request_body["type"] == InteractionType.PING.value:
             log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG.value})
@@ -93,7 +94,8 @@ class Bot(FastAPI):
                 if _json["data"]["name"] == name:
                     if command._callback:
                         interaction = Interaction(request=request, **_json)
-                        await command._callback(interaction)
+                        if interaction.data.options:
+                            await command._callback(interaction)
         
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 

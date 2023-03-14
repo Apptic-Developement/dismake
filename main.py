@@ -14,16 +14,12 @@ async def on_startup():
     print(app.user.username)
     
 options = [
-    Option(name="name", description="Enter your name", type=OptionType.STRING.value),
-    Option(name="age", description="Enter your age", type=OptionType.INTEGER.value),
+    Option(name="name", description="Enter your name", type=OptionType.STRING.value, required=True),
 ]
 
-@app.command(name="ping", description="Ping Command", options=options)
+@app.command(name="hello", description="I will echo your name.", options=options)
 async def ping(interaction: Interaction):
-    await interaction.defer(thinking=True)
-    await interaction.respond("Responded! Dismake :)", ephemeral=True)
-    await interaction.send_followup("This is a followup message!")
-    await interaction.send_followup("This is a followup message!", ephemeral=True)
+    await interaction.respond(f"Hello {interaction.data.options[0].value}!")
     
 
 
