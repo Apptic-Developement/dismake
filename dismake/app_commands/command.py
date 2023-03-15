@@ -1,22 +1,21 @@
 from __future__ import annotations
 import re
 from typing import Any, Optional
-from pydantic import validator
 
 from ..types import AsyncFunction, SnowFlake
 from ..enums import CommandType, OptionType
 
-__all__ = ("SlashCommand",)
+__all__ = ("SlashCommand", "Option", "Choice", "validate_name")
 
 THAI_COMBINING = r"\u0e31-\u0e3a\u0e47-\u0e4e"
 DEVANAGARI_COMBINING = r"\u0900-\u0903\u093a\u093b\u093c\u093e\u093f\u0940-\u094f\u0955\u0956\u0957\u0962\u0963"
-VALID_SLASH_COMMAND_NAME = re.compile(
+VALID_NAME = re.compile(
     r"^[-_\w" + THAI_COMBINING + DEVANAGARI_COMBINING + r"]{1,32}$"
 )
 
 
 def validate_name(name: str):
-    if VALID_SLASH_COMMAND_NAME.match(name) is None:
+    if VALID_NAME.match(name) is None:
         raise NameError(
             f"{name!r} must be between 1-32 characters and contain only lower-case letters, numbers, hyphens, or underscores."
         )
@@ -24,7 +23,7 @@ def validate_name(name: str):
 
 
 class Choice:
-    def __init__(self, name: str, value: Optional[str | int | float]) -> None:
+    def __init__(self, name: str, value: Optional[str | int | float] = None) -> None:
         self.name = name
         self.value = value
     @property
@@ -35,9 +34,9 @@ class Choice:
 class Option:
     def __init__(
         self,
-        type: int,
         name: str,
         description: str,
+        type: int = OptionType.STRING,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
         required: Optional[bool] = False,
@@ -109,6 +108,7 @@ class SlashCommand:
         self,
         name: str,
         description: str,
+        type: int = CommandType.SLASH,
         guild_id: Optional[SnowFlake] = None,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
