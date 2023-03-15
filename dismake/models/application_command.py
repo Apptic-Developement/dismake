@@ -44,6 +44,5 @@ class ApplicationCommand(BaseModel):
     options: Optional[list[ApplicationCommandOption]]
     default_member_permissions: Optional[str]
     dm_permission: Optional[bool] = True
-    default_permission: Optional[bool] = True
     nsfw: Optional[bool] = False
     version: int
