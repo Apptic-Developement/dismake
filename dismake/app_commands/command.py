@@ -108,7 +108,6 @@ class SlashCommand:
         self,
         name: str,
         description: str,
-        type: int = CommandType.SLASH,
         guild_id: Optional[SnowFlake] = None,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
@@ -118,6 +117,7 @@ class SlashCommand:
         dm_permission: Optional[bool] = None
     ) -> None:
         self._name = validate_name(name)
+        self._type = CommandType.SLASH
         self._description = description
         self._guild_id = guild_id
         self._name_localizations = name_localizations
@@ -126,10 +126,10 @@ class SlashCommand:
         self._default_member_permissions = default_member_permissions
         self._nsfw = nsfw
         self._dm_permission = dm_permission
-        self._callback: AsyncFunction
+        self._callback: Optional[AsyncFunction] = None
 
     @property
-    def callback(self) -> AsyncFunction:
+    def callback(self) -> Optional[AsyncFunction]:
         return self._callback
 
     @property
@@ -137,6 +137,7 @@ class SlashCommand:
         payload: dict[str, Any] = {
             "name": self._name,
             "description": self._description,
+            "type": self._type,
         }
         if self._guild_id:
             payload["guild_id"] = self._guild_id

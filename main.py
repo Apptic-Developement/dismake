@@ -5,25 +5,21 @@ app = dismake.Bot(
 )
 
 
-@app.command(
-    name="hello",
-    description="Prompt your's name.",
-    options=[
-        dismake.Option(
-            name="name",
-            description="Enter your name",
-            choices=[dismake.Choice(name="Okiee")],
-        )
-    ],
-)
-async def hmm(interaction):
+rolemenu = dismake.Group(name="rolemenu", description="Rolemenu command")
+edit = dismake.Group(name="edit", description="Edit rolemenu components", parent=rolemenu)
+
+
+@edit.command(name="button", description="edit a rolemenu button")
+async def callback(interaction):
     pass
 
 
+app.add_command(rolemenu)
 
-
-
-print(hmm.payload)
+for n, c in app._global_application_commands.items():
+    print(c.payload)
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
+
+
 

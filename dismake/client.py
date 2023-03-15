@@ -16,7 +16,7 @@ from dismake.types.snowflake import SnowFlake
 from .enums import InteractionResponseType, InteractionType
 from .api import API
 from .models import User
-from .app_commands import SlashCommand
+from .app_commands import SlashCommand, Group
 
 log = logging.getLogger("uvicorn")
 
@@ -46,8 +46,8 @@ class Bot(FastAPI):
         # self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
 
-        self._global_application_commands: dict[str, SlashCommand] = {}  # TODO
-        self._guild_application_commands: dict[str, SlashCommand] = {}  # TODO
+        self._global_application_commands: dict[str, SlashCommand | Group] = {}  # TODO
+        self._guild_application_commands: dict[str, SlashCommand | Group] = {}  # TODO
 
         self._listeners = {}
 
@@ -98,12 +98,19 @@ class Bot(FastAPI):
 
         uvicorn.run(**kwargs)
 
-    def add_command(self, command: SlashCommand):
+    def add_command(self, command: SlashCommand | Group):
         if command._guild_id:
             self._guild_application_commands[command._name] = command
             return command
         self._global_application_commands[command._name] = command
         return command
+
+    def add_commands(self, commands: list[SlashCommand | Group]):
+        for command in commands:
+            if command._guild_id:
+                self._guild_application_commands[command._name] = command
+            else:
+                self._global_application_commands[command._name] = command
 
     def command(
         self,
