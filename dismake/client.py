@@ -16,7 +16,7 @@ from dismake.types.snowflake import SnowFlake
 from .enums import InteractionResponseType, InteractionType
 from .api import API
 from .models import User
-from .app_commands import SlashCommand, Group
+from .app_commands import SlashCommand
 
 log = logging.getLogger("uvicorn")
 
@@ -46,8 +46,8 @@ class Bot(FastAPI):
         # self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
 
-        self._global_application_commands: dict[str, SlashCommand | Group] = {}  # TODO
-        self._guild_application_commands: dict[str, SlashCommand | Group] = {}  # TODO
+        self._global_application_commands: dict[str, SlashCommand] = {}  
+        self._guild_application_commands: dict[str, SlashCommand] = {} 
 
         self._listeners = {}
 
@@ -86,26 +86,26 @@ class Bot(FastAPI):
 
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
-    # async def sync_commands(self, *, guild_id: Optional[int] = None):
-    #     if not guild_id:
-    #         res = await self._http.bulk_override_commands(
-    #             [command for _, command in self._slash_commands.items()]
-    #         )
-    #         return res.json()
+    async def sync_commands(self, *, guild_id: Optional[int] = None):
+        if not guild_id:
+            res = await self._http.bulk_override_commands(
+                [command for command in self._global_application_commands.values()]
+            )
+            return res.json()
 
     def run(self, **kwargs):
         import uvicorn
 
         uvicorn.run(**kwargs)
 
-    def add_command(self, command: SlashCommand | Group):
+    def add_command(self, command: SlashCommand):
         if command._guild_id:
             self._guild_application_commands[command._name] = command
             return command
         self._global_application_commands[command._name] = command
         return command
 
-    def add_commands(self, commands: list[SlashCommand | Group]):
+    def add_commands(self, commands: list[SlashCommand]):
         for command in commands:
             if command._guild_id:
                 self._guild_application_commands[command._name] = command
