@@ -3,4 +3,4 @@ pydantic
 httpx
 uvicorn
 PyNaCl
-loguru
+rich

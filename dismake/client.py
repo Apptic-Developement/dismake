@@ -1,24 +1,26 @@
 from __future__ import annotations
-from functools import wraps
-
 import json, logging
-from typing import Optional
 
+
+from functools import wraps
+from typing import Optional
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-from dismake.app_commands.command import Option
-from dismake.types import AsyncFunction
+from .app_commands.command import Option
+from .types import AsyncFunction
 
-from dismake.types.snowflake import SnowFlake
+from .types import SnowFlake
 
 from .enums import InteractionResponseType, InteractionType
 from .api import API
-from .models import User
+from .models import User, ApplicationCommand
 from .app_commands import SlashCommand
+from .utils import LOGGING_CONFIG
 
 log = logging.getLogger("uvicorn")
+
 
 __all__ = ("Bot",)
 
@@ -43,17 +45,23 @@ class Bot(FastAPI):
             methods=["POST"],
             include_in_schema=False,
         )
-        # self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
-
+        self.add_event_handler("startup", self._init_commands)
         self._global_application_commands: dict[str, SlashCommand] = {}
+        self._queue_global_application_commands: dict[str, SlashCommand] = {}
         self._guild_application_commands: dict[str, SlashCommand] = {}
-
+        self._queue_guild_application_commands: dict[str, SlashCommand] = {}
         self._listeners = {}
 
     @property
     def user(self) -> User:
         return self._http._user
+
+    def get_command(self, name: str) -> Optional[ApplicationCommand]:
+        command = self._global_application_commands[name]
+        if not command:
+            return None
+        return command.partial
 
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
@@ -86,31 +94,56 @@ class Bot(FastAPI):
 
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
+    async def _init_commands(self):
+        log.info("Commands initializing...")
+        r_commands = await self._http.get_global_commands()
+        if not r_commands:
+            log.info("No registered commands found.")
+            return
+        if not self._queue_global_application_commands:
+            log.critical("No commands found.")
+            return
+
+        initialized_commands: int = 0
+        for rcommand in r_commands:
+            for mcommand in self._queue_global_application_commands.values():
+                if rcommand.name == mcommand.name:
+                    initialized_commands += 1
+                    self._global_application_commands[rcommand.name] = mcommand
+                    mcommand._partial = rcommand
+        log.info(
+            f"{initialized_commands} {'command is' if initialized_commands == 1 else 'commands are'} successfully initialized."
+        )
+
     async def sync_commands(self, *, guild_id: Optional[int] = None):
         if not guild_id:
             res = await self._http.bulk_override_commands(
-                [command for command in self._global_application_commands.values()]
+                [
+                    command
+                    for command in self._queue_global_application_commands.values()
+                ]
             )
+            await self._init_commands()
             return res.json()
 
     def run(self, **kwargs):
         import uvicorn
-
+        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
     def add_command(self, command: SlashCommand):
         if command.guild_id:
-            self._guild_application_commands[command.name] = command
+            self._queue_guild_application_commands[command.name] = command
             return command
-        self._global_application_commands[command.name] = command
+        self._queue_global_application_commands[command.name] = command
         return command
 
     def add_commands(self, commands: list[SlashCommand]):
         for command in commands:
             if command.guild_id:
-                self._guild_application_commands[command.name] = command
+                self._queue_guild_application_commands[command.name] = command
             else:
-                self._global_application_commands[command.name] = command
+                self._queue_global_application_commands[command.name] = command
 
     def command(
         self,

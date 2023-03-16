@@ -2,8 +2,10 @@ from __future__ import annotations
 import inspect
 import re
 
-from functools import wraps
+from functools import partial, wraps
 from typing import Any, Optional
+
+from dismake.models.application_command import ApplicationCommand, ApplicationCommandOption
 
 from ..types import AsyncFunction, SnowFlake
 from ..enums import CommandType, OptionType
@@ -68,7 +70,7 @@ class Option:
         self.autocomplete_callback: AsyncFunction | None = None
         self.subcommands: dict[str, Option] = {}
 
-    def command(
+    def sub_command(
         self,
         name: str,
         description: Optional[str] = None,
@@ -189,8 +191,15 @@ class SlashCommand:
 
         # Custom
         self.subcommands: dict[str, Option] = {}
+        self._partial: Optional[ApplicationCommand] = None
 
-    def command(
+    @property
+    def partial(self) -> Optional[ApplicationCommand]:
+        return self._partial
+
+
+
+    def sub_command(
         self,
         name: str,
         description: Optional[str] = None,
