@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Optional
 from .enums import MessageFlags
 
+
 def handle_send_params(
     content: str,
     *,
@@ -24,11 +25,8 @@ def handle_send_params(
             _embeds.append(emb)
     if embed:
         _embeds.append(embed)
-    
+
     if _embeds:
         embeds = _embeds
-     # TODO: attachments, components, allowed_mentions
+    # TODO: attachments, components, allowed_mentions
     return payload
-
-
-

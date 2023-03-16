@@ -46,8 +46,8 @@ class Bot(FastAPI):
         # self.add_event_handler("startup", self._init)
         self.add_event_handler("startup", self._http.fetch_me)
 
-        self._global_application_commands: dict[str, SlashCommand] = {}  
-        self._guild_application_commands: dict[str, SlashCommand] = {} 
+        self._global_application_commands: dict[str, SlashCommand] = {}
+        self._guild_application_commands: dict[str, SlashCommand] = {}
 
         self._listeners = {}
 
@@ -99,18 +99,18 @@ class Bot(FastAPI):
         uvicorn.run(**kwargs)
 
     def add_command(self, command: SlashCommand):
-        if command._guild_id:
-            self._guild_application_commands[command._name] = command
+        if command.guild_id:
+            self._guild_application_commands[command.name] = command
             return command
-        self._global_application_commands[command._name] = command
+        self._global_application_commands[command.name] = command
         return command
 
     def add_commands(self, commands: list[SlashCommand]):
         for command in commands:
-            if command._guild_id:
-                self._guild_application_commands[command._name] = command
+            if command.guild_id:
+                self._guild_application_commands[command.name] = command
             else:
-                self._global_application_commands[command._name] = command
+                self._global_application_commands[command.name] = command
 
     def command(
         self,
@@ -119,14 +119,16 @@ class Bot(FastAPI):
         options: Optional[list[Option]] = None,
         guild_id: Optional[SnowFlake] = None,
     ):
-        command = SlashCommand(
-            name=name, description=description, guild_id=guild_id, options=options
-        )
-
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
-                command._callback = coro
+                command = SlashCommand(
+                    name=name,
+                    description=description,
+                    guild_id=guild_id,
+                    options=options,
+                    callback=coro,
+                )
                 return self.add_command(command)
 
             return wrapper()

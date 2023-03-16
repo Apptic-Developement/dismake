@@ -48,10 +48,8 @@ class User(BaseModel):
     premium_type: Optional[int]
     public_flags: Optional[int]
 
-
     def __str__(self):
         return f"{self.username}#{self.discriminator}"
-
 
     @property
     def get_flags(self) -> Optional[list[str | None]]:
@@ -61,11 +59,15 @@ class User(BaseModel):
                 _flag_names.append(v)
 
         return _flag_names
+
     @property
     def display_avatar(self) -> Asset:
         if not self.avatar:
-            return Asset.from_default_avatar(int(self.discriminator) % len(DefaultAvatar))
+            return Asset.from_default_avatar(
+                int(self.discriminator) % len(DefaultAvatar)
+            )
         return Asset.from_avatar(self.avatar, self.id)
+
 
 class Member(BaseModel):
     user: Optional[User]

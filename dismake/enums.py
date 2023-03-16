@@ -9,8 +9,9 @@ __all__ = (
     "InteractionResponseFlags",
     "CommandType",
     "OptionType",
-    "MessageFlags"
+    "MessageFlags",
 )
+
 
 class DefaultAvatar(Enum):
     blurple = 0
@@ -31,17 +32,20 @@ class InteractionType(Enum):
     APPLICATION_COMMAND_AUTOCOMPLETE = 4
     MODAL_SUBMIT = 5
 
+
 class InteractionResponseType(Enum):
     PONG = 1
     CHANNEL_MESSAGE_WITH_SOURCE = 4
     DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5
     DEFERRED_UPDATE_MESSAGE = 6
-    UPDATE_MESSAGE =  7
+    UPDATE_MESSAGE = 7
     APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8
     MODAL = 9
 
+
 class InteractionResponseFlags(Enum):
     EPHEMERAL = 1 << 6
+
 
 class CommandType(int):
     SLASH = 1
@@ -61,12 +65,13 @@ class OptionType(int):
     MENTIONABLE = 9
     NUMBER = 10
 
+
 class MessageFlags(Enum):
-    CROSSPOSTED	= 1 << 0
+    CROSSPOSTED = 1 << 0
     IS_CROSSPOST = 1 << 1
     SUPPRESS_EMBEDS = 1 << 2
-    SOURCE_MESSAGE_DELETED = 1 << 3	
-    URGENT = 1 << 4	
+    SOURCE_MESSAGE_DELETED = 1 << 3
+    URGENT = 1 << 4
     HAS_THREAD = 1 << 5
     EPHEMERAL = 1 << 6
     LOADING = 1 << 7

@@ -1,12 +1,14 @@
 from __future__ import annotations
-from functools import wraps
+import inspect
 import re
+
+from functools import wraps
 from typing import Any, Optional
 
 from ..types import AsyncFunction, SnowFlake
 from ..enums import CommandType, OptionType
 
-__all__ = ("SlashCommand", "Option", "Choice", "validate_name")
+__all__ = ("SlashCommand", "Option", "Choice")
 
 THAI_COMBINING = r"\u0e31-\u0e3a\u0e47-\u0e4e"
 DEVANAGARI_COMBINING = r"\u0900-\u0903\u093a\u093b\u093c\u093e\u093f\u0940-\u094f\u0955\u0956\u0957\u0962\u0963"
@@ -22,217 +24,227 @@ def validate_name(name: str):
 
 
 class Choice:
-    def __init__(self, name: str, value: Optional[str | int | float] = None) -> None:
+    def __init__(self, name: str, value: Optional[str] = None) -> None:
         self.name = name
-        self.value = value
+        self.value = value or name
 
-    def to_dict(self):
-        return {"name": self.name, "value": self.value if self.value else self.name}
+    def to_dict(self) -> dict[str, Any]:
+        return {"name": self.name, "value": self.value}
 
 
 class Option:
-    _level: int = 0
+    _level: int = 1
+
     def __init__(
         self,
         name: str,
-        description: str,
         type: int = OptionType.STRING,
+        description: Optional[str] = "No description provided",
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
-        required: Optional[bool] = False,
+        required: Optional[bool] = None,
         choices: Optional[list[Choice]] = None,
         options: Optional[list[Option]] = None,
-        # channel_types: Optional[list[str]] = None,
-        min_length: Optional[int] = None,
-        max_length: Optional[int] = None,
+        channel_types: Optional[list[str]] = None,  # TODO: We will add son
+        min_value: Optional[int] = None,
+        max_value: Optional[int] = None,
         autocomplete: Optional[bool] = None,
-        autocomplete_callback: Optional[AsyncFunction] = None,
     ) -> None:
-        self._type = type
-        self._name = validate_name(name)
-        self._description = description
-        self._name_localizations = name_localizations
-        self._description_localizations = description_localizations
-        self._required = required
-        self._choices = choices
-        # self._channel_types = channel_types
-        self._min_length = min_length
-        self._max_length = max_length
-        self._autocomplete = autocomplete
-        self._options = options
-        self._callback: AsyncFunction |None = None
-        self._sub_commands: list[Option] = (
-            [command for command in options if command._type == OptionType.SUB_COMMAND]
-            if options
-            else []
-        )
-        self._autocomplete_callback = autocomplete_callback
+        self.type = type
+        self.name = validate_name(name)
+        self.name_localizations = name_localizations
+        self.description = description
+        self.description_localizations = description_localizations
+        self.required = required
+        self.choices = choices
+        self.options = options
+        self.channel_types = channel_types  # TODO: We will add son
+        self.min_value = min_value
+        self.max_value = max_value
+        self.autocomplete = autocomplete
+
+        # Custom
+        self.callback: AsyncFunction | None = None
+        self.autocomplete_callback: AsyncFunction | None = None
+        self.subcommands: dict[str, Option] = {}
 
     def command(
         self,
         name: str,
-        description: str,
-        options: Optional[list[Option]] = None
+        description: Optional[str] = None,
+        name_localizations: Optional[dict[str, str]] = None,
+        description_localizations: Optional[dict[str, str]] = None,
+        options: Optional[list[Option]] = None,
     ):
-        self._type = OptionType.SUB_COMMAND_GROUP
+        self.type = OptionType.SUB_COMMAND_GROUP
         command = Option(
+            type=OptionType.SUB_COMMAND,
             name=name,
             description=description,
+            name_localizations=name_localizations,
+            description_localizations=description_localizations,
             options=options,
-            type=OptionType.SUB_COMMAND
         )
-        if self._options: self._options.clear()
-        if self._callback: self._callback = None
         command._level = 1 + self._level
-        if self._level > 1:
-            raise RuntimeError("A slash command can have max 2 childs.")
+        if command._level > 2:
+            raise RuntimeError(f"The {name!r} registration failed because it has too many nested levels. Please simplify the command structure and try again. Maximum allowed nesting level is 2.")
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
-            def wrapper(*_, **__):
-                self._sub_commands.append(command)
+            def wrapper(*_, **__) -> Option:
+                command.callback = coro
+                self.subcommands[command.name] = command
                 return command
+
             return wrapper()
+
         return decorator
-    
 
-    def to_dict(self):
-        payload = {
-            "type": self._type,
-            "name": self._name,
-            "description": self._description,
+    def to_dict(self) -> dict[str, Any]:
+        base: dict[str, Any] = {
+            "name": self.name,
+            "description": self.description,
+            "type": self.type,
         }
-        if self._name_localizations:
-            payload["name_localization"] = self._name_localizations
 
-        if self._description_localizations:
-            payload["description_localization"] = self._description_localizations
+        if self.name_localizations is not None:
+            base["name_localizations"] = self.name_localizations
+        if self.description_localizations is not None:
+            base["description_localizations"] = self.description_localizations
 
-        if self._required is not None:
-            payload["required"] = self._required
+        # Prepare for only sub_commands
+        if self.type in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP):
+            match self.type:
+                case OptionType.SUB_COMMAND_GROUP:
+                    if self.subcommands:
+                        subcommands = list()
+                        for command in self.subcommands.values():
+                            subcommands.append(command.to_dict())
+                        base["options"] = subcommands
+                    return base
+                case OptionType.SUB_COMMAND:
+                    if self.options:
+                        options = list()
+                        for option in self.options:
+                            options.append(option.to_dict())
+                        base["options"] = options
+                    return base
+        else:
+            if self.required is not None:
+                base["required"] = self.required
+            if self.choices:
+                choices = list()
+                for choice in self.choices:
+                    choices.append(choice.to_dict())
+                base["choices"] = choices
 
-        if self._choices:
-            choices = []
-            for choice in self._choices:
-                choices.append(choice.to_dict())
+            if self.options:
+                options = [option.to_dict() for option in self.options]
+                if options:
+                    base["options"] = options
 
-            if choices:  # Saftey
-                payload["choices"] = choices
-
-        if self._type == OptionType.STRING:
-            if self._min_length:
-                payload["min_length"] = self._min_length
-
-            if self._max_length:
-                payload["max_length"] = self._max_length
-        elif self._type == OptionType.INTEGER:
-            if self._min_length:
-                payload["min_value"] = self._min_length
-
-            if self._max_length:
-                payload["max_value"] = self._max_length
-
-        if self._autocomplete and self._autocomplete_callback:
-            payload["autocomplete"] = self._autocomplete
-        
-        options = []
-        if self._sub_commands:
-            for command in self._sub_commands:
-                options.append(command.to_dict())
-        if self._options:
-            for opt in self._options:
-                options.append(opt.to_dict())
-
-        if options:
-            payload["options"] = options
-        return payload
+            if self.type in (OptionType.STRING, OptionType.INTEGER):
+                match self.type:
+                    case OptionType.STRING:
+                        if self.min_value:
+                            base["min_length"] = self.min_value
+                        if self.max_value:
+                            base["max_length"] = self.max_value
+                    case OptionType.INTEGER:
+                        if self.min_value:
+                            base["min_value"] = self.min_value
+                        if self.max_value:
+                            base["max_value"] = self.max_value
+            if self.autocomplete is not None:
+                base["autocomplete"] = self.autocomplete
+            return base
 
 
 class SlashCommand:
     def __init__(
         self,
         name: str,
-        description: str,
+        callback: AsyncFunction,
+        type: int = CommandType.SLASH,
+        description: Optional[str] = None,
         guild_id: Optional[SnowFlake] = None,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
         options: Optional[list[Option]] = None,
         default_member_permissions: Optional[str] = None,
-        nsfw: Optional[bool] = None,
         dm_permission: Optional[bool] = None,
+        nsfw: Optional[bool] = None,
     ) -> None:
-        self._name = validate_name(name)
-        self._type = CommandType.SLASH
-        self._description = description
-        self._guild_id = guild_id
-        self._name_localizations = name_localizations
-        self._description_localizations = description_localizations
-        self._options = options
-        self._default_member_permissions = default_member_permissions
-        self._nsfw = nsfw
-        self._dm_permission = dm_permission
-        self._callback: Optional[AsyncFunction] = None
-        self._subcommands: list[Option] = []
+        self.name = name
+        self.type = type
+        self.description = description or "No description provided."
+        self.guild_id = guild_id
+        self.name_localizations = name_localizations
+        self.description_localizations = description_localizations
+        self.options = options
+        self.default_member_permissions = default_member_permissions
+        self.dm_permission = dm_permission
+        self.nsfw = nsfw
+        self.callback: AsyncFunction = callback
 
-    @property
-    def callback(self) -> Optional[AsyncFunction]:
-        return self._callback
+        # Custom
+        self.subcommands: dict[str, Option] = {}
 
-
-    def sub_command(
+    def command(
         self,
         name: str,
-        description: str,
-        options: Optional[list[Option]] = None
+        description: Optional[str] = None,
+        name_localizations: Optional[dict[str, str]] = None,
+        description_localizations: Optional[dict[str, str]] = None,
+        options: Optional[list[Option]] = None,
     ):
-
         command = Option(
+            type=OptionType.SUB_COMMAND,
             name=name,
             description=description,
+            name_localizations=name_localizations,
+            description_localizations=description_localizations,
             options=options,
-            type=OptionType.SUB_COMMAND
         )
-        if self._options: self._options.clear()
-        if self._callback: self._callback = None
-        command._level = 1 + command._level
-        if command._level > 1:
-            raise RuntimeError("Max childs reached")
-
+        command._level = 1
         def decorator(coro: AsyncFunction):
             @wraps(coro)
-            def wrapper(*_, **__):
-                self._subcommands.append(command)
+            def wrapper(*_, **__) -> Option:
+                command.callback = coro
+                self.subcommands[command.name] = command
                 return command
+
             return wrapper()
+
         return decorator
 
-
-    def to_dict(self):
-        payload: dict[str, Any] = {
-            "name": self._name,
-            "description": self._description,
-            "type": self._type,
+    def to_dict(self) -> dict[str, Any]:
+        base = {
+            "name": self.name,
+            "description": self.description,
+            "type": self.type,
         }
-        if self._guild_id:
-            payload["guild_id"] = self._guild_id
-
-        if self._name_localizations:
-            payload["name_localizations"] = self._name_localizations
-        if self._description_localizations:
-            payload["description_localizations"] = self._description_localizations
-
-        options = []
-        if self._options:
-            for option in self._options:
-                if option._type not in (
-                    OptionType.SUB_COMMAND,
-                    OptionType.SUB_COMMAND_GROUP,
-                ):
-                    options.append(option.to_dict())
-        if self._subcommands:
-            for command in self._subcommands:
+        options = list()
+        if self.subcommands:
+            for command in self.subcommands.values():
                 options.append(command.to_dict())
-
+        elif self.options:
+            for option in self.options:
+                options.append(option.to_dict())
         if options:
-            payload["options"] = options
+            base["options"] = options
+        if self.default_member_permissions is not None:
+            base["default_member_permissions"] = self.default_member_permissions
 
-        return payload
+        if self.name_localizations is not None:
+            base["name_localizations"] = self.name_localizations
+        if self.description_localizations is not None:
+            base["description_localizations"] = self.description_localizations
+
+        if self.guild_id is not None:
+            base["guild_id"] = self.guild_id
+
+        if self.dm_permission is not None:
+            base["dm_permission"] = self.dm_permission
+
+        return base

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
 
+
 class Locale(BaseModel):
     id: Optional[str]
     da: Optional[str]
@@ -35,6 +36,3 @@ class Locale(BaseModel):
     ja: Optional[str]
     zh_TW: Optional[str]
     ko: Optional[str]
-
-
-    

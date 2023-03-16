@@ -5,6 +5,7 @@ from httpx import AsyncClient, Response
 from .models import User
 from .models import ApplicationCommand
 from .app_commands import SlashCommand
+
 __all__ = ("API",)
 
 
@@ -42,7 +43,7 @@ class API:
         res = await self.client.request(
             method="GET",
             url=f"/applications/{self.client_id}/commands",
-            headers=self.headers
+            headers=self.headers,
         )
         res.raise_for_status()
         _json = res.json()
@@ -51,30 +52,27 @@ class API:
 
         return [ApplicationCommand(**command) for command in _json]
 
-    async def bulk_override_commands(self, commands: list[SlashCommand], guild_id: Optional[int] = None) -> Response:
-
+    async def bulk_override_commands(
+        self, commands: list[SlashCommand], guild_id: Optional[int] = None
+    ) -> Response:
         return await self.client.request(
-                method="PUT",
-                url=f"/applications/{self.client_id}/commands",
-                json=[command.to_dict() for command in commands],
-                headers=self.headers
-            )
+            method="PUT",
+            url=f"/applications/{self.client_id}/commands",
+            json=[command.to_dict() for command in commands],
+            headers=self.headers,
+        )
+
     async def remove_all_commands(self):
         return await self.client.request(
             method="PUT",
             url=f"/applications/{self.client_id}/commands",
             headers=self.headers,
-            json=[]
+            json=[],
         )
 
     async def fetch_me(self):
-
         res = await self.client.request(
-                method="GET",
-                url="/users/@me",
-                headers=self.headers
-            )
+            method="GET", url="/users/@me", headers=self.headers
+        )
         res.raise_for_status()
         self._user = User(**res.json())
-
-    

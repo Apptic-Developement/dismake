@@ -23,12 +23,14 @@ class ResolvedData(BaseModel):
     messages: Optional[Any]
     attachments: Optional[Any]
 
+
 class CommandDataOption(BaseModel):
     name: str
     type: int
     value: Optional[str | int | float]
     options: Optional[list[CommandDataOption]]
     focused: Optional[bool]
+
 
 class CommandData(BaseModel):
     id: SnowFlake
