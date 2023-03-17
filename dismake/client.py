@@ -1,23 +1,18 @@
 from __future__ import annotations
-import json, logging
-
+from logging import getLogger
 from functools import wraps
 from typing import Optional
-from fastapi import FastAPI, Request, Response
-from fastapi.responses import JSONResponse
-from nacl.signing import VerifyKey
-from nacl.exceptions import BadSignatureError
+from fastapi import FastAPI
+from .handler import InteractionHandler
 from .app_commands.command import Option
 from .types import AsyncFunction
 from .types import SnowFlake
-from .enums import CommandType, InteractionResponseType, InteractionType, OptionType
 from .api import API
 from .models import User, ApplicationCommand
 from .app_commands import SlashCommand
 from .utils import LOGGING_CONFIG
-from .interaction import Interaction, CommandData
 
-log = logging.getLogger("uvicorn")
+log = getLogger("uvicorn")
 
 
 __all__ = ("Bot",)
@@ -33,13 +28,13 @@ class Bot(FastAPI):
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        self._interaction_handler = InteractionHandler(self)
         self._client_id = client_id
         self._client_public_key = client_public_key
-        self.verification_key = VerifyKey(bytes.fromhex(self._client_public_key))
         self._http = API(token=token, client_id=client_id)
         self.add_route(
             path=route,
-            route=self.handle_interactions,
+            route=self._interaction_handler.handle_interactions,
             methods=["POST"],
             include_in_schema=False,
         )
@@ -60,77 +55,6 @@ class Bot(FastAPI):
         if not command:
             return None
         return command.partial
-
-    def verify_key(self, body: bytes, signature: str, timestamp: str):
-        message = timestamp.encode() + body
-        try:
-            self.verification_key.verify(message, bytes.fromhex(signature))
-            return True
-        except BadSignatureError as e:
-            log.error("Bad signature request.")
-        except Exception as e:
-            log.exception(e)
-            return False
-
-    async def handle_interactions(self, request: Request):
-        signature = request.headers["X-Signature-Ed25519"]
-        timestamp = request.headers["X-Signature-Timestamp"]
-        if (
-            signature is None
-            or timestamp is None
-            or not self.verify_key(await request.body(), signature, timestamp)
-        ):
-            return Response(content="Bad Signature", status_code=401)
-
-        request_body = json.loads(await request.body())
-        _json = await request.json()
-
-        if request_body["type"] == InteractionType.PING.value:
-            log.info("Successfully responded to discord.")
-            return JSONResponse({"type": InteractionResponseType.PONG.value})
-        elif request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            interaction = Interaction(request=request, **_json)
-            assert isinstance(interaction.data, CommandData)
-            command = self._global_application_commands.get(interaction.data.name)
-            if not command:
-                raise ValueError(
-                    f"An unknown command called {interaction.data.name!r} ran by {interaction.member or interaction.user}."
-                )
-            if interaction.data.type != CommandType.SLASH:
-                # TODO: Context Menu
-                ...
-            elif (
-                interaction.data.options
-                and len(interaction.data.options) == 1
-                and interaction.data.options[0].type
-                in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP)
-            ):
-                # TODO: SUB Command
-                if interaction.data.options[0].type == OptionType.SUB_COMMAND:
-                    child = command.subcommands.get(interaction.data.options[0].name)
-                    if child is None:
-                        raise ValueError("Not Impl {command.name} {sub_group.name}")
-                    if child and child.callback:
-                        await child.callback(interaction)
-                # elif interaction.data.options[0].type == OptionType.SUB_COMMAND_GROUP:
-                else:
-                    sub_group = command.subcommands.get(
-                        interaction.data.options[0].name
-                    )
-                    if sub_group is None:
-                        raise ValueError(
-                            "Not Impl {command.name} {sub_group.name}"
-                        )  # TODO:
-                    if interaction.data.options[0].options:
-                        child = sub_group.subcommands.get(
-                            interaction.data.options[0].options[0].name
-                        )
-                        if child and child.callback:
-                            await child.callback(interaction)
-
-            else:
-                await command.callback(interaction)
-        return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
     async def _init_commands(self):
         log.info("Commands initializing...")
