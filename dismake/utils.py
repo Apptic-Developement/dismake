@@ -11,7 +11,7 @@ LOGGING_CONFIG = {
     },
     "formatters": {
         "default": {
-            "format": "[%(name)s]  %(message)s",
+            "format": "[%(name)s] - %(message)s",
         },
     },
     "loggers": {

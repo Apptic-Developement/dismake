@@ -1,7 +1,6 @@
 from __future__ import annotations
 import json, logging
 
-
 from functools import wraps
 from typing import Optional
 from fastapi import FastAPI, Request, Response
@@ -10,15 +9,13 @@ from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .app_commands.command import Option
 from .types import AsyncFunction
-
 from .types import SnowFlake
-
 from .enums import InteractionResponseType, InteractionType
 from .api import API
 from .models import User, ApplicationCommand
 from .app_commands import SlashCommand
 from .utils import LOGGING_CONFIG
-
+from .context import CommandContext
 log = logging.getLogger("uvicorn")
 
 
@@ -90,8 +87,8 @@ class Bot(FastAPI):
             log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         elif request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            pass
-
+            context = CommandContext(bot=self, request=request, **_json)
+            print(context.bot.user.username)
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
     async def _init_commands(self):
@@ -131,6 +128,7 @@ class Bot(FastAPI):
         kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
+
     def add_command(self, command: SlashCommand):
         if command.guild_id:
             self._queue_guild_application_commands[command.name] = command
@@ -167,3 +165,4 @@ class Bot(FastAPI):
             return wrapper()
 
         return decorator
+

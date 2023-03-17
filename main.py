@@ -1,5 +1,5 @@
 import dismake, config
-from rich.logging import RichHandler
+
 app = dismake.Bot(
     token=config.token, client_public_key=config.public_key, client_id=config.client_id
 )
@@ -58,3 +58,4 @@ async def ddropdown(interaction):
 
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
+
