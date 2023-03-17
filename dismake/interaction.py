@@ -27,7 +27,7 @@ class ResolvedData(BaseModel):
 class CommandDataOption(BaseModel):
     name: str
     type: int
-    value: Optional[Union[str, int, float]]
+    value: Optional[Union[str, int, float, bool]]
     options: Optional[list[CommandDataOption]]
     focused: Optional[bool]
 

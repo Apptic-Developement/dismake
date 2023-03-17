@@ -28,9 +28,9 @@ class Bot(FastAPI):
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self._interaction_handler = InteractionHandler(self)
         self._client_id = client_id
         self._client_public_key = client_public_key
+        self._interaction_handler = InteractionHandler(self)
         self._http = API(token=token, client_id=client_id)
         self.add_route(
             path=route,
