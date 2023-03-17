@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Union
 from ..types import SnowFlake
 
 
@@ -12,7 +12,7 @@ __all__ = (
 
 class ApplicationCommandChoice(BaseModel):
     name: str
-    value: str | int | float
+    value: Union[str, int, float]
 
 
 class ApplicationCommandOption(BaseModel):

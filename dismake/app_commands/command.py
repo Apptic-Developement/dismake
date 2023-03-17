@@ -5,7 +5,10 @@ import re
 from functools import partial, wraps
 from typing import Any, Optional
 
-from dismake.models.application_command import ApplicationCommand, ApplicationCommandOption
+from dismake.models.application_command import (
+    ApplicationCommand,
+    ApplicationCommandOption,
+)
 
 from ..types import AsyncFunction, SnowFlake
 from ..enums import CommandType, OptionType
@@ -66,8 +69,8 @@ class Option:
         self.autocomplete = autocomplete
 
         # Custom
-        self.callback: AsyncFunction | None = None
-        self.autocomplete_callback: AsyncFunction | None = None
+        self.callback: Optional[AsyncFunction] = None
+        self.autocomplete_callback: Optional[AsyncFunction] = None
         self.subcommands: dict[str, Option] = {}
 
     def sub_command(
@@ -89,7 +92,9 @@ class Option:
         )
         command._level = 1 + self._level
         if command._level > 2:
-            raise RuntimeError(f"The {name!r} registration failed because it has too many nested levels. Please simplify the command structure and try again. Maximum allowed nesting level is 2.")
+            raise RuntimeError(
+                f"The {name!r} registration failed because it has too many nested levels. Please simplify the command structure and try again. Maximum allowed nesting level is 2."
+            )
 
         def decorator(coro: AsyncFunction):
             @wraps(coro)
@@ -116,21 +121,20 @@ class Option:
 
         # Prepare for only sub_commands
         if self.type in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP):
-            match self.type:
-                case OptionType.SUB_COMMAND_GROUP:
-                    if self.subcommands:
-                        subcommands = list()
-                        for command in self.subcommands.values():
-                            subcommands.append(command.to_dict())
-                        base["options"] = subcommands
-                    return base
-                case OptionType.SUB_COMMAND:
-                    if self.options:
-                        options = list()
-                        for option in self.options:
-                            options.append(option.to_dict())
-                        base["options"] = options
-                    return base
+            if self.type == OptionType.SUB_COMMAND_GROUP:
+                if self.subcommands:
+                    subcommands = list()
+                    for command in self.subcommands.values():
+                        subcommands.append(command.to_dict())
+                    base["options"] = subcommands
+                return base
+            else:
+                if self.options:
+                    options = list()
+                    for option in self.options:
+                        options.append(option.to_dict())
+                    base["options"] = options
+                return base
         else:
             if self.required is not None:
                 base["required"] = self.required
@@ -146,21 +150,19 @@ class Option:
                     base["options"] = options
 
             if self.type in (OptionType.STRING, OptionType.INTEGER):
-                match self.type:
-                    case OptionType.STRING:
-                        if self.min_value:
-                            base["min_length"] = self.min_value
-                        if self.max_value:
-                            base["max_length"] = self.max_value
-                    case OptionType.INTEGER:
-                        if self.min_value:
-                            base["min_value"] = self.min_value
-                        if self.max_value:
-                            base["max_value"] = self.max_value
+                if self.type == OptionType.STRING:
+                    if self.min_value:
+                        base["min_length"] = self.min_value
+                    if self.max_value:
+                        base["max_length"] = self.max_value
+                else:
+                    if self.min_value:
+                        base["min_value"] = self.min_value
+                    if self.max_value:
+                        base["max_value"] = self.max_value
             if self.autocomplete is not None:
                 base["autocomplete"] = self.autocomplete
             return base
-
 
 
 class SlashCommand:
@@ -198,8 +200,6 @@ class SlashCommand:
     def partial(self) -> Optional[ApplicationCommand]:
         return self._partial
 
-
-
     def sub_command(
         self,
         name: str,
@@ -217,6 +217,7 @@ class SlashCommand:
             options=options,
         )
         command._level = 1
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__) -> Option:

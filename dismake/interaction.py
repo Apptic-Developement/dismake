@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from dismake.models.user import User
 
@@ -27,7 +27,7 @@ class ResolvedData(BaseModel):
 class CommandDataOption(BaseModel):
     name: str
     type: int
-    value: Optional[str | int | float]
+    value: Optional[Union[str, int, float]]
     options: Optional[list[CommandDataOption]]
     focused: Optional[bool]
 
@@ -60,7 +60,7 @@ class Interaction(BaseModel):
     app_permissions: str
     guild_locale: Optional[str]
     locale: Optional[str]
-    data: CommandData | ComponentData | CommandDataOption
+    data: Union[CommandData, ComponentData, CommandDataOption]
     channel_id: SnowFlake
 
     async def respond(

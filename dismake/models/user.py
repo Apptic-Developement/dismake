@@ -43,7 +43,7 @@ class User(BaseModel):
     ancent_color: Optional[int]
     locale: Optional[str]
     verified: Optional[bool]
-    email: Optional[str | None]
+    email: Optional[str]
     flags: Optional[int]
     premium_type: Optional[int]
     public_flags: Optional[int]
@@ -52,7 +52,7 @@ class User(BaseModel):
         return f"{self.username}#{self.discriminator}"
 
     @property
-    def get_flags(self) -> Optional[list[str | None]]:
+    def get_flags(self) -> Optional[list[str]]:
         _flag_names = list()
         for k, v in FLAGS_MAPPING.items():
             if k == self.flags:

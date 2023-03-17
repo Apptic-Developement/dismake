@@ -23,4 +23,5 @@ LOGGING_CONFIG = {
     },
 }
 from rich.logging import RichHandler
+
 handler = RichHandler()

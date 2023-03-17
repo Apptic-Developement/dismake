@@ -106,29 +106,27 @@ class Bot(FastAPI):
                 in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP)
             ):
                 # TODO: SUB Command
-                match interaction.data.options[0].type:
-                    case OptionType.SUB_COMMAND:
-                        child = command.subcommands.get(interaction.data.options[0].name)
-                        if child is None:
-                            raise ValueError(
-                                "Not Impl {command.name} {sub_group.name}"
-                            ) 
+                if interaction.data.options[0].type == OptionType.SUB_COMMAND:
+                    child = command.subcommands.get(interaction.data.options[0].name)
+                    if child is None:
+                        raise ValueError("Not Impl {command.name} {sub_group.name}")
+                    if child and child.callback:
+                        await child.callback(interaction)
+                # elif interaction.data.options[0].type == OptionType.SUB_COMMAND_GROUP:
+                else:
+                    sub_group = command.subcommands.get(
+                        interaction.data.options[0].name
+                    )
+                    if sub_group is None:
+                        raise ValueError(
+                            "Not Impl {command.name} {sub_group.name}"
+                        )  # TODO:
+                    if interaction.data.options[0].options:
+                        child = sub_group.subcommands.get(
+                            interaction.data.options[0].options[0].name
+                        )
                         if child and child.callback:
                             await child.callback(interaction)
-                    case OptionType.SUB_COMMAND_GROUP:
-                        sub_group = command.subcommands.get(
-                            interaction.data.options[0].name
-                        )
-                        if sub_group is None:
-                            raise ValueError(
-                                "Not Impl {command.name} {sub_group.name}"
-                            )  # TODO:
-                        if interaction.data.options[0].options:
-                            child = sub_group.subcommands.get(
-                                interaction.data.options[0].options[0].name
-                            )
-                            if child and child.callback:
-                                await child.callback(interaction)
 
             else:
                 await command.callback(interaction)

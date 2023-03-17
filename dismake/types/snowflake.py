@@ -1,6 +1,7 @@
 from __future__ import annotations
+from typing import Union
 
 __all__ = ("SnowFlake", "SnowFlakeL")
 
-SnowFlake = str | int
-SnowFlakeL = list[str | int]
+SnowFlake = Union[str, int]
+SnowFlakeL = list[Union[str, int]]
