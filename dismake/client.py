@@ -10,12 +10,13 @@ from nacl.exceptions import BadSignatureError
 from .app_commands.command import Option
 from .types import AsyncFunction
 from .types import SnowFlake
-from .enums import InteractionResponseType, InteractionType
+from .enums import CommandType, InteractionResponseType, InteractionType, OptionType
 from .api import API
 from .models import User, ApplicationCommand
 from .app_commands import SlashCommand
 from .utils import LOGGING_CONFIG
-from .context import CommandContext
+from .interaction import Interaction, CommandData
+
 log = logging.getLogger("uvicorn")
 
 
@@ -83,12 +84,54 @@ class Bot(FastAPI):
 
         request_body = json.loads(await request.body())
         _json = await request.json()
+
         if request_body["type"] == InteractionType.PING.value:
             log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         elif request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            context = CommandContext(bot=self, request=request, **_json)
-            print(context.bot.user.username)
+            interaction = Interaction(request=request, **_json)
+            assert isinstance(interaction.data, CommandData)
+            command = self._global_application_commands.get(interaction.data.name)
+            if not command:
+                raise ValueError(
+                    f"An unknown command called {interaction.data.name!r} ran by {interaction.member or interaction.user}."
+                )
+            if interaction.data.type != CommandType.SLASH:
+                # TODO: Context Menu
+                ...
+            elif (
+                interaction.data.options
+                and len(interaction.data.options) == 1
+                and interaction.data.options[0].type
+                in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP)
+            ):
+                # TODO: SUB Command
+                match interaction.data.options[0].type:
+                    case OptionType.SUB_COMMAND:
+                        child = command.subcommands.get(interaction.data.options[0].name)
+                        if child is None:
+                            raise ValueError(
+                                "Not Impl {command.name} {sub_group.name}"
+                            ) 
+                        if child and child.callback:
+                            await child.callback(interaction)
+                    case OptionType.SUB_COMMAND_GROUP:
+                        sub_group = command.subcommands.get(
+                            interaction.data.options[0].name
+                        )
+                        if sub_group is None:
+                            raise ValueError(
+                                "Not Impl {command.name} {sub_group.name}"
+                            )  # TODO:
+                        if interaction.data.options[0].options:
+                            child = sub_group.subcommands.get(
+                                interaction.data.options[0].options[0].name
+                            )
+                            if child and child.callback:
+                                await child.callback(interaction)
+
+            else:
+                await command.callback(interaction)
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
     async def _init_commands(self):
@@ -125,9 +168,9 @@ class Bot(FastAPI):
 
     def run(self, **kwargs):
         import uvicorn
+
         kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
-
 
     def add_command(self, command: SlashCommand):
         if command.guild_id:
@@ -165,4 +208,3 @@ class Bot(FastAPI):
             return wrapper()
 
         return decorator
-

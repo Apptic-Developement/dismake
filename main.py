@@ -1,14 +1,9 @@
 import dismake, config
+from dismake.interaction import Interaction
 
 app = dismake.Bot(
     token=config.token, client_public_key=config.public_key, client_id=config.client_id
 )
-
-
-@app.command(name="rolemenu", description="Rolemenu command")
-async def rolemenu(interaction):
-    pass
-
 
 @app.on_event("startup")
 async def on_startup():
@@ -16,46 +11,35 @@ async def on_startup():
     pass
 
 
-@rolemenu.sub_command(name="create", description="Rolemenu create command")
-async def create(interaction):
-    pass
+@app.command(name="rolemenu", description="Rolemenu command")
+async def rolemenu(interaction): pass
 
 
-@rolemenu.sub_command(name="edit", description="Rolemenu edit")
-async def edit(interaction):
-    pass
+@rolemenu.sub_command(name="create", description="Okiee?")
+async def rc(interaction): pass
 
+@rc.sub_command(name='something', description="Hmmm")
+async def rcs(interaction: Interaction):
+    await interaction.respond("Called.")
 
-@edit.sub_command(name="button", description="Edit a button")
-async def button(interaction):
-    pass
+@rolemenu.sub_command(name="delete", description="Delete okiee??", options=[
+    dismake.Option(name="cname", description="cname", required=True),
+    dismake.Option(name="buttons", description="buttons", required=True, choices=[
+        dismake.Choice(name='B1'),
+        dismake.Choice(name='B2'),
+        dismake.Choice(name='B3'),
+        dismake.Choice(name='B4'),
+    ]),
+])
+async def rd(interaction: Interaction):
+    await interaction.respond("delete")
 
-
-@edit.sub_command(name="dropdown", description="Edit a dropdown")
-async def dropdown(interaction):
-    pass
-
-
-@edit.sub_command(name="placeholder", description="Edit a placeholder")
-async def placeholder(interaction):
-    pass
-
-
-@rolemenu.sub_command(name="delete", description="Delete something")
-async def delete(interaction):
-    pass
-
-
-@delete.sub_command(name="button", description="Delete a button")
-async def dbutton(interaction):
-    pass
-
-
-@delete.sub_command(name="dropdown", description="Delete a dropdown")
-async def ddropdown(interaction):
-    pass
-
-
+@app.command(
+    name="ban",
+    description="Ban a randi"
+)
+async def ban(interaction: Interaction):
+    await interaction.respond("ban")
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
 
