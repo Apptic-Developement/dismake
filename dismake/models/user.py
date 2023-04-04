@@ -31,7 +31,6 @@ FLAGS_MAPPING = {
 class User(BaseModel):
     id: int
     username: str
-    display_name: Optional[str]
     discriminator: str
     avatar: Optional[str]
     avatar_decoration: Optional[str]

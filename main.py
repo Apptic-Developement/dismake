@@ -1,4 +1,5 @@
 import dismake, config
+from dismake.builders import SlashCommandBuilder, Option, Choice
 
 
 
@@ -8,6 +9,12 @@ app = dismake.Bot(
     client_id=config.client_id,
     route="/",
 )
+
+@app.event('ready')
+async def on_ready():
+    print("Logged in as %s" % app.user)
+
+
 
 
 if __name__ == "__main__":

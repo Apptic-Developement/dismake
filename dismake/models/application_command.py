@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 from ..types import SnowFlake
 
 
@@ -22,9 +22,9 @@ class ApplicationCommandOption(BaseModel):
     description: Optional[str] = "No description provided"
     description_localizations: Optional[dict[str, str]]
     required: Optional[bool] = False
-    choices: Optional[list[ApplicationCommandChoice]]
-    options: Optional[list["ApplicationCommandOption"]]
-    channel_types: Optional[list[str]]
+    choices: Optional[List[ApplicationCommandChoice]]
+    options: Optional[List["ApplicationCommandOption"]]
+    channel_types: Optional[List[str]]
     min_value: Optional[int]
     max_value: Optional[int]
     min_length: Optional[int]
@@ -36,12 +36,12 @@ class ApplicationCommand(BaseModel):
     id: SnowFlake
     type: int = 1
     application_id: SnowFlake
-    guild_id: Optional[int]
+    guild_id: Optional[SnowFlake]
     name: str
-    name_localizations: Optional[dict[str, str]]
+    name_localizations: Optional[Dict[str, str]]
     description: Optional[str] = "No description provided"
-    description_localizations: Optional[dict[str, str]]
-    options: Optional[list[ApplicationCommandOption]]
+    description_localizations: Optional[Dict[str, str]]
+    options: Optional[List[ApplicationCommandOption]]
     default_member_permissions: Optional[str]
     dm_permission: Optional[bool] = True
     nsfw: Optional[bool] = False
