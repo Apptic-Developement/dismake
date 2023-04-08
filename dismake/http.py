@@ -1,15 +1,16 @@
 from __future__ import annotations
-from typing import Optional
+from typing import List, Optional
 from httpx import AsyncClient, Response
 
 from .models import User
 from .models import ApplicationCommand
+from .builders import SlashCommandBuilder
 
 
 __all__ = ("API",)
 
 
-class API:
+class HttpClient:
     def __init__(
         self,
         *,
@@ -52,15 +53,15 @@ class API:
 
         return [ApplicationCommand(**command) for command in _json]
 
-    # async def bulk_override_commands(
-    #     self, commands: list[SlashCommand], guild_id: Optional[int] = None
-    # ) -> Response:
-    #     return await self.client.request(
-    #         method="PUT",
-    #         url=f"/applications/{self.client_id}/commands",
-    #         json=[command.to_dict() for command in commands],
-    #         headers=self.headers,
-    #     )
+    async def bulk_override_commands(
+        self, commands: List[SlashCommandBuilder], guild_id: Optional[int] = None
+    ) -> Response:
+        return await self.client.request(
+            method="PUT",
+            url=f"/applications/{self.client_id}/commands",
+            json=[command.to_dict() for command in commands],
+            headers=self.headers,
+        )
 
     async def remove_all_commands(self):
         return await self.client.request(

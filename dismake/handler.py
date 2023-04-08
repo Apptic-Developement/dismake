@@ -7,8 +7,10 @@ from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import CommandType, InteractionType, InteractionResponseType, OptionType
+from .interaction import Interaction, CommandInteraction
 from ._types import ClientT
 from .errors import NotImplemented
+
 log = getLogger("uvicorn")
 
 
@@ -17,7 +19,6 @@ class InteractionHandler:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
 
-    
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
         try:
@@ -41,10 +42,12 @@ class InteractionHandler:
 
         request_body = json.loads(await request.body())
         _json = await request.json()
-
         if request_body["type"] == InteractionType.PING.value:
-            log.info("Successfully responded to discord.")
             return JSONResponse({"type": InteractionResponseType.PONG.value})
-
-
+        if request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
+            interaction = CommandInteraction(request=request, **_json)
+            if (data := interaction.data) is not None:
+                command = self.client._slash_commands.get(data.name)
+                if command:
+                    await command.callback(interaction)
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
