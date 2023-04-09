@@ -21,7 +21,7 @@ class HttpClient:
         self.client_id = client_id
         self.api_version = 10
         self.app_command_endpoint = f"/applications/{client_id}/commands"
-        self.client = AsyncClient(base_url=self.base_url)
+        self.client = AsyncClient(base_url=self.base_url, headers=self.headers)
         self._user: User
 
     @property

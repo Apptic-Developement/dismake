@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import Optional, List, Any, Dict
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from .user import Member, User
 from ..types import SnowFlake
 from enum import Enum
+from ..asset import Asset
 
 
 class Ban(BaseModel):
@@ -89,3 +90,14 @@ class Guild(BaseModel):
     # verification_level: VerificationLevel TODO
     voice_states: Optional[List[Any]] = list()
     created_at: Optional[datetime]
+
+    @property
+    def display_banner(self) -> Optional[Asset]:
+        if self.banner:
+            return Asset.from_guild_banner(self.banner, int(self.id))
+    
+    @property
+    def display_icon(self) -> Optional[Asset]:
+        if self.icon:
+            return Asset.from_guild_icon(self.icon, int(self.id))
+        

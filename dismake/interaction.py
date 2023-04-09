@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union
 from fastapi import Request
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
-from .commands import Option
 from .types import SnowFlake
-from .models import Member, User
+from .models import Member, User, Guild, Channel
 
 
 if TYPE_CHECKING:
@@ -59,7 +58,7 @@ class Interaction(BaseModel):
     id: SnowFlake
     application_id: SnowFlake
     type: int
-    guild_id: Optional[SnowFlake]
+    guild_id: Optional[int]
     channel: Optional[Any]
     channel_id: Optional[SnowFlake]
     member: Optional[Member]
@@ -78,6 +77,15 @@ class Interaction(BaseModel):
             return self.member
         assert self.user is not None
         return self.user
+
+    
+    @validator('channel')
+    def validate_channel(cls, value: SnowFlake) -> Optional[Channel]:
+        ...
+
+    async def fetch_guild(self) -> Guild:
+        assert self.guild_id is not None, "Guild id is none."
+        return await self.bot.fetch_guild(self.guild_id)
 
     @property
     def bot(self) -> Bot:

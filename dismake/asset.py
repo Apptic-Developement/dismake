@@ -30,3 +30,23 @@ class Asset:
             animated=animated,
             key=avatar_hash,
         )
+
+    @classmethod
+    def from_guild_banner(cls, banner_hash: str, guild_id: int):
+        animated = banner_hash.startswith('a_')
+        format = "gif" if animated  else "png"
+        return cls(
+            url=f"{cls.BASE}/banners/{guild_id}/{banner_hash}.{format}",
+            animated=animated,
+            key=banner_hash
+        )
+
+    @classmethod
+    def from_guild_icon(cls, icon_hash: str, guild_id: int):
+        animated = icon_hash.startswith("a_")
+        format = "gif" if animated else "png"
+        return cls(
+            url=f"{cls.BASE}/icons/{guild_id}/{icon_hash}.{format}",
+            key=icon_hash,
+            animated=animated
+        )

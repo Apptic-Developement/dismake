@@ -4,3 +4,4 @@ from .enums import *
 from .types import *
 from .interaction import *
 from .commands import *
+from .permissions import *

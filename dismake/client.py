@@ -3,19 +3,18 @@ import asyncio
 
 from logging import getLogger
 from functools import wraps
-from typing import Any, Callable, List, Dict, Optional, TYPE_CHECKING
+from typing import Any, List, Dict, Optional, TYPE_CHECKING
 from fastapi import FastAPI
+
+from dismake.models.guild import Guild
 from .handler import InteractionHandler
 from .types import AsyncFunction, SnowFlake
 from .http import HttpClient
 from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
-from .errors import (
-    CommandInvokeError,
-    NotImplemented,
-    DismakeException
-)
+from .errors import CommandInvokeError
+
 if TYPE_CHECKING:
     from .commands import Context
 log = getLogger("uvicorn")
@@ -111,11 +110,20 @@ class Bot(FastAPI):
         def wrapper(*_, **__):
             self._error_handler = coro
             return coro
+
         return wrapper()
 
     async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
         log.exception(error)
         if isinstance(error, CommandInvokeError):
-            return await ctx.respond(f"Oops! Something went wrong while running the command.", ephemeral=True)
-            
-        
+            return await ctx.respond(
+                f"Oops! Something went wrong while running the command.", ephemeral=True
+            )
+
+    async def fetch_guild(self, guild_id: int) -> Guild:
+        res = await self._http.client.request(
+            method="GET",
+            url=f"/guilds/{guild_id}"
+        )
+        res.raise_for_status()
+        return Guild(**res.json())
