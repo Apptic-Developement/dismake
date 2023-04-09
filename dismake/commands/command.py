@@ -44,10 +44,10 @@ class SlashCommand:
         self.default_member_permissions = default_member_permissions
         self.dm_permission = dm_permission
 
-    async def callback(self, interaction: Context) -> Any:
+    async def callback(self, ctx: Context) -> Any:
         ...
 
-    async def autocomplete(self, interaction: Context) -> List[Choice]:
+    async def autocomplete(self, ctx: Context) -> List[Choice]:
         ...
 
     def to_dict(self) -> Dict[str, Any]:

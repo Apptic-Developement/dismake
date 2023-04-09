@@ -4,7 +4,7 @@ with open("README.md", "r") as file:
     long_description = file.read()
 setup(
     name="dismake",
-    version="0.0.4",
+    version="0.0.5",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",

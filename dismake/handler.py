@@ -48,11 +48,11 @@ class InteractionHandler:
             context = Context(request=request, **_json)
             if (data := context.data) is not None:
                 command = self.client._slash_commands.get(data.name)
-                if command:
-                    try:
-                        await command.callback(context)
-                    except Exception as e:
-                        await self.client._error_handler(context, CommandInvokeError(command, e))
+                if not command: raise NotImplemented(f"Command {data.name!r} not found.")
+                try:
+                    await command.callback(context)
+                except Exception as e:
+                    await self.client._error_handler(context, CommandInvokeError(command, e))
         elif (
             request_body["type"]
             == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
