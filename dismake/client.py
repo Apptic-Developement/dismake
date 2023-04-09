@@ -12,6 +12,7 @@ from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
 from .errors import (
+    CommandInvokeError,
     NotImplemented,
     DismakeException
 )
@@ -47,7 +48,7 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._slash_commands: Dict[str, SlashCommand] = {}
-        self._error_handler: Callable = self._default_error_handler
+        self._error_handler: AsyncFunction = self._default_error_handler
 
     @property
     def user(self) -> User:
@@ -105,7 +106,16 @@ class Bot(FastAPI):
                 [command for command in self._slash_commands.values()]
             )
 
+    def on_app_command_error(self, coro: AsyncFunction):
+        @wraps(coro)
+        def wrapper(*_, **__):
+            self._error_handler = coro
+            return coro
+        return wrapper()
+
     async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
-        
-        await ctx.respond(f"An error occured.", ephemeral=True)
+        log.exception(error)
+        if isinstance(error, CommandInvokeError):
+            return await ctx.respond(f"An error occured.", ephemeral=True)
             
+        

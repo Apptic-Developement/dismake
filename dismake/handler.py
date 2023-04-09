@@ -9,7 +9,7 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from ._types import ClientT
 from .commands import Context
-from .errors import NotImplemented
+from .errors import CommandInvokeError, NotImplemented
 
 log = getLogger("uvicorn")
 
@@ -52,7 +52,7 @@ class InteractionHandler:
                     try:
                         await command.callback(context)
                     except Exception as e:
-                        await self.client._error_handler(context, e)
+                        await self.client._error_handler(context, CommandInvokeError(command, e))
         elif (
             request_body["type"]
             == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
