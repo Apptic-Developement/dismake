@@ -4,10 +4,10 @@ from httpx import AsyncClient, Response
 
 from .models import User
 from .models import ApplicationCommand
-from .builders import SlashCommandBuilder
+from .commands import SlashCommand
 
 
-__all__ = ("API",)
+__all__ = ("HttpClient",)
 
 
 class HttpClient:
@@ -54,7 +54,7 @@ class HttpClient:
         return [ApplicationCommand(**command) for command in _json]
 
     async def bulk_override_commands(
-        self, commands: List[SlashCommandBuilder], guild_id: Optional[int] = None
+        self, commands: List[SlashCommand], guild_id: Optional[int] = None
     ) -> Response:
         return await self.client.request(
             method="PUT",

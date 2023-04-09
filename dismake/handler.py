@@ -6,9 +6,9 @@ from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-from .enums import CommandType, InteractionType, InteractionResponseType, OptionType
-from .interaction import Interaction, CommandInteraction
+from .enums import InteractionType, InteractionResponseType
 from ._types import ClientT
+from .commands import Context
 from .errors import NotImplemented
 
 log = getLogger("uvicorn")
@@ -45,9 +45,26 @@ class InteractionHandler:
         if request_body["type"] == InteractionType.PING.value:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            interaction = CommandInteraction(request=request, **_json)
+            interaction = Context(request=request, **_json)
             if (data := interaction.data) is not None:
                 command = self.client._slash_commands.get(data.name)
                 if command:
                     await command.callback(interaction)
+        elif (
+            request_body["type"]
+            == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
+        ):
+            interaction = Context(request=request, **_json)
+            if (data := interaction.data) is not None:
+                command = self.client.get_command(data.name)
+                if command:
+                    choices = await command.autocomplete(interaction)
+                    return JSONResponse(
+                        {
+                            "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+                            "data": {
+                                "choices": [choice.to_dict() for choice in choices]
+                            },
+                        }
+                    )
         return JSONResponse({"ack": InteractionResponseType.PONG.value})

@@ -1,5 +1,6 @@
 import dismake, config
-from dismake.builders import SlashCommandBuilder, Option
+from dismake import SlashCommand, Option, Context
+from dismake import Choice
 from dismake.enums import OptionType
 
 
@@ -17,26 +18,42 @@ async def on_ready():
     # await app.sync_commands()
 
 
-class RoleMenu(SlashCommandBuilder):
+class Autocomplete(SlashCommand):
     def __init__(self):
         super().__init__(
-            name="rolemenu",
-            description="Create awesome rolemenus.",
+            name="autocomplete",
+            description="Testing autocomplete.",
             options=[
                 Option(
-                    name="create",
+                    name="fruit",
                     description="Create a new rolemenu.",
                     type=OptionType.SUB_COMMAND,
-                    options=[Option(name="name", description="Name of the rolemenu.")],
+                    options=[
+                        Option(name="your-name", description="Your name?"),
+                        Option(
+                            name="fav-fruit",
+                            description="Fruits with your name.",
+                            autocomplete=True,
+                        ),
+                    ],
                 )
             ],
         )
 
-    async def callback(self, interaction: dismake.CommandInteraction):
-        ...
+    async def callback(self, interaction: Context):
+        await interaction.respond(
+            f"Okay! So your favourite fruit is {interaction.namespace.fav_fruit}"
+        )
+
+    async def autocomplete(self, interaction: Context):
+        fruits = ["Apple", "Banana", "Mango"]
+        return [
+            Choice(name=f"{interaction.namespace.your_name} {fruit}", value=fruit)
+            for fruit in fruits
+        ]
 
 
-app.add_commands([RoleMenu()])
+app.add_commands([Autocomplete()])
 
 
 if __name__ == "__main__":

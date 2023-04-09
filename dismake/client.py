@@ -10,7 +10,7 @@ from .types import AsyncFunction, SnowFlake
 from .http import HttpClient
 from .models import User
 from .utils import LOGGING_CONFIG
-from .builders import SlashCommandBuilder
+from .commands import SlashCommand
 
 log = getLogger("uvicorn")
 
@@ -41,13 +41,13 @@ class Bot(FastAPI):
         self.add_event_handler("startup", self._http.fetch_me)
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
-        self._slash_commands: Dict[str, SlashCommandBuilder] = {}
+        self._slash_commands: Dict[str, SlashCommand] = {}
 
     @property
     def user(self) -> User:
         return self._http._user
 
-    def get_command(self, name: str) -> Optional[SlashCommandBuilder]:
+    def get_command(self, name: str) -> Optional[SlashCommand]:
         return self._slash_commands.get(name)
 
     def run(self, **kwargs):
@@ -82,14 +82,14 @@ class Bot(FastAPI):
 
         return decorator
 
-    def add_command(self, command: SlashCommandBuilder):
+    def add_command(self, command: SlashCommand):
         if self._slash_commands.get(command.name):
             raise ValueError(
                 f"You can not create more than one command with same name."
             )
         self._slash_commands[command.name] = command
 
-    def add_commands(self, commands: List[SlashCommandBuilder]):
+    def add_commands(self, commands: List[SlashCommand]):
         for command in commands:
             self.add_command(command)
 
