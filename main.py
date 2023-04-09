@@ -1,5 +1,5 @@
 import dismake, config
-from dismake.builders import SlashCommandBuilder, Option, Choice
+from dismake.builders import SlashCommandBuilder, Option
 from dismake.enums import OptionType
 
 
@@ -17,38 +17,27 @@ async def on_ready():
     # await app.sync_commands()
 
 
-class Echo(SlashCommandBuilder):
+class RoleMenu(SlashCommandBuilder):
     def __init__(self):
         super().__init__(
-            "echo",
-            "Echo something!",
+            name="rolemenu",
+            description="Create awesome rolemenus.",
             options=[
-                Option(name="text", description="Say something...", required=True),
                 Option(
-                    name="fav-fruits",
-                    description="Tell me what is your fav fruit...",
-                    required=True,
-                    choices=[
-                        Choice(name="apple"),
-                        Choice(name="mango"),
-                        Choice(name="banana"),
-                    ],
-                ),
-                Option(
-                    name="response-type",
-                    description="Choose a response type",
-                    required=True,
-                    type=OptionType.BOOLEAN,
-                ),
+                    name="create",
+                    description="Create a new rolemenu.",
+                    type=OptionType.SUB_COMMAND,
+                    options=[Option(name="name", description="Name of the rolemenu.")],
+                )
             ],
         )
 
     async def callback(self, interaction: dismake.CommandInteraction):
-        assert interaction.data is not None
-        return print(interaction.data.options[1].value)
+        ...
 
 
-app.add_commands([Echo()])
-print(Echo().to_dict())
+app.add_commands([RoleMenu()])
+
+
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)

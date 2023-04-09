@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Union
-from ..interaction import Interaction
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from ..types import SnowFlake
 from ..enums import CommandType, OptionType
 
+if TYPE_CHECKING: from ..interaction import CommandInteraction
 
 __all__ = ("SlashCommandBuilder", "Option", "Choice")
 
@@ -42,10 +42,10 @@ class SlashCommandBuilder:
         self.default_member_permissions = default_member_permissions
         self.dm_permission = dm_permission
 
-    async def callback(self, interaction: Interaction) -> Any:
+    async def callback(self, interaction: CommandInteraction) -> Any:
         ...
 
-    async def autocomplete(self, interaction: Interaction) -> Any:
+    async def autocomplete(self, interaction: CommandInteraction) -> Any:
         ...
 
     def to_dict(self) -> Dict[str, Any]:

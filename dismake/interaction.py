@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import Any, List, Optional, TYPE_CHECKING, Union
 from fastapi import Request
 from pydantic import BaseModel
+
+from dismake.builders.command import Option
 from .types import SnowFlake
-from .enums import InteractionType, OptionType
+from .enums import InteractionResponseType, InteractionType, MessageFlags, OptionType
 from .models import Member, User
 from .params import handle_send_params
 
@@ -81,22 +83,84 @@ class Interaction(BaseModel):
 
 class CommandInteraction(Interaction):
     data: Optional[ApplicationCommandData]
+    _responded: bool = False
+
+    async def respond(
+        self, content: str, *, tts: bool = False, ephemeral: bool = False
+    ):
+        await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": handle_send_params(
+                    content=content, tts=tts, ephemeral=ephemeral
+                ),
+            },
+            headers=self.request.app._http.headers,
+        )
+        self._responded = True
+
+    async def defer(self, thinking: bool = True):
+        await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
+            },
+            headers=self.request.app._http.headers,
+        )
+        self._responded = True
+
+    async def send_followup(
+        self, content: str, *, tts: bool = False, ephemeral: bool = False
+    ):
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/webhooks/{self.application_id}/{self.token}",
+            json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
+            headers=self.request.app._http.headers,
+        )
+
+    async def send(self, content: str, *, tts: bool = False, ephemeral: bool = False):
+        if self._responded:
+            return await self.send_followup(content, tts=tts, ephemeral=ephemeral)
+
+        return await self.respond(content, tts=tts, ephemeral=ephemeral)
 
     @property
     def command(self) -> Optional[SlashCommandBuilder]:
         assert self.data is not None
         return self.bot.get_command(self.data.name)
 
-    def get_string(self, string: str):
-        assert self.data is not None
-        if not (options := self.data.options):
-            return None
-        opts = list(
-            filter(
-                lambda option: option.name == string
-                and option.type == OptionType.STRING,
-                options,
-            )
-        )
-        if opts:
-            return opts[0].value
+    @property
+    def namespace(self) -> Namespace:
+        kwargs = {}
+        if (data := self.data) is None or (options := data.options) is None:
+            return Namespace()
+
+        opts: Optional[List[ApplicationCommandOption]] = list()
+        for option in options:
+            if o_opts := option.options:
+                for o_opt in o_opts:
+                    opts.append(o_opt)
+
+            opts.append(option)
+        if not opts:
+            return Namespace()
+        for opt in opts:
+            if opt.type in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP):
+                kwargs[opt.name] = True
+            else:
+                kwargs[opt.name] = opt.value
+        return Namespace(**kwargs)
+
+
+class Namespace:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            self.__dict__[k] = v
+
+    def __getattr__(self, attr: str):
+        return Namespace()
