@@ -3,7 +3,7 @@ import asyncio
 
 from logging import getLogger
 from functools import wraps
-from typing import List, Dict, Optional
+from typing import Any, Callable, List, Dict, Optional, TYPE_CHECKING
 from fastapi import FastAPI
 from .handler import InteractionHandler
 from .types import AsyncFunction, SnowFlake
@@ -11,7 +11,12 @@ from .http import HttpClient
 from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
-
+from .errors import (
+    NotImplemented,
+    DismakeException
+)
+if TYPE_CHECKING:
+    from .commands import Context
 log = getLogger("uvicorn")
 
 
@@ -42,6 +47,7 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._slash_commands: Dict[str, SlashCommand] = {}
+        self._error_handler: Callable = self._default_error_handler
 
     @property
     def user(self) -> User:
@@ -98,3 +104,8 @@ class Bot(FastAPI):
             await self._http.bulk_override_commands(
                 [command for command in self._slash_commands.values()]
             )
+
+    async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
+        
+        await ctx.respond(f"An error occured.", ephemeral=True)
+            

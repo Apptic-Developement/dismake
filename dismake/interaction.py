@@ -30,7 +30,7 @@ class ApplicationCommandOption(BaseModel):
     type: int
     value: Optional[Union[str, int, float, bool]]
     options: Optional[List[ApplicationCommandOption]]
-    focused: Optional[bool]
+    focused: bool = False
 
 
 class ApplicationCommandData(BaseModel):
