@@ -9,6 +9,7 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from ._types import ClientT
 from .commands import Context
+from .interaction import Interaction
 from .errors import CommandInvokeError, NotImplemented
 
 log = getLogger("uvicorn")
@@ -42,16 +43,23 @@ class InteractionHandler:
 
         request_body = json.loads(await request.body())
         _json = await request.json()
+        self.client.dispatch(
+            "interaction_create",
+            Interaction(request=request, is_done=False, **_json),
+            payload=_json,
+        )
         if request_body["type"] == InteractionType.PING.value:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            context = Context(request=request, **_json)
+            context = Context(request=request, is_done=False, **_json)
             if (data := context.data) is not None:
                 command = self.client._slash_commands.get(data.name)
                 if not command:
                     raise NotImplemented(f"Command {data.name!r} not found.")
                 try:
+                    await command.before_invoke(context)
                     await command.callback(context)
+                    await command.after_invoke(context)
                 except Exception as e:
                     await self.client._error_handler(
                         context, CommandInvokeError(command, e)

@@ -9,10 +9,15 @@ app = dismake.Bot(
 )
 
 
-@app.event("ready")
+@app.event(dismake.Events.Ready)
 async def on_ready():
     print("Logged in as %s" % app.user)
     # await app.sync_commands()
+
+
+@app.event(dismake.Events.InteractionCreate)
+async def interaction_create(interaction: dismake.Interaction, payload: dict):
+    print(interaction.bot.user)
 
 
 app.add_commands(get_commands(app))

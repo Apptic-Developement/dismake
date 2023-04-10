@@ -3,7 +3,7 @@ import asyncio
 
 from logging import getLogger
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING
+from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
 
 from dismake.models.guild import Guild
@@ -14,6 +14,7 @@ from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
 from .errors import CommandInvokeError
+from .enums import Events
 
 if TYPE_CHECKING:
     from .commands import Context
@@ -30,12 +31,13 @@ class Bot(FastAPI):
         client_public_key: str,
         client_id: int,
         route: str = "/interactions",
+        interaction_handler: Optional[InteractionHandler] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self._client_id = client_id
         self._client_public_key = client_public_key
-        self._interaction_handler = InteractionHandler(self)
+        self._interaction_handler = interaction_handler or InteractionHandler(self)
         self._http = HttpClient(token=token, client_id=client_id)
         self.add_route(
             path=route,
@@ -75,7 +77,10 @@ class Bot(FastAPI):
         for coro in event:
             asyncio.ensure_future(self._dispatch_callback(coro, *args, **kwargs))
 
-    def event(self, event_name: str):
+    def event(self, event_name: Union[Events, str]):
+        if isinstance(event_name, Events):
+            event_name = event_name.value
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
@@ -121,9 +126,6 @@ class Bot(FastAPI):
             )
 
     async def fetch_guild(self, guild_id: int) -> Guild:
-        res = await self._http.client.request(
-            method="GET",
-            url=f"/guilds/{guild_id}"
-        )
+        res = await self._http.client.request(method="GET", url=f"/guilds/{guild_id}")
         res.raise_for_status()
         return Guild(**res.json())

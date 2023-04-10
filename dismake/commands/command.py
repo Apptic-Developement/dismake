@@ -45,6 +45,12 @@ class SlashCommand:
         self.default_member_permissions = default_member_permissions
         self.dm_permission = dm_permission
 
+    async def before_invoke(self, ctx: Context) -> Any:
+        return
+
+    async def after_invoke(self, ctx: Context) -> Any:
+        return
+
     async def callback(self, ctx: Context) -> Any:
         ...
 

@@ -6,6 +6,7 @@ from pydantic import BaseModel, validator
 
 from .types import SnowFlake
 from .models import Member, User, Guild, Channel
+from .enums import InteractionType
 
 
 if TYPE_CHECKING:
@@ -55,6 +56,7 @@ class ModalSubmitData(BaseModel):
 
 class Interaction(BaseModel):
     request: Request
+    is_done: bool
     id: SnowFlake
     application_id: SnowFlake
     type: int
@@ -71,6 +73,26 @@ class Interaction(BaseModel):
     guild_locale: Optional[str]
 
     @property
+    def is_application_command(self) -> bool:
+        return self.type == InteractionType.APPLICATION_COMMAND.value
+
+    @property
+    def is_autocomplete(self) -> bool:
+        return self.type == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
+
+    @property
+    def is_modal_submit(self) -> bool:
+        return self.type == InteractionType.MODAL_SUBMIT.value
+
+    @property
+    def is_ping(self) -> bool:
+        return self.type == InteractionType.PING.value
+
+    @property
+    def is_component(self) -> bool:
+        return self.type == InteractionType.MESSAGE_COMPONENT.value
+
+    @property
     def author(self) -> Union[Member, User]:
         if self.guild_id:
             assert self.member is not None
@@ -78,8 +100,7 @@ class Interaction(BaseModel):
         assert self.user is not None
         return self.user
 
-    
-    @validator('channel')
+    @validator("channel")
     def validate_channel(cls, value: SnowFlake) -> Optional[Channel]:
         ...
 

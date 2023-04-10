@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, List, TYPE_CHECKING
 
 from ..interaction import Interaction, ApplicationCommandData, ApplicationCommandOption
-from ..enums import InteractionResponseType, InteractionType, MessageFlags, OptionType
+from ..enums import InteractionResponseType, MessageFlags, OptionType
 from ..params import handle_send_params
 
 if TYPE_CHECKING:
@@ -55,10 +55,6 @@ class Context(Interaction):
     def command(self) -> Optional[SlashCommand]:
         assert self.data is not None
         return self.bot.get_command(self.data.name)
-
-    @property
-    def is_autocomplete(self) -> bool:
-        return self.type == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
 
     @property
     def get_options(self) -> Optional[List[ApplicationCommandOption]]:

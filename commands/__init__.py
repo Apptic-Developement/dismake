@@ -7,8 +7,7 @@ from .info import InfoCommand
 
 if TYPE_CHECKING:
     from dismake import Bot
+
+
 def get_commands(bot: Bot):
-    return [
-        Autocomplete(bot),
-        InfoCommand(bot)
-    ]
+    return [Autocomplete(bot), InfoCommand(bot)]
