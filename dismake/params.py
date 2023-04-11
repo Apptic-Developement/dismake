@@ -3,7 +3,7 @@ from typing import Any, List, Optional
 
 from .ui import House
 from .enums import MessageFlags
-from .errors import HouseError
+from .errors import ComponentException
 
 
 def handle_send_params(
@@ -23,8 +23,6 @@ def handle_send_params(
     if tts:
         payload.update({"tts": tts})
     if houses:
-        if len(houses) > 5:
-            raise HouseError("A message can only have 5 houses.")
         payload.update({"components": [house.to_dict() for house in houses]})
     _embeds = list()
     if embeds:

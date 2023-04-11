@@ -15,9 +15,9 @@ async def on_ready():
     await app.sync_commands()
 
 
-@app.event(dismake.Events.InteractionCreate)
-async def interaction_create(interaction: dismake.Interaction, payload: dict):
-    print(payload)
+# @app.event(dismake.Events.InteractionCreate)
+# async def interaction_create(interaction: dismake.Interaction, payload: dict):
+#     print(payload)
 
 
 app.add_commands(get_commands(app))

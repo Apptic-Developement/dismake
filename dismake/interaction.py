@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict
+from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from fastapi import Request
 from pydantic import BaseModel, validator
 
 from .types import SnowFlake
 from .models import Member, User, Guild, Message, Role
-from .enums import InteractionType
+from .enums import InteractionType, InteractionResponseType, MessageFlags
+from .errors import InteractionNotResponded, InteractionResponded, ComponentException
+from .params import handle_send_params
+if TYPE_CHECKING:
+    from .ui import House
 
 
 if TYPE_CHECKING:
@@ -41,16 +45,6 @@ class ApplicationCommandData(BaseModel):
     guild_id: Optional[SnowFlake]
     target_id: Optional[SnowFlake]
 
-
-class MessageComponentData(BaseModel):
-    custom_id: str
-    component_type: int
-    # values?*	array of select option values	values the user selected in a select menu component
-
-
-class ModalSubmitData(BaseModel):
-    custom_id: str
-    # components	array of message components	the values submitted by the user
 
 
 class Interaction(BaseModel):
@@ -110,6 +104,81 @@ class Interaction(BaseModel):
     @property
     def bot(self) -> Bot:
         return self.request.app
+    
+    async def respond(
+        self,
+        content: str,
+        *,
+        tts: bool = False,
+        ephemeral: bool = False,
+        houses: Optional[List[House]] = None,
+    ):
+        if self.is_responded:
+            raise InteractionResponded(self)
+        
+        if houses:
+            if len(houses) > 5:
+                raise ComponentException("A message can only have 5 houses.")
+            for house in houses:
+                self.bot.add_house(house)
+        await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": handle_send_params(
+                    content=content, tts=tts, ephemeral=ephemeral, houses=houses
+                ),
+            },
+            headers=self.request.app._http.headers,
+        )
+        self.is_response_done = True
 
+    async def defer(self, thinking: bool = True):
+        if self.is_responded:
+            raise InteractionResponded(self)
+        await self.request.app._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
+                "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
+            },
+            headers=self.request.app._http.headers,
+        )
+        self.is_response_done = True
+
+    async def send_followup(
+        self, content: str, *, tts: bool = False, houses: Optional[List[House]] = None, ephemeral: bool = False
+    ):
+        if not self.respond:
+            raise InteractionNotResponded(self)
+        
+        if houses:
+            if len(houses) > 5:
+                raise ComponentException("A message can only have 5 houses.")
+            for house in houses:
+                self.bot.add_house(house)
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/webhooks/{self.application_id}/{self.token}",
+            json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
+            headers=self.request.app._http.headers,
+        )
+
+    # async def edit_original_response(
+    #     self,
+    #     content: str
+    # ):
+    #     return await self.bot._http.client.request(
+    #         method="PATCH",
+    #         url=f"/webhooks/{self.application_id}/{self.token}/messages/{self.message.id}"
+            
+    #     )
+
+    async def send(self, content: str, *, tts: bool = False, houses: Optional[List[House]] = None, ephemeral: bool = False):
+        if self.is_responded:
+            return await self.send_followup(content, tts=tts, houses=houses, ephemeral=ephemeral)
+        return await self.respond(content, tts=tts, houses=houses, ephemeral=ephemeral)
     class Config:
         arbitrary_types_allowed = True

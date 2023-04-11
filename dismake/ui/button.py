@@ -16,15 +16,13 @@ class Button(Component):
         style: Optional[ButtonStyles],
         emoji: Optional[Any] = None,
         url: Optional[str] = None,
+        disabled: Optional[bool] = None
     ) -> None:
         self.type = ComponentTypes.BUTTON
-        super().__init__(type=self.type)
+        super().__init__(type=self.type, custom_id=custom_id, disabled=disabled)
         self.label = label
         self.style = style or ButtonStyles.PRIMARY
         self.emoji = emoji
-        self.custom_id = custom_id or str(
-            uuid.uuid3(name=label, namespace=uuid.NAMESPACE_URL)
-        )
         self.url = url
 
     def to_dict(self) -> Dict[str, Any]:
@@ -32,10 +30,11 @@ class Button(Component):
         if not self.url:
             base["label"] = self.label
             base["style"] = self.style.value
-            base["custom_id"] = self.custom_id
         else:
             base["label"] = self.label
             base["style"] = ButtonStyles.LINK.value
             base["url"] = self.url
+            if base.get("custom_id"):
+                base.pop("custom_id")
 
         return base

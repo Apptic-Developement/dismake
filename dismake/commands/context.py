@@ -6,7 +6,7 @@ from ..ui import House
 from ..interaction import Interaction, ApplicationCommandData, ApplicationCommandOption
 from ..enums import InteractionResponseType, MessageFlags, OptionType
 from ..params import handle_send_params
-from ..errors import InteractionResponded, InteractionNotResponded
+from ..errors import ComponentException, InteractionResponded, InteractionNotResponded
 
 if TYPE_CHECKING:
     from .command import SlashCommand
@@ -17,59 +17,6 @@ __all__ = ("Context",)
 class Context(Interaction):
     data: Optional[ApplicationCommandData]
 
-    async def respond(
-        self,
-        content: str,
-        *,
-        tts: bool = False,
-        ephemeral: bool = False,
-        houses: Optional[List[House]] = None,
-    ):
-        if self.is_responded:
-            raise InteractionResponded(self)
-        await self.request.app._http.client.request(
-            method="POST",
-            url=f"/interactions/{self.id}/{self.token}/callback",
-            json={
-                "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
-                "data": handle_send_params(
-                    content=content, tts=tts, ephemeral=ephemeral, houses=houses
-                ),
-            },
-            headers=self.request.app._http.headers,
-        )
-        self.is_response_done = True
-
-    async def defer(self, thinking: bool = True):
-        if self.is_responded:
-            raise InteractionResponded(self)
-        await self.request.app._http.client.request(
-            method="POST",
-            url=f"/interactions/{self.id}/{self.token}/callback",
-            json={
-                "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
-                "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
-            },
-            headers=self.request.app._http.headers,
-        )
-        self.is_response_done = True
-
-    async def send_followup(
-        self, content: str, *, tts: bool = False, ephemeral: bool = False
-    ):
-        if not self.respond:
-            raise InteractionNotResponded(self)
-        return await self.request.app._http.client.request(
-            method="POST",
-            url=f"/webhooks/{self.application_id}/{self.token}",
-            json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
-            headers=self.request.app._http.headers,
-        )
-
-    async def send(self, content: str, *, tts: bool = False, ephemeral: bool = False):
-        if self.is_responded:
-            return await self.send_followup(content, tts=tts, ephemeral=ephemeral)
-        return await self.respond(content, tts=tts, ephemeral=ephemeral)
 
     @property
     def command(self) -> Optional[SlashCommand]:

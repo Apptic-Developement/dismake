@@ -1,24 +1,24 @@
 from __future__ import annotations
 import uuid
-from typing import Any, Dict, List, Optional
-from ..enums import ButtonStyles, ComponentTypes
-from ..types import AsyncFunction
-from pydantic import BaseModel
-from functools import wraps
+from typing import Any, Dict, Optional, TYPE_CHECKING
+from ..enums import ComponentTypes
+if TYPE_CHECKING:
+    from .context import ComponentContext
 
 __all__ = ("Component",)
 
 
 class Component:
-    def __init__(self, type: ComponentTypes) -> None:
+    def __init__(self, type: ComponentTypes, custom_id: Optional[str], disabled: Optional[bool]) -> None:
         self.type = type
-        self._callback: Optional[AsyncFunction] = None
+        self.custom_id = custom_id or str(uuid.uuid4())
+        self.disabled = disabled
 
-    @property
-    def callback(self) -> AsyncFunction:
-        assert self._callback is not None
-        return self._callback
+    async def callback(self, ctx: ComponentContext) -> Any:
+        ...
 
     def to_dict(self) -> Dict[str, Any]:
-        base = {"type": self.type.value}
+        base = {"type": self.type.value, "custom_id": self.custom_id}
+        if self.disabled:
+            base['disabled'] = self.disabled
         return base

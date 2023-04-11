@@ -11,7 +11,7 @@ __all__ = (
     "CommandInvokeError",
     "InteractionResponded",
     "InteractionNotResponded",
-    "HouseError",
+    "ComponentException",
 )
 
 
@@ -44,5 +44,5 @@ class InteractionNotResponded(DismakeException):
         super().__init__(f"{interaction.id!r} The interaction is not responded.")
 
 
-class HouseError(DismakeException):
+class ComponentException(DismakeException):
     """Base Exception for house."""

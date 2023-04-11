@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 
 from logging import getLogger
+from typing import Any
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
@@ -11,6 +12,7 @@ from ._types import ClientT
 from .commands import Context
 from .interaction import Interaction
 from .errors import CommandInvokeError, NotImplemented
+from .ui import ComponentContext
 
 log = getLogger("uvicorn")
 
@@ -31,6 +33,49 @@ class InteractionHandler:
             log.exception(e)
             return False
 
+    async def _handle_command(self, request: Request) -> Any:
+        payload = await request.json()
+        context = Context(request=request, is_response_done=False, **payload)
+        if (data := context.data) is not None:
+            command = self.client._slash_commands.get(data.name)
+            if not command:
+                raise NotImplemented(f"Command {data.name!r} not found.")
+            try:
+                await command.before_invoke(context)
+                await command.callback(context)
+                await command.after_invoke(context)
+            except Exception as e:
+                await self.client._error_handler(
+                    context, CommandInvokeError(command, e)
+                )
+
+    async def _handle_autocomplete(self, request: Request) -> Any:
+        payload = await request.json()
+        interaction = Context(request=request, **payload)
+        if (data := interaction.data) is not None:
+            if (command := self.client.get_command(data.name)):
+                if (choices := await command.autocomplete(interaction)):
+                    return JSONResponse(
+                        {
+                            "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+                            "data": {
+                                "choices": [choice.to_dict() for choice in choices]
+                            },
+                        }
+                    )
+                return JSONResponse(
+                    {
+                        "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+                        "data": {"choices": []},
+                    }
+                )
+    async def _handle_message_component(self, request: Request) -> Any:
+        payload = await request.json()
+        ctx = ComponentContext(request=request, is_response_done=False, **payload)
+        if (data := ctx.data):
+            comp = self.client._components.get(ctx.data.custom_id)
+            if comp:
+                await comp.callback(ctx)
     async def handle_interactions(self, request: Request):
         signature = request.headers["X-Signature-Ed25519"]
         timestamp = request.headers["X-Signature-Timestamp"]
@@ -41,53 +86,24 @@ class InteractionHandler:
         ):
             return Response(content="Bad Signature", status_code=401)
 
-        request_body = json.loads(await request.body())
-        _json = await request.json()
+        payload = await request.json()
         self.client.dispatch(
             "interaction_create",
-            Interaction(request=request, is_response_done=False, **_json),
-            payload=_json,
+            Interaction(request=request, is_response_done=False, **payload),
+            payload=payload,
         )
-        if request_body["type"] == InteractionType.PING.value:
+        if payload["type"] == InteractionType.PING.value:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
-        if request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            context = Context(request=request, is_response_done=False, **_json)
-            if (data := context.data) is not None:
-                command = self.client._slash_commands.get(data.name)
-                if not command:
-                    raise NotImplemented(f"Command {data.name!r} not found.")
-                try:
-                    await command.before_invoke(context)
-                    await command.callback(context)
-                    await command.after_invoke(context)
-                except Exception as e:
-                    await self.client._error_handler(
-                        context, CommandInvokeError(command, e)
-                    )
+        if payload["type"] == InteractionType.APPLICATION_COMMAND.value:
+            await self._handle_command(request)
         elif (
-            request_body["type"]
+            payload["type"]
             == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
         ):
-            interaction = Context(request=request, **_json)
-            if (data := interaction.data) is not None:
-                command = self.client.get_command(data.name)
-                if command:
-                    choices = await command.autocomplete(interaction)
-                    if choices:
-                        return JSONResponse(
-                            {
-                                "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-                                "data": {
-                                    "choices": [choice.to_dict() for choice in choices]
-                                },
-                            }
-                        )
-                    return JSONResponse(
-                        {
-                            "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-                            "data": {"choices": []},
-                        }
-                    )
+            return await self._handle_autocomplete(request)
+        elif payload['type'] == InteractionType.MESSAGE_COMPONENT.value:
+            await self._handle_message_component(request)
+        
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
 

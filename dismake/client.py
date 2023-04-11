@@ -18,6 +18,7 @@ from .enums import Events
 
 if TYPE_CHECKING:
     from .commands import Context
+    from .ui import House, Component
 log = getLogger("uvicorn")
 
 
@@ -49,6 +50,7 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._slash_commands: Dict[str, SlashCommand] = {}
+        self._components: Dict[str, Component] = {}
         self._error_handler: AsyncFunction = self._default_error_handler
 
     @property
@@ -129,3 +131,11 @@ class Bot(FastAPI):
         res = await self._http.client.request(method="GET", url=f"/guilds/{guild_id}")
         res.raise_for_status()
         return Guild(**res.json())
+
+    def add_house(self, house: House) -> None:
+        if not (components := house.components):
+            return
+        for component in components:
+            if self._components.get((custom_id := component.custom_id)):
+                continue
+            self._components[custom_id] = component
