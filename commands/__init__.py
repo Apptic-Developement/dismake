@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING
 
 from .autocomplete import Autocomplete
 from .info import InfoCommand
+from .components import Component
 
 if TYPE_CHECKING:
     from dismake import Bot
 
 
 def get_commands(bot: Bot):
-    return [Autocomplete(bot), InfoCommand(bot)]
+    return [Autocomplete(bot), InfoCommand(bot), Component(bot)]

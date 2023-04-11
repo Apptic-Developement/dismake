@@ -45,13 +45,13 @@ class InteractionHandler:
         _json = await request.json()
         self.client.dispatch(
             "interaction_create",
-            Interaction(request=request, is_done=False, **_json),
+            Interaction(request=request, is_response_done=False, **_json),
             payload=_json,
         )
         if request_body["type"] == InteractionType.PING.value:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if request_body["type"] == InteractionType.APPLICATION_COMMAND.value:
-            context = Context(request=request, is_done=False, **_json)
+            context = Context(request=request, is_response_done=False, **_json)
             if (data := context.data) is not None:
                 command = self.client._slash_commands.get(data.name)
                 if not command:

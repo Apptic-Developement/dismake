@@ -7,9 +7,17 @@ from pydantic import BaseModel
 from .embed import Embed
 
 from ..types import SnowFlake
-from .user import User
-from ..interaction import Interaction
+from .user import Member, User
 
+__all__ = ("Message",)
+
+
+class MessageInteraction(BaseModel):
+    id: SnowFlake
+    type: int
+    name: str
+    user: User
+    member: Optional[Member]
 
 
 class Message(BaseModel):
@@ -22,7 +30,7 @@ class Message(BaseModel):
     tts: bool
     mention_everyone: bool
     mentions: List[User]
-    mention_roles: List[Any]
+    mention_roles: List[int]
     pinned: bool
     edited_timestamp: Optional[datetime]
     mention_channels: Optional[List[Any]]
@@ -37,7 +45,7 @@ class Message(BaseModel):
     message_reference: Optional[Any]
     flags: Optional[Any]
     referenced_message: Optional[Any]
-    interaction: Optional[Interaction]
+    interaction: Optional[MessageInteraction]
     thread: Optional[Any]
     components: Optional[List[Any]]
     sticker_items: Optional[List[Any]]

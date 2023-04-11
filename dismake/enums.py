@@ -1,6 +1,6 @@
 from __future__ import annotations
-
-from enum import Enum
+import random
+from enum import Enum, IntEnum
 
 __all__ = (
     "DefaultAvatar",
@@ -14,6 +14,9 @@ __all__ = (
     "StrEnum",
     "Locale",
     "Events",
+    "ComponentTypes",
+    "ButtonStyles",
+    "TextInputStyle",
 )
 
 
@@ -140,3 +143,23 @@ class Locale(StrEnum):
 class Events(StrEnum):
     Ready = OnReady = "ready"
     InteractionCreate = "interaction_create"
+
+
+class ComponentTypes(IntEnum):
+    ACTION_ROW = 1
+    BUTTON = 2
+    SELECT_MENU = 3
+    TEXT_INPUT = 4
+
+
+class ButtonStyles(IntEnum):
+    PRIMARY = primary = 1
+    SECONDARY = secondary = 2
+    SUCCESS = success = 3
+    DANGER = danger = 4
+    LINK = link = 5
+
+
+class TextInputStyle(IntEnum):
+    SHORT = short = 1
+    PARAGRAPH = paragraph = 2

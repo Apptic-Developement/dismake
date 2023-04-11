@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
+from ..ui import House
 from ..interaction import Interaction, ApplicationCommandData, ApplicationCommandOption
 from ..enums import InteractionResponseType, MessageFlags, OptionType
 from ..params import handle_send_params
+from ..errors import InteractionResponded, InteractionNotResponded
 
 if TYPE_CHECKING:
     from .command import SlashCommand
@@ -16,21 +18,31 @@ class Context(Interaction):
     data: Optional[ApplicationCommandData]
 
     async def respond(
-        self, content: str, *, tts: bool = False, ephemeral: bool = False
+        self,
+        content: str,
+        *,
+        tts: bool = False,
+        ephemeral: bool = False,
+        houses: Optional[List[House]] = None,
     ):
+        if self.is_responded:
+            raise InteractionResponded(self)
         await self.request.app._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
                 "data": handle_send_params(
-                    content=content, tts=tts, ephemeral=ephemeral
+                    content=content, tts=tts, ephemeral=ephemeral, houses=houses
                 ),
             },
             headers=self.request.app._http.headers,
         )
+        self.is_response_done = True
 
     async def defer(self, thinking: bool = True):
+        if self.is_responded:
+            raise InteractionResponded(self)
         await self.request.app._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
@@ -40,16 +52,24 @@ class Context(Interaction):
             },
             headers=self.request.app._http.headers,
         )
+        self.is_response_done = True
 
     async def send_followup(
         self, content: str, *, tts: bool = False, ephemeral: bool = False
     ):
+        if not self.respond:
+            raise InteractionNotResponded(self)
         return await self.request.app._http.client.request(
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
             json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
             headers=self.request.app._http.headers,
         )
+
+    async def send(self, content: str, *, tts: bool = False, ephemeral: bool = False):
+        if self.is_responded:
+            return await self.send_followup(content, tts=tts, ephemeral=ephemeral)
+        return await self.respond(content, tts=tts, ephemeral=ephemeral)
 
     @property
     def command(self) -> Optional[SlashCommand]:
@@ -110,6 +130,7 @@ class Context(Interaction):
 
     @property
     def namespace(self) -> Namespace:
+        assert self.data is not None
         kwargs = {}
         if (options := self.get_options) is None:
             return Namespace()
@@ -119,7 +140,20 @@ class Context(Interaction):
             if o_opts := option.options:
                 for o_opt in o_opts:
                     opts.append(o_opt)
-
+            if (
+                option.type == OptionType.USER
+                and (resolved := self.data.resolved)
+                and (user := resolved.users)
+            ):
+                if isinstance((id := option.value), str):
+                    option.value = user[id]
+            elif (
+                option.type == OptionType.ROLE
+                and (resolved := self.data.resolved)
+                and (role := resolved.roles)
+            ):
+                if isinstance((id := option.value), str):
+                    option.value = role[id]
             opts.append(option)
         if not opts:
             return Namespace()

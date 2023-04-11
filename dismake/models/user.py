@@ -50,6 +50,10 @@ class User(BaseModel):
     def __str__(self):
         return f"{self.username}#{self.discriminator}"
 
+    @classmethod
+    def from_resolved_data(cls, **kwargs):
+        return cls(**kwargs)
+
     @property
     def get_flags(self) -> Optional[list[str]]:
         _flag_names = list()
@@ -58,6 +62,10 @@ class User(BaseModel):
                 _flag_names.append(v)
 
         return _flag_names
+
+    @property
+    def mention(self) -> str:
+        return f"<@{self.id}>"
 
     @property
     def display_avatar(self) -> Asset:
