@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from fastapi import Request
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from .types import SnowFlake
 from .models import Member, User, Guild, Message, Role
 from .enums import InteractionType, InteractionResponseType, MessageFlags
 from .errors import InteractionNotResponded, InteractionResponded, ComponentException
-from .params import handle_send_params
+from .params import handle_send_params, handle_edit_params
 if TYPE_CHECKING:
     from .ui import House
-
-
-if TYPE_CHECKING:
     from .client import Bot
+
+
 
 __all__ = ("Interaction", "ApplicationCommandData", "ApplicationCommandOption")
 
@@ -163,19 +162,35 @@ class Interaction(BaseModel):
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
             json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
-            headers=self.request.app._http.headers,
         )
 
-    # async def edit_original_response(
-    #     self,
-    #     content: str
-    # ):
-    #     return await self.bot._http.client.request(
-    #         method="PATCH",
-    #         url=f"/webhooks/{self.application_id}/{self.token}/messages/{self.message.id}"
-            
-    #     )
+    async def edit_original_response(
+        self,
+        content: str,
+        *,
+        tts: bool = False,
+        houses: Optional[List[House]] = None
+    ):
+        if houses:
+            if len(houses) > 5:
+                raise ComponentException("A message can only have 5 houses.")
+            for house in houses:
+                self.bot.add_house(house)
+        return await self.bot._http.client.request(
+            method="PATCH",
+            url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
+            json=handle_edit_params(content=content, tts=tts, houses=houses)
+        )
 
+    async def get_original_response(self) -> Message:
+        res =  await self.bot._http.client.request(
+            method="GET",
+            url=f"/webhooks/{self.application_id}/{self.token}/messages/@original"
+        )
+        res.raise_for_status()
+        return Message(**res.json())
+    
+   
     async def send(self, content: str, *, tts: bool = False, houses: Optional[List[House]] = None, ephemeral: bool = False):
         if self.is_responded:
             return await self.send_followup(content, tts=tts, houses=houses, ephemeral=ephemeral)

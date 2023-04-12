@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from .ui import House
 from .enums import MessageFlags
-from .errors import ComponentException
 
 
 def handle_send_params(
@@ -34,4 +33,33 @@ def handle_send_params(
     if _embeds:
         embeds = _embeds
     # TODO: attachments, components, allowed_mentions
+    return payload
+
+def  handle_edit_params(
+    content: str,
+    *,
+    tts: Optional[bool] = None,
+    embeds: Optional[list] = None,
+    allowed_mentions: Optional[Any] = None,
+    houses: Optional[List[House]] = None,
+    attachments: Optional[List[Any]] = None,
+    embed: Optional[Any] = None,
+) -> Dict[str, Any]:
+    payload: Dict[str, Any] = {"content": content}
+    if tts:
+        payload.update({"tts": tts})
+    embs = list()
+    if embeds:
+        for embed in embeds:
+            embs.append(embed)
+    if embed:
+        embs.append(embed)
+    
+    if embeds:
+        embeds = embs
+    
+    if houses:
+        payload.update({"components": [house.to_dict() for house in houses]})
+    else:
+        payload.update({"components": None})
     return payload

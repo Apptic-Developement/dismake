@@ -52,3 +52,5 @@ class Message(BaseModel):
     stickers: Optional[List[Any]]
     position: Optional[int]
     role_subscription_data: Optional[Any]
+
+    
