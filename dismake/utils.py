@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from typing import Iterable
+
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": True,
@@ -22,6 +27,19 @@ LOGGING_CONFIG = {
         },
     },
 }
-from rich.logging import RichHandler
 
-handler = RichHandler()
+def chunk(max_size: int, iterator: Iterable):
+    if max_size <= 0:
+        raise ValueError('Chunk sizes must be greater than 0.')
+    
+    ret = list()
+    n = 0
+    for i in iterator:
+        ret.append(i)
+        n += 1
+        if n == max_size:
+            yield ret
+            ret.clear()
+            n = 0
+    if ret:
+        yield ret

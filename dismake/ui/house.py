@@ -8,7 +8,7 @@ from ..types import AsyncFunction
 from .component import Component
 from .button import Button
 from ..errors import ComponentException
-
+from ..utils import chunk
 __all__ = ("House",)
 
 
@@ -17,7 +17,7 @@ class House:
         self.components: List[Component] = []
 
     def add_component(self, component: Component):
-        if len(self.components) == 5:
+        if len(self.components) == 25:
             raise ComponentException(
                 "Cannot add more components, already reached maximum"
             )
@@ -48,8 +48,11 @@ class House:
         return decorator
 
     def to_dict(self) -> Dict[str, Any]:
-        base = {
+        comps: List[List[Component]] = list()
+        for items in chunk(5, self.components):
+            comps.append([item.to_dict() for item in items])
+        
+        return {
             "type": ComponentTypes.ACTION_ROW.value,
-            "components": [component.to_dict() for component in self.components],
+            "components": comps
         }
-        return base
