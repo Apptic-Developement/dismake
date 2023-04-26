@@ -3,7 +3,7 @@ import uuid
 from typing import Any, Dict, Optional, TYPE_CHECKING
 from ..enums import ComponentTypes
 if TYPE_CHECKING:
-    from .context import ComponentContext
+    from ..models import ComponentContext
 
 __all__ = ("Component",)
 

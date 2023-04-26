@@ -24,6 +24,8 @@ def handle_send_params(
     if house:
         if isinstance(house, House):
             payload.update({"components": house.to_dict()})
+        else:
+            payload.update({"components": house})
     _embeds = list()
     if embeds:
         for emb in embeds:
@@ -42,7 +44,7 @@ def  handle_edit_params(
     tts: Optional[bool] = None,
     embeds: Optional[list] = None,
     allowed_mentions: Optional[Any] = None,
-    houses: Optional[List[House]] = None,
+    house: Optional[House] = None,
     attachments: Optional[List[Any]] = None,
     embed: Optional[Any] = None,
 ) -> Dict[str, Any]:
@@ -59,8 +61,8 @@ def  handle_edit_params(
     if embeds:
         embeds = embs
     
-    if houses:
-        payload.update({"components": [house.to_dict() for house in houses]})
+    if house:
+        payload.update({"components": house.to_dict()})
     else:
         payload.update({"components": None})
     return payload

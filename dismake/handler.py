@@ -10,9 +10,8 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from ._types import ClientT
 from .commands import Context
-from .interaction import Interaction
+from .models import Interaction, ComponentContext
 from .errors import CommandInvokeError, NotImplemented
-from .ui import ComponentContext
 
 log = getLogger("uvicorn")
 

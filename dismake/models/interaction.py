@@ -4,18 +4,22 @@ from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKIN
 from fastapi import Request
 from pydantic import BaseModel
 
-from .types import SnowFlake
-from .models import Member, User, Guild, Message, Role
-from .enums import InteractionType, InteractionResponseType, MessageFlags
-from .errors import InteractionNotResponded, InteractionResponded, ComponentException
-from .params import handle_send_params, handle_edit_params
+from ..types import SnowFlake
+from .user import Member, User
+from .guild import Guild
+from .role import Role
+from .message import Message
+from ..enums import InteractionType, InteractionResponseType, MessageFlags
+from ..errors import InteractionNotResponded, InteractionResponded
+from ..ui import SelectOption
+from ..params import handle_send_params, handle_edit_params
 if TYPE_CHECKING:
-    from .ui import House
-    from .client import Bot
+    from ..ui import House
+    from ..client import Bot
 
 
 
-__all__ = ("Interaction", "ApplicationCommandData", "ApplicationCommandOption")
+__all__ = ("Interaction", "ApplicationCommandData", "ApplicationCommandOption", "ComponentContext", "ModalContext")
 
 
 class ResolvedData(BaseModel):
@@ -110,23 +114,20 @@ class Interaction(BaseModel):
         *,
         tts: bool = False,
         ephemeral: bool = False,
-        houses: Optional[List[House]] = None,
+        house: Optional[House] = None
     ):
         if self.is_responded:
             raise InteractionResponded(self)
         
-        if houses:
-            if len(houses) > 5:
-                raise ComponentException("A message can only have 5 houses.")
-            for house in houses:
-                self.bot.add_house(house)
+        if house:
+            self.bot.add_house(house)
         await self.request.app._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
                 "data": handle_send_params(
-                    content=content, tts=tts, ephemeral=ephemeral, houses=houses
+                    content=content, tts=tts, ephemeral=ephemeral, house=house
                 ),
             },
             headers=self.request.app._http.headers,
@@ -148,20 +149,17 @@ class Interaction(BaseModel):
         self.is_response_done = True
 
     async def send_followup(
-        self, content: str, *, tts: bool = False, houses: Optional[List[House]] = None, ephemeral: bool = False
+        self, content: str, *, tts: bool = False, house: Optional[House] = None, ephemeral: bool = False
     ):
         if not self.respond:
             raise InteractionNotResponded(self)
         
-        if houses:
-            if len(houses) > 5:
-                raise ComponentException("A message can only have 5 houses.")
-            for house in houses:
+        if house:
                 self.bot.add_house(house)
         return await self.request.app._http.client.request(
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
-            json=handle_send_params(content=content, tts=tts, ephemeral=ephemeral),
+            json=handle_send_params(content=content, tts=tts, house=house, ephemeral=ephemeral),
         )
 
     async def edit_original_response(
@@ -169,17 +167,14 @@ class Interaction(BaseModel):
         content: str,
         *,
         tts: bool = False,
-        houses: Optional[List[House]] = None
+        house: Optional[House] = None
     ):
-        if houses:
-            if len(houses) > 5:
-                raise ComponentException("A message can only have 5 houses.")
-            for house in houses:
+        if house:
                 self.bot.add_house(house)
         return await self.bot._http.client.request(
             method="PATCH",
             url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
-            json=handle_edit_params(content=content, tts=tts, houses=houses)
+            json=handle_edit_params(content=content, tts=tts, house=house)
         )
 
     async def get_original_response(self) -> Message:
@@ -191,9 +186,47 @@ class Interaction(BaseModel):
         return Message(**res.json())
     
    
-    async def send(self, content: str, *, tts: bool = False, houses: Optional[List[House]] = None, ephemeral: bool = False):
+    async def send(self, content: str, *, tts: bool = False, house: Optional[House] = None, ephemeral: bool = False):
         if self.is_responded:
-            return await self.send_followup(content, tts=tts, houses=houses, ephemeral=ephemeral)
-        return await self.respond(content, tts=tts, houses=houses, ephemeral=ephemeral)
+            return await self.send_followup(content, tts=tts, house=house, ephemeral=ephemeral)
+        return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
     class Config:
         arbitrary_types_allowed = True
+
+
+class MessageComponentData(BaseModel):
+    custom_id: str
+    component_type: int
+    values: Optional[List[SelectOption]]
+
+
+class ModalSubmitData(BaseModel):
+    custom_id: str
+    # components	array of message components	the values submitted by the user
+
+class ComponentContext(Interaction):
+    data: Optional[MessageComponentData]
+
+    async def edit_message(
+        self,
+        content: str,
+        *,
+        tts: bool = False,
+        house: Optional[House] = None
+    ):
+        if self.is_responded:
+            raise InteractionResponded(self)
+        if house:
+            self.bot.add_house(house)
+        payload = handle_edit_params(content=content, tts=tts, house=house)
+        return await self.bot._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.UPDATE_MESSAGE.value,
+                "data": payload
+            }
+        )
+
+class ModalContext(Interaction):
+    data: Optional[ModalSubmitData]

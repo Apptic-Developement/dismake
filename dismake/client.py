@@ -26,6 +26,24 @@ __all__ = ("Bot",)
 
 
 class Bot(FastAPI):
+    """
+    A class for creating a Discord bot using FastAPI.
+
+    Parameters
+    ----------
+    token : str
+        The Discord bot's token.
+    client_public_key : str
+        The Discord client's public key.
+    client_id : int
+        The Discord client's ID.
+    route : str
+        The route to listen for Discord interactions on, by default "/interactions".
+    interaction_handler : Optional[InteractionHandler]
+        An interaction handler to process incoming Discord interactions, by default None.
+    **kwargs
+        Additional keyword arguments that will be passed to the FastAPI constructor.
+    """
     def __init__(
         self,
         token: str,
@@ -52,12 +70,34 @@ class Bot(FastAPI):
         self._slash_commands: Dict[str, SlashCommand] = {}
         self._components: Dict[str, Component] = {}
         self._error_handler: AsyncFunction = self._default_error_handler
+        self.log = log
 
     @property
     def user(self) -> User:
+        """
+        Returns the user object representing the bot.
+
+        Returns
+        -------
+        User
+            The user object representing the bot.
+        """
         return self._http._user
 
     def get_command(self, name: str) -> Optional[SlashCommand]:
+        """
+        Get a SlashCommand object with the specified name.
+
+        Parameters
+        ----------
+        name : str
+            The name of the SlashCommand object to retrieve.
+
+        Returns
+        -------
+        Optional[SlashCommand]
+            The SlashCommand object with the specified name, or None if no such object exists.
+        """
         return self._slash_commands.get(name)
 
     def run(self, **kwargs):
@@ -139,3 +179,4 @@ class Bot(FastAPI):
             if self._components.get((custom_id := component.custom_id)):
                 continue
             self._components[custom_id] = component
+

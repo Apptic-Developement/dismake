@@ -4,3 +4,4 @@ httpx
 uvicorn
 PyNaCl
 rich
+typer[rich]

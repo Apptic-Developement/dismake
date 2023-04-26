@@ -1,5 +1,6 @@
 from dismake import SlashCommand, Context, Bot, Option, OptionType
 from test import house
+
 class Component(SlashCommand):
     def __init__(self, bot: Bot):
         super().__init__(
@@ -16,5 +17,5 @@ class Component(SlashCommand):
 
     async def callback(self, ctx: Context):
         if ctx.namespace.button:
-            await ctx.respond(f"Button", houses=[house])
+            await ctx.respond(f"Button", house=house)
 

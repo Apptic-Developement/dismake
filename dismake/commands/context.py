@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, List, TYPE_CHECKING
 
 from ..ui import House
-from ..interaction import Interaction, ApplicationCommandData, ApplicationCommandOption
+from ..models import Interaction, ApplicationCommandData, ApplicationCommandOption
 from ..enums import InteractionResponseType, MessageFlags, OptionType
 from ..params import handle_send_params
 from ..errors import ComponentException, InteractionResponded, InteractionNotResponded
