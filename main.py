@@ -1,4 +1,4 @@
-import dismake, config
+import dismake, config, asyncio
 from commands import get_commands
 
 app = dismake.Bot(
@@ -24,5 +24,5 @@ app.add_commands(get_commands(app))
 
 
 if __name__ == "__main__":
-    app.run(app=f"main:app", reload=True)
-
+    # app.run(app=f"main:app", reload=True)
+    asyncio.run(app.run())

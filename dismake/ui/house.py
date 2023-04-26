@@ -26,6 +26,8 @@ class House:
         )
         if exists:
             return
+        
+        component.house = self
         self.components.append(component)
 
     def button(

@@ -2,8 +2,10 @@ from __future__ import annotations
 import uuid
 from typing import Any, Dict, Optional, TYPE_CHECKING
 from ..enums import ComponentTypes
+
 if TYPE_CHECKING:
     from ..models import ComponentContext
+    from .house import House
 
 __all__ = ("Component",)
 
@@ -13,6 +15,16 @@ class Component:
         self.type = type
         self.custom_id = custom_id or str(uuid.uuid4())
         self.disabled = disabled
+        self._house: House
+    
+    @property
+    def house(self) -> House:
+        return self._house
+    
+    @house.setter
+    def house(self, h: House) -> House:
+        self._house = h
+        return self._house
 
     async def callback(self, ctx: ComponentContext) -> Any:
         ...

@@ -1,10 +1,11 @@
 from __future__ import annotations
 import asyncio
 
-from logging import getLogger
+from logging import getLogger, Logger
 from functools import wraps
 from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
+from rich.console import Console
 
 from dismake.models.guild import Guild
 from .handler import InteractionHandler
@@ -19,7 +20,9 @@ from .enums import Events
 if TYPE_CHECKING:
     from .commands import Context
     from .ui import House, Component
-log = getLogger("uvicorn")
+
+
+log = getLogger("dismake")
 
 
 __all__ = ("Bot",)
@@ -71,6 +74,20 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._error_handler: AsyncFunction = self._default_error_handler
         self.log = log
+#         from rich import console
+#         console = Console()
+#         console.log(
+#             """
+# [green]'########::'####::'######::'##::::'##::::'###::::'##:::'##:'########:
+# ##.... ##:. ##::'##... ##: ###::'###:::'## ##::: ##::'##:: ##.....::
+# ##:::: ##:: ##:: ##:::..:: ####'####::'##:. ##:: ##:'##::: ##:::::::
+# ##:::: ##:: ##::. ######:: ## ### ##:'##:::. ##: #####:::: ######:::
+# ##:::: ##:: ##:::..... ##: ##. #: ##: #########: ##. ##::: ##...::::
+# ##:::: ##:: ##::'##::: ##: ##:.:: ##: ##.... ##: ##:. ##:: ##:::::::
+# ########::'####:. ######:: ##:::: ##: ##:::: ##: ##::. ##: ########:
+# ........:::....:::......:::..:::::..::..:::::..::..::::..::........::
+#             """
+#         )
 
     @property
     def user(self) -> User:
@@ -100,11 +117,15 @@ class Bot(FastAPI):
         """
         return self._slash_commands.get(name)
 
-    def run(self, **kwargs):
-        import uvicorn
+    async def run(self, **kwargs):
+        # import uvicorn
 
-        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
-        uvicorn.run(**kwargs)
+        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        # uvicorn.run(**kwargs)
+        from hypercorn.config import Config
+        from hypercorn.asyncio import serve
+        config = Config()
+        await serve(app=self, config=config) # type: ignore
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
         try:
