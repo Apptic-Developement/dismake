@@ -11,16 +11,18 @@ __all__ = ("Component",)
 
 
 class Component:
-    def __init__(self, type: ComponentTypes, custom_id: Optional[str], disabled: Optional[bool]) -> None:
+    def __init__(
+        self, type: ComponentTypes, custom_id: Optional[str], disabled: Optional[bool]
+    ) -> None:
         self.type = type
         self.custom_id = custom_id or str(uuid.uuid4())
         self.disabled = disabled
         self._house: House
-    
+
     @property
     def house(self) -> House:
         return self._house
-    
+
     @house.setter
     def house(self, h: House) -> House:
         self._house = h
@@ -32,5 +34,5 @@ class Component:
     def to_dict(self) -> Dict[str, Any]:
         base = {"type": self.type.value, "custom_id": self.custom_id}
         if self.disabled:
-            base['disabled'] = self.disabled
+            base["disabled"] = self.disabled
         return base

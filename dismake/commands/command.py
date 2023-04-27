@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from ..types import SnowFlake
 from ..enums import CommandType, OptionType
-from ..permissions import Permission
+from ..permissions import Permissions
 
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class SlashCommand:
         nsfw: Optional[bool] = False,
         guild_id: Optional[SnowFlake] = None,
         options: Optional[List[Option]] = None,
-        default_member_permissions: Optional[Permission] = None,
+        default_member_permissions: Optional[Permissions] = None,
         dm_permission: Optional[bool] = True,
     ):
         self.name = name

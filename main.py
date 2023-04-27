@@ -1,4 +1,4 @@
-import dismake, config, asyncio
+import dismake, config
 from commands import get_commands
 
 app = dismake.Bot(
@@ -9,9 +9,9 @@ app = dismake.Bot(
 )
 
 
-@app.event(dismake.Events.Ready)
+@app.event("ready")
 async def on_ready():
-    app.log.info("Logged in as %s" % app.user)
+    print("Logged in as %s" % app.user)
     await app.sync_commands()
 
 
@@ -24,5 +24,4 @@ app.add_commands(get_commands(app))
 
 
 if __name__ == "__main__":
-    # app.run(app=f"main:app", reload=True)
-    asyncio.run(app.run())
+    app.run(app=f"main:app", reload=True)

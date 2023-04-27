@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-__all__ = (
-    "chunk",
-)
+__all__ = ("chunk",)
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -31,10 +29,11 @@ LOGGING_CONFIG = {
     },
 }
 
+
 def chunk(max_size: int, iterator: Iterable):
     if max_size <= 0:
-        raise ValueError('Chunk sizes must be greater than 0.')
-    
+        raise ValueError("Chunk sizes must be greater than 0.")
+
     ret = list()
     n = 0
     for i in iterator:

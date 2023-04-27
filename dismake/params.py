@@ -38,7 +38,8 @@ def handle_send_params(
     # TODO: attachments, components, allowed_mentions
     return payload
 
-def  handle_edit_params(
+
+def handle_edit_params(
     content: str,
     *,
     tts: Optional[bool] = None,
@@ -57,10 +58,10 @@ def  handle_edit_params(
             embs.append(embed)
     if embed:
         embs.append(embed)
-    
+
     if embeds:
         embeds = embs
-    
+
     if house:
         payload.update({"components": house.to_dict()})
     else:

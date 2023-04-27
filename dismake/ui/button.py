@@ -16,7 +16,7 @@ class Button(Component):
         style: Optional[ButtonStyles],
         emoji: Optional[Any] = None,
         url: Optional[str] = None,
-        disabled: Optional[bool] = None
+        disabled: Optional[bool] = None,
     ) -> None:
         self.type = ComponentTypes.BUTTON
         super().__init__(type=self.type, custom_id=custom_id, disabled=disabled)

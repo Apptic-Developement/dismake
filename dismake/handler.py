@@ -52,8 +52,8 @@ class InteractionHandler:
         payload = await request.json()
         interaction = Context(request=request, **payload)
         if (data := interaction.data) is not None:
-            if (command := self.client.get_command(data.name)):
-                if (choices := await command.autocomplete(interaction)):
+            if command := self.client.get_command(data.name):
+                if choices := await command.autocomplete(interaction):
                     return JSONResponse(
                         {
                             "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
@@ -68,13 +68,15 @@ class InteractionHandler:
                         "data": {"choices": []},
                     }
                 )
+
     async def _handle_message_component(self, request: Request) -> Any:
         payload = await request.json()
         ctx = ComponentContext(request=request, is_response_done=False, **payload)
-        if (data := ctx.data):
+        if data := ctx.data:
             comp = self.client._components.get(ctx.data.custom_id)
             if comp:
                 await comp.callback(ctx)
+
     async def handle_interactions(self, request: Request):
         signature = request.headers["X-Signature-Ed25519"]
         timestamp = request.headers["X-Signature-Timestamp"]
@@ -95,14 +97,11 @@ class InteractionHandler:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if payload["type"] == InteractionType.APPLICATION_COMMAND.value:
             await self._handle_command(request)
-        elif (
-            payload["type"]
-            == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
-        ):
+        elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
             return await self._handle_autocomplete(request)
-        elif payload['type'] == InteractionType.MESSAGE_COMPONENT.value:
+        elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
             await self._handle_message_component(request)
-        
+
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
 
 

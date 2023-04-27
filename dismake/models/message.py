@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, List, Union, Optional
 from datetime import datetime
 from pydantic import BaseModel
-
+from fastapi import Request
 from .embed import Embed
 
 from ..types import SnowFlake
@@ -21,6 +21,7 @@ class MessageInteraction(BaseModel):
 
 
 class Message(BaseModel):
+    _request: Request
     type: int
     id: SnowFlake
     channel_id: SnowFlake
@@ -52,5 +53,3 @@ class Message(BaseModel):
     stickers: Optional[List[Any]]
     position: Optional[int]
     role_subscription_data: Optional[Any]
-
-    

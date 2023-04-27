@@ -17,7 +17,6 @@ __all__ = ("Context",)
 class Context(Interaction):
     data: Optional[ApplicationCommandData]
 
-
     @property
     def command(self) -> Optional[SlashCommand]:
         assert self.data is not None

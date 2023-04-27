@@ -1,11 +1,10 @@
 from __future__ import annotations
 import asyncio
 
-from logging import getLogger, Logger
+from logging import getLogger
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union, Literal
 from fastapi import FastAPI
-from rich.console import Console
 
 from dismake.models.guild import Guild
 from .handler import InteractionHandler
@@ -15,7 +14,6 @@ from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
 from .errors import CommandInvokeError
-from .enums import Events
 
 if TYPE_CHECKING:
     from .commands import Context
@@ -47,6 +45,7 @@ class Bot(FastAPI):
     **kwargs
         Additional keyword arguments that will be passed to the FastAPI constructor.
     """
+
     def __init__(
         self,
         token: str,
@@ -74,20 +73,6 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._error_handler: AsyncFunction = self._default_error_handler
         self.log = log
-#         from rich import console
-#         console = Console()
-#         console.log(
-#             """
-# [green]'########::'####::'######::'##::::'##::::'###::::'##:::'##:'########:
-# ##.... ##:. ##::'##... ##: ###::'###:::'## ##::: ##::'##:: ##.....::
-# ##:::: ##:: ##:: ##:::..:: ####'####::'##:. ##:: ##:'##::: ##:::::::
-# ##:::: ##:: ##::. ######:: ## ### ##:'##:::. ##: #####:::: ######:::
-# ##:::: ##:: ##:::..... ##: ##. #: ##: #########: ##. ##::: ##...::::
-# ##:::: ##:: ##::'##::: ##: ##:.:: ##: ##.... ##: ##:. ##:: ##:::::::
-# ########::'####:. ######:: ##:::: ##: ##:::: ##: ##::. ##: ########:
-# ........:::....:::......:::..:::::..::..:::::..::..::::..::........::
-#             """
-#         )
 
     @property
     def user(self) -> User:
@@ -117,15 +102,11 @@ class Bot(FastAPI):
         """
         return self._slash_commands.get(name)
 
-    async def run(self, **kwargs):
-        # import uvicorn
+    def run(self, **kwargs):
+        import uvicorn
 
-        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
-        # uvicorn.run(**kwargs)
-        from hypercorn.config import Config
-        from hypercorn.asyncio import serve
-        config = Config()
-        await serve(app=self, config=config) # type: ignore
+        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
         try:
@@ -140,10 +121,7 @@ class Bot(FastAPI):
         for coro in event:
             asyncio.ensure_future(self._dispatch_callback(coro, *args, **kwargs))
 
-    def event(self, event_name: Union[Events, str]):
-        if isinstance(event_name, Events):
-            event_name = event_name.value
-
+    def event(self, event_name: str):
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
@@ -200,4 +178,3 @@ class Bot(FastAPI):
             if self._components.get((custom_id := component.custom_id)):
                 continue
             self._components[custom_id] = component
-

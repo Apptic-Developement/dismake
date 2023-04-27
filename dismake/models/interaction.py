@@ -13,13 +13,19 @@ from ..enums import InteractionType, InteractionResponseType, MessageFlags
 from ..errors import InteractionNotResponded, InteractionResponded
 from ..ui import SelectOption
 from ..params import handle_send_params, handle_edit_params
+
 if TYPE_CHECKING:
     from ..ui import House
     from ..client import Bot
 
 
-
-__all__ = ("Interaction", "ApplicationCommandData", "ApplicationCommandOption", "ComponentContext", "ModalContext")
+__all__ = (
+    "Interaction",
+    "ApplicationCommandData",
+    "ApplicationCommandOption",
+    "ComponentContext",
+    "ModalContext",
+)
 
 
 class ResolvedData(BaseModel):
@@ -47,7 +53,6 @@ class ApplicationCommandData(BaseModel):
     options: Optional[List[ApplicationCommandOption]]
     guild_id: Optional[SnowFlake]
     target_id: Optional[SnowFlake]
-
 
 
 class Interaction(BaseModel):
@@ -107,18 +112,18 @@ class Interaction(BaseModel):
     @property
     def bot(self) -> Bot:
         return self.request.app
-    
+
     async def respond(
         self,
         content: str,
         *,
         tts: bool = False,
         ephemeral: bool = False,
-        house: Optional[House] = None
+        house: Optional[House] = None,
     ):
         if self.is_responded:
             raise InteractionResponded(self)
-        
+
         if house:
             self.bot.add_house(house)
         await self.request.app._http.client.request(
@@ -149,47 +154,59 @@ class Interaction(BaseModel):
         self.is_response_done = True
 
     async def send_followup(
-        self, content: str, *, tts: bool = False, house: Optional[House] = None, ephemeral: bool = False
-    ):
-        if not self.respond:
-            raise InteractionNotResponded(self)
-        
-        if house:
-                self.bot.add_house(house)
-        return await self.request.app._http.client.request(
-            method="POST",
-            url=f"/webhooks/{self.application_id}/{self.token}",
-            json=handle_send_params(content=content, tts=tts, house=house, ephemeral=ephemeral),
-        )
-
-    async def edit_original_response(
         self,
         content: str,
         *,
         tts: bool = False,
-        house: Optional[House] = None
+        house: Optional[House] = None,
+        ephemeral: bool = False,
+    ):
+        if not self.respond:
+            raise InteractionNotResponded(self)
+
+        if house:
+            self.bot.add_house(house)
+        return await self.request.app._http.client.request(
+            method="POST",
+            url=f"/webhooks/{self.application_id}/{self.token}",
+            json=handle_send_params(
+                content=content, tts=tts, house=house, ephemeral=ephemeral
+            ),
+        )
+
+    async def edit_original_response(
+        self, content: str, *, tts: bool = False, house: Optional[House] = None
     ):
         if house:
-                self.bot.add_house(house)
+            self.bot.add_house(house)
         return await self.bot._http.client.request(
             method="PATCH",
             url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
-            json=handle_edit_params(content=content, tts=tts, house=house)
+            json=handle_edit_params(content=content, tts=tts, house=house),
         )
 
     async def get_original_response(self) -> Message:
-        res =  await self.bot._http.client.request(
+        res = await self.bot._http.client.request(
             method="GET",
-            url=f"/webhooks/{self.application_id}/{self.token}/messages/@original"
+            url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
         )
         res.raise_for_status()
         return Message(**res.json())
-    
-   
-    async def send(self, content: str, *, tts: bool = False, house: Optional[House] = None, ephemeral: bool = False):
+
+    async def send(
+        self,
+        content: str,
+        *,
+        tts: bool = False,
+        house: Optional[House] = None,
+        ephemeral: bool = False,
+    ):
         if self.is_responded:
-            return await self.send_followup(content, tts=tts, house=house, ephemeral=ephemeral)
+            return await self.send_followup(
+                content, tts=tts, house=house, ephemeral=ephemeral
+            )
         return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
+
     class Config:
         arbitrary_types_allowed = True
 
@@ -204,15 +221,12 @@ class ModalSubmitData(BaseModel):
     custom_id: str
     # components	array of message components	the values submitted by the user
 
+
 class ComponentContext(Interaction):
     data: Optional[MessageComponentData]
 
     async def edit_message(
-        self,
-        content: str,
-        *,
-        tts: bool = False,
-        house: Optional[House] = None
+        self, content: str, *, tts: bool = False, house: Optional[House] = None
     ):
         if self.is_responded:
             raise InteractionResponded(self)
@@ -224,9 +238,10 @@ class ComponentContext(Interaction):
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.UPDATE_MESSAGE.value,
-                "data": payload
-            }
+                "data": payload,
+            },
         )
+
 
 class ModalContext(Interaction):
     data: Optional[ModalSubmitData]

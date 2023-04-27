@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 from datetime import datetime
 from pydantic import BaseModel
 from contextlib import suppress
@@ -38,15 +38,13 @@ class EmbedAuthor(BaseModel):
 
 class Embed(BaseModel):
     title: Optional[str] = None
-    type: Optional[
-        Literal["rich", "image", "video", "gifv", "article", "link"]
-    ] = "rich"
+    type: Literal["rich", "image", "video", "gifv", "article", "link"] = "rich"
     description: Optional[str] = None
     url: Optional[str] = None
     timestamp: Optional[datetime] = None
     color: Optional[int] = None
     footer: Optional[EmbedFooter] = None
-    fields: list[EmbedField] = []
+    fields: List[EmbedField] = []
     image: Optional[EmbedAsset] = None
     thumbnail: Optional[EmbedAsset] = None
     video: Optional[EmbedAsset] = None

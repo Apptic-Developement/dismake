@@ -13,7 +13,6 @@ __all__ = (
     "ChannelType",
     "StrEnum",
     "Locale",
-    "Events",
     "ComponentTypes",
     "ButtonStyles",
     "TextInputStyle",
@@ -138,11 +137,6 @@ class Locale(StrEnum):
     ja = "ja"  # 	Japanese	日本語
     zh_TW = "zh-TW"  # 	Chinese, Taiwan	繁體中文
     ko = "ko"  # 	Korean	한국어
-
-
-class Events(StrEnum):
-    Ready = OnReady = "ready"
-    InteractionCreate = "interaction_create"
 
 
 class ComponentTypes(IntEnum):
