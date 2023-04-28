@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
-from fastapi import Request
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 
-from ..types import SnowFlake
 from .user import Member, User
 from .guild import Guild
 from .role import Role
@@ -17,6 +15,8 @@ from ..params import handle_send_params, handle_edit_params
 if TYPE_CHECKING:
     from ..ui import House
     from ..client import Bot
+    from ..types import SnowFlake
+    from fastapi import Request
 
 
 __all__ = (
@@ -73,6 +73,13 @@ class Interaction(BaseModel):
     locale: Optional[str]
     guild_locale: Optional[str]
 
+    @root_validator
+    def _validate_requests(cls, values):
+        if values["message"]:
+            values["message"]._request = values["request"]
+            print(values["message"]._request)
+        return values
+        
     @property
     def is_responded(self) -> bool:
         return self.is_response_done
@@ -126,7 +133,7 @@ class Interaction(BaseModel):
 
         if house:
             self.bot.add_house(house)
-        await self.request.app._http.client.request(
+        await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
@@ -135,21 +142,21 @@ class Interaction(BaseModel):
                     content=content, tts=tts, ephemeral=ephemeral, house=house
                 ),
             },
-            headers=self.request.app._http.headers,
+            headers=self.bot._http.headers,
         )
         self.is_response_done = True
 
     async def defer(self, thinking: bool = True):
         if self.is_responded:
             raise InteractionResponded(self)
-        await self.request.app._http.client.request(
+        await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
                 "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
             },
-            headers=self.request.app._http.headers,
+            headers=self.bot._http.headers,
         )
         self.is_response_done = True
 
@@ -166,7 +173,7 @@ class Interaction(BaseModel):
 
         if house:
             self.bot.add_house(house)
-        return await self.request.app._http.client.request(
+        return await self.bot._http.client.request(
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
             json=handle_send_params(

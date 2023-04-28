@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, List, Union, Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 from fastapi import Request
 from .embed import Embed
 
@@ -21,7 +21,7 @@ class MessageInteraction(BaseModel):
 
 
 class Message(BaseModel):
-    _request: Request
+    _request: Request = PrivateAttr()
     type: int
     id: SnowFlake
     channel_id: SnowFlake

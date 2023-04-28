@@ -1,6 +1,7 @@
-import dismake, config
+import dismake, config, logging
 from commands import get_commands
 
+log = logging.getLogger(__name__)
 app = dismake.Bot(
     token=config.token,
     client_public_key=config.public_key,
@@ -11,7 +12,7 @@ app = dismake.Bot(
 
 @app.event("ready")
 async def on_ready():
-    print("Logged in as %s" % app.user)
+    log.info("Logged in as %s" % app.user)
     await app.sync_commands()
 
 

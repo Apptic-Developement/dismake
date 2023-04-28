@@ -3,8 +3,10 @@ from __future__ import annotations
 
 __all__ = ("Asset",)
 
-
-class Asset:
+class AssetMixin:
+    def __init__(self):
+        pass
+class Asset(AssetMixin):
     BASE = "https://cdn.discordapp.com"
 
     def __init__(self, *, url: str, key: str, animated: bool = False) -> None:

@@ -33,8 +33,9 @@ class InteractionHandler:
             return False
 
     async def _handle_command(self, request: Request) -> Any:
-        payload = await request.json()
-        context = Context(request=request, is_response_done=False, **payload)
+        payload: dict = await request.json()
+        payload.update({"request":request, "is_response_done": False})
+        context = Context.parse_obj(payload)
         if (data := context.data) is not None:
             command = self.client._slash_commands.get(data.name)
             if not command:
@@ -49,11 +50,12 @@ class InteractionHandler:
                 )
 
     async def _handle_autocomplete(self, request: Request) -> Any:
-        payload = await request.json()
-        interaction = Context(request=request, **payload)
-        if (data := interaction.data) is not None:
+        payload: dict = await request.json()
+        payload.update({"request":request, "is_response_done": False})
+        context = Context.parse_obj(payload)
+        if (data := context.data) is not None:
             if command := self.client.get_command(data.name):
-                if choices := await command.autocomplete(interaction):
+                if choices := await command.autocomplete(context):
                     return JSONResponse(
                         {
                             "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
@@ -70,10 +72,11 @@ class InteractionHandler:
                 )
 
     async def _handle_message_component(self, request: Request) -> Any:
-        payload = await request.json()
-        ctx = ComponentContext(request=request, is_response_done=False, **payload)
+        payload: dict = await request.json()
+        payload.update({"request":request, "is_response_done": False})
+        ctx = ComponentContext.parse_obj(payload)
         if data := ctx.data:
-            comp = self.client._components.get(ctx.data.custom_id)
+            comp = self.client._components.get(data.custom_id)
             if comp:
                 await comp.callback(ctx)
 
