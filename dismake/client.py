@@ -160,11 +160,11 @@ class Bot(FastAPI):
         return wrapper()
 
     async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
-        log.exception(error)
         if isinstance(error, CommandInvokeError):
-            return await ctx.respond(
+            await ctx.respond(
                 f"Oops! Something went wrong while running the command.", ephemeral=True
             )
+        raise error
 
     async def fetch_guild(self, guild_id: int) -> Guild:
         res = await self._http.client.request(method="GET", url=f"/guilds/{guild_id}")

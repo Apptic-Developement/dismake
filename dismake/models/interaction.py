@@ -9,22 +9,19 @@ from .role import Role
 from .message import Message
 from ..enums import InteractionType, InteractionResponseType, MessageFlags
 from ..errors import InteractionNotResponded, InteractionResponded
-from ..ui import SelectOption
 from ..params import handle_send_params, handle_edit_params
+from fastapi import Request
+from ..types import SnowFlake
 
 if TYPE_CHECKING:
     from ..ui import House
     from ..client import Bot
-    from ..types import SnowFlake
-    from fastapi import Request
 
 
 __all__ = (
     "Interaction",
     "ApplicationCommandData",
     "ApplicationCommandOption",
-    "ComponentContext",
-    "ModalContext",
 )
 
 
@@ -77,7 +74,6 @@ class Interaction(BaseModel):
     def _validate_requests(cls, values):
         if values["message"]:
             values["message"]._request = values["request"]
-            print(values["message"]._request)
         return values
         
     @property
@@ -218,37 +214,3 @@ class Interaction(BaseModel):
         arbitrary_types_allowed = True
 
 
-class MessageComponentData(BaseModel):
-    custom_id: str
-    component_type: int
-    values: Optional[List[SelectOption]]
-
-
-class ModalSubmitData(BaseModel):
-    custom_id: str
-    # components	array of message components	the values submitted by the user
-
-
-class ComponentContext(Interaction):
-    data: Optional[MessageComponentData]
-
-    async def edit_message(
-        self, content: str, *, tts: bool = False, house: Optional[House] = None
-    ):
-        if self.is_responded:
-            raise InteractionResponded(self)
-        if house:
-            self.bot.add_house(house)
-        payload = handle_edit_params(content=content, tts=tts, house=house)
-        return await self.bot._http.client.request(
-            method="POST",
-            url=f"/interactions/{self.id}/{self.token}/callback",
-            json={
-                "type": InteractionResponseType.UPDATE_MESSAGE.value,
-                "data": payload,
-            },
-        )
-
-
-class ModalContext(Interaction):
-    data: Optional[ModalSubmitData]

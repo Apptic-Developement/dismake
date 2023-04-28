@@ -4,8 +4,8 @@ from typing import Any, Dict, Optional, TYPE_CHECKING
 from ..enums import ComponentTypes
 
 if TYPE_CHECKING:
-    from ..models import ComponentContext
     from .house import House
+    from .context import ComponentContext
 
 __all__ = ("Component",)
 

@@ -1,4 +1,4 @@
-from dismake import SlashCommand, Context, Bot, Option, OptionType, ComponentContext
+from dismake import SlashCommand, Context, Bot, Option, OptionType
 from dismake import ui
 
 
@@ -12,14 +12,14 @@ house = House()
 
 
 @house.button(label="Click", custom_id="random_number_gusser")
-async def click_me(ctx: ComponentContext):
+async def click_me(ctx: ui.ComponentContext):
     house.count += 1
     view.label = str(house.count)
     await ctx.edit_message(f"Click to increase count.", house=house)
 
 
 @house.button(label=f"0", disabled=True)
-async def view(ctx: ComponentContext):
+async def view(ctx: ui.ComponentContext):
     ...
 
 

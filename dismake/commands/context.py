@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
-from ..ui import House
 from ..models import Interaction, ApplicationCommandData, ApplicationCommandOption
-from ..enums import InteractionResponseType, MessageFlags, OptionType
-from ..params import handle_send_params
-from ..errors import ComponentException, InteractionResponded, InteractionNotResponded
+from ..enums import OptionType
 
 if TYPE_CHECKING:
     from .command import SlashCommand

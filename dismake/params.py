@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 
-from .ui import House
 from .enums import MessageFlags
+
+if TYPE_CHECKING:
+    from .ui import House
+
 
 __all__ = ("handle_send_params", "handle_edit_params")
 
@@ -24,10 +27,10 @@ def handle_send_params(
     if tts:
         payload.update({"tts": tts})
     if house:
-        if isinstance(house, House):
-            payload.update({"components": house.to_dict()})
-        else:
+        if isinstance(house, dict):
             payload.update({"components": house})
+        else:
+            payload.update({"components": house.to_dict()})
     _embeds = list()
     if embeds:
         for emb in embeds:
@@ -47,7 +50,7 @@ def handle_edit_params(
     tts: Optional[bool] = None,
     embeds: Optional[list] = None,
     allowed_mentions: Optional[Any] = None,
-    house: Optional[House] = None,
+    house: Optional[Union[House, Dict[str, Any]]] = None,
     attachments: Optional[List[Any]] = None,
     embed: Optional[Any] = None,
 ) -> Dict[str, Any]:
@@ -65,7 +68,10 @@ def handle_edit_params(
         embeds = embs
 
     if house:
-        payload.update({"components": house.to_dict()})
+        if isinstance(house, dict):
+            payload.update({"components": house})
+        else:
+            payload.update({"components": house.to_dict()})
     else:
         payload.update({"components": None})
     return payload
