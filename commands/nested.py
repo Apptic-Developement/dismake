@@ -1,4 +1,5 @@
 import dismake
+from dismake.enums import OptionType
 
 
 class NestedCommand(dismake.SlashCommand):
@@ -17,24 +18,21 @@ class NestedCommand(dismake.SlashCommand):
                             description="This is level 3.",
                             type=dismake.OptionType.SUB_COMMAND,
                         ),
-                        # Options
-                        dismake.Option(
-                            name="level_1",
-                            description="This is level 1 option.",
-                            type=dismake.OptionType.SUB_COMMAND,
-                        ),
-                        dismake.Option(
-                            name="level_2",
-                            description="This is 2 option.",
-                            type=dismake.OptionType.SUB_COMMAND,
-                        ),
-                        dismake.Option(
-                            name="level_3",
-                            description="This is 3 option.",
-                            type=dismake.OptionType.SUB_COMMAND,
-                        )
                     ],
-                )
+                ),
+                dismake.Option(
+                            name="groups",
+                            description="This is a command group.",
+                            type=dismake.OptionType.SUB_COMMAND_GROUP,
+                            options=[
+                                dismake.Option(
+                                    name="string",
+                                    description="This is a string option.",
+                                    type=OptionType.SUB_COMMAND
+                                )
+                            ]
+                        ),
+
             ],
         )
         self.bot = bot

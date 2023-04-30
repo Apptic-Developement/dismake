@@ -142,11 +142,9 @@ class Bot(FastAPI):
             self.add_command(command)
 
     async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
-        if not guild_ids:
-            synced = await self._http.bulk_override_commands(
+        return await self._http.bulk_override_commands(
                 [command for command in self._slash_commands.values()]
             )
-            print(synced)
 
     def on_app_command_error(self, coro: AsyncFunction):
         @wraps(coro)
