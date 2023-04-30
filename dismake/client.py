@@ -3,21 +3,24 @@ import asyncio
 
 from logging import getLogger
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union, Literal
+from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
 
-from dismake.models.guild import Guild
+from dismake.permissions import Permissions
+
+from .models import Guild
 from .handler import InteractionHandler
-from .types import AsyncFunction, SnowFlake
 from .http import HttpClient
 from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
 from .errors import CommandInvokeError
+from .app_commands import AppCommand, Group
 
 if TYPE_CHECKING:
     from .commands import Context
     from .ui import House, Component
+    from .types import AsyncFunction, SnowFlake
 
 
 log = getLogger("dismake")
@@ -70,6 +73,7 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._slash_commands: Dict[str, SlashCommand] = {}
+        self._app_commands: Dict[str, Union[Group, AppCommand]] = {}
         self._components: Dict[str, Component] = {}
         self._error_handler: AsyncFunction = self._default_error_handler
         self.log = log
@@ -145,10 +149,15 @@ class Bot(FastAPI):
         for command in commands:
             self.add_command(command)
 
+    # async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
+    #     if not guild_ids:
+    #         await self._http.bulk_override_commands(
+    #             [command for command in self._slash_commands.values()]
+    #         )
     async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
         if not guild_ids:
             await self._http.bulk_override_commands(
-                [command for command in self._slash_commands.values()]
+                [command for command in self._app_commands.values()]
             )
 
     def on_app_command_error(self, coro: AsyncFunction):
@@ -178,3 +187,36 @@ class Bot(FastAPI):
             if self._components.get((custom_id := component.custom_id)):
                 continue
             self._components[custom_id] = component
+
+    def command(
+        self,
+        name: str,
+        description: str,
+        *,
+        name_localizations: Optional[Dict[str, Any]] = None,
+        description_localizations: Optional[Dict[str, Any]] = None,
+        guild_only: Optional[bool] = False,
+        default_member_permissions: Optional[Permissions] = None,
+        nsfw: Optional[bool] = None,
+        guild_id: Optional[int] = None,
+    ):
+        def decorator(func: AsyncFunction):
+            @wraps(func)
+            def wrapper(*_, **__):
+                command = AppCommand(
+                    name=name,
+                    description=description,
+                    name_localizations=name_localizations,
+                    description_localizations=description_localizations,
+                    callback=func,
+                    options=None,
+                    default_member_permissions=default_member_permissions,
+                    dm_permission=not guild_only,
+                    nsfw=nsfw,
+                    guild_id=guild_id
+                )
+                self._app_commands[command.name] = command
+                return command
+            return wrapper()
+        return decorator
+        

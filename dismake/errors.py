@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .commands import SlashCommand
-    from .interaction import Interaction
+    from .models import Interaction
+    from .app_commands import AppCommand, Group
 
 __all__ = (
     "DismakeException",
@@ -26,7 +27,7 @@ class NotImplemented(DismakeException):
 class CommandInvokeError(DismakeException):
     """TODO"""
 
-    def __init__(self, command: SlashCommand, exception: Exception) -> None:
+    def __init__(self, command: Union[Group, AppCommand], exception: Exception) -> None:
         self.command = command
         self.exception = exception
         super().__init__(f"Command {command.name!r} raised an exception: {exception}")

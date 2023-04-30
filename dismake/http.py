@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import List, Optional, Union
 from httpx import AsyncClient, Response
 
 from .models import User
 from .models import ApplicationCommand
 from .commands import SlashCommand
+from .app_commands import Group, AppCommand
 
 
 __all__ = ("HttpClient",)
@@ -54,7 +55,7 @@ class HttpClient:
         return [ApplicationCommand(**command) for command in _json]
 
     async def bulk_override_commands(
-        self, commands: List[SlashCommand], guild_id: Optional[int] = None
+        self, commands: List[Union[AppCommand, Group]], guild_id: Optional[int] = None
     ) -> Response:
         return await self.client.request(
             method="PUT",

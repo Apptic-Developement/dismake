@@ -1,5 +1,5 @@
 import dismake, config, logging
-from commands import get_commands
+# from commands import get_commands
 
 log = logging.getLogger(__name__)
 app = dismake.Bot(
@@ -12,17 +12,13 @@ app = dismake.Bot(
 
 @app.event("ready")
 async def on_ready():
-    log.info("Logged in as %s" % app.user)
+    print("Logged in as %s" % app.user)
     await app.sync_commands()
 
 
-# @app.event(dismake.Events.InteractionCreate)
-# async def interaction_create(interaction: dismake.Interaction, payload: dict):
-#     print(payload)
-
-
-app.add_commands(get_commands(app))
-
+@app.command("test", "This is a test command")
+async def test_command(ctx: dismake.Context):
+    await ctx.send("Ok?")
 
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
