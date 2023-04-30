@@ -56,8 +56,12 @@ class Embed(BaseModel):
         return self
 
     def get_field(self, index: int) -> Optional[EmbedField]:
-        with suppress(IndexError):
-            return self.fields[index]
+        try:
+            field = self.fields[index]
+        except IndexError:
+            return None
+        else:
+            return field
 
     def set_footer(
         self, text: str, icon_url: Optional[str], proxy_icon_url: Optional[str]

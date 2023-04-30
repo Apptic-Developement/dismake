@@ -1,4 +1,5 @@
 from __future__ import annotations
+from re import sub
 
 from typing import Optional, List, TYPE_CHECKING
 
@@ -72,11 +73,25 @@ class Context(Interaction):
         return Subcommands(**kwargs)
 
     @property
-    def namespace(self) -> Namespace:
+    def sub_group_commands(self) -> Subcommands:
+        if (data := self.data) is None or (options := data.options) is None:
+            return Subcommands()
+        
+        sg_command: Optional[List[ApplicationCommandOption]] = list()
+        for option in options:
+            if option.type == OptionType.SUB_COMMAND_GROUP:
+                sg_command.append(option)
+        
+        kwargs = {}
+        for command in sg_command:
+            kwargs[command.name.replace("-", "_")] = command
+        return Subcommands(**kwargs)
+    @property
+    def options(self) -> Options:
         assert self.data is not None
         kwargs = {}
         if (options := self.get_options) is None:
-            return Namespace()
+            return Options()
 
         opts: Optional[List[ApplicationCommandOption]] = list()
         for option in options:
@@ -99,16 +114,16 @@ class Context(Interaction):
                     option.value = role[id]
             opts.append(option)
         if not opts:
-            return Namespace()
+            return Options()
         for opt in opts:
             if opt.type in (OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP):
                 kwargs[opt.name.replace("-", "_")] = True
             else:
                 kwargs[opt.name.replace("-", "_")] = opt.value
-        return Namespace(**kwargs)
+        return Options(**kwargs)
 
 
-class Namespace:
+class Options:
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             self.__dict__[k] = v

@@ -95,8 +95,10 @@ class Guild(BaseModel):
     def display_banner(self) -> Optional[Asset]:
         if self.banner:
             return Asset.from_guild_banner(self.banner, int(self.id))
+        return None
 
     @property
     def display_icon(self) -> Optional[Asset]:
         if self.icon:
             return Asset.from_guild_icon(self.icon, int(self.id))
+        return None

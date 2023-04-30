@@ -38,5 +38,5 @@ class Component(SlashCommand):
         )
 
     async def callback(self, ctx: Context):
-        if ctx.namespace.button:
+        if ctx.options.button:
             await ctx.respond(f"Button", house=house)

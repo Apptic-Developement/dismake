@@ -65,10 +65,10 @@ class Autocomplete(SlashCommand):
     async def callback(self, ctx: Context):
         if ctx.subcommands.fruit:
             await ctx.respond(
-                f"You got: {ctx.namespace.fav_fruit}\nQuantity: {ctx.namespace.quantity}\nThanks for shoping {ctx.namespace.name}!"
+                f"You got: {ctx.options.fav_fruit}\nQuantity: {ctx.options.quantity}\nThanks for shoping {ctx.options.name}!"
             )
         if ctx.subcommands.echo:
-            await ctx.respond(f"**Type:** {ctx.namespace.type}\n\n{ctx.namespace.text}")
+            await ctx.respond(f"**Type:** {ctx.options.type}\n\n{ctx.options.text}")
 
     async def autocomplete(self, ctx: Context):
         if ctx.subcommands.fruit:

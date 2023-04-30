@@ -12,7 +12,6 @@ from .commands import Context
 from .models import Interaction
 from .ui import ComponentContext
 from .errors import CommandInvokeError, NotImplemented
-from .app_commands import AppCommand, Group
 log = getLogger("uvicorn")
 
 
@@ -36,34 +35,19 @@ class InteractionHandler:
         payload: dict = await request.json()
         payload.update({"request": request, "is_response_done": False})
         context = Context.parse_obj(payload)
-        print(context)
-        # if (data := context.data) is not None:
-        #     command = self.client._slash_commands.get(data.name)
-        #     if not command:
-        #         raise NotImplemented(f"Command {data.name!r} not found.")
-        #     try:
-        #         await command.before_invoke(context)
-        #         await command.callback(context)
-        #         await command.after_invoke(context)
-        #     except Exception as e:
-        #         await self.client._error_handler(
-        #             context, CommandInvokeError(command, e)
-        #         )
         if (data := context.data) is not None:
-            command = self.client._app_commands.get(data.name)
+            command = self.client._slash_commands.get(data.name)
             if not command:
                 raise NotImplemented(f"Command {data.name!r} not found.")
-            
-            if isinstance(command, AppCommand):
-                try:
-                    await command.callback(context)
-                except Exception as e:
-                    await self.client._error_handler(
-                            context, CommandInvokeError(command, e)
-                        )
-            else:
-                ...
-            
+            try:
+                await command.before_invoke(context)
+                await command.callback(context)
+                await command.after_invoke(context)
+            except Exception as e:
+                await self.client._error_handler(
+                    context, CommandInvokeError(command, e)
+                )
+
 
     async def _handle_autocomplete(self, request: Request) -> Any:
         payload: dict = await request.json()
