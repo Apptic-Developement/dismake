@@ -7,8 +7,11 @@ from .select_option import SelectOption
 from ..errors import InteractionResponded
 from ..params import handle_edit_params
 from ..enums import InteractionResponseType
+
 if TYPE_CHECKING:
     from .house import House
+
+
 class MessageComponentData(BaseModel):
     custom_id: str
     component_type: int

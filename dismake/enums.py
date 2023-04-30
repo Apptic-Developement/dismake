@@ -1,5 +1,5 @@
 from __future__ import annotations
-import random
+
 from enum import Enum, IntEnum
 
 __all__ = (
@@ -58,13 +58,13 @@ class InteractionResponseFlags(Enum):
     EPHEMERAL = 1 << 6
 
 
-class CommandType(int):
+class CommandType(Enum):
     SLASH = 1
     USER = 2
     MESSAGE = 3
 
 
-class OptionType(int):
+class OptionType(Enum):
     SUB_COMMAND = 1
     SUB_COMMAND_GROUP = 2
     STRING = 3

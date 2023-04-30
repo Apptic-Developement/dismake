@@ -75,7 +75,7 @@ class Interaction(BaseModel):
         if values["message"]:
             values["message"]._request = values["request"]
         return values
-        
+
     @property
     def is_responded(self) -> bool:
         return self.is_response_done
@@ -212,5 +212,3 @@ class Interaction(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-
-

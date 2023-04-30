@@ -34,7 +34,7 @@ class InteractionHandler:
 
     async def _handle_command(self, request: Request) -> Any:
         payload: dict = await request.json()
-        payload.update({"request":request, "is_response_done": False})
+        payload.update({"request": request, "is_response_done": False})
         context = Context.parse_obj(payload)
         if (data := context.data) is not None:
             command = self.client._slash_commands.get(data.name)
@@ -51,7 +51,7 @@ class InteractionHandler:
 
     async def _handle_autocomplete(self, request: Request) -> Any:
         payload: dict = await request.json()
-        payload.update({"request":request, "is_response_done": False})
+        payload.update({"request": request, "is_response_done": False})
         context = Context.parse_obj(payload)
         if (data := context.data) is not None:
             if command := self.client.get_command(data.name):
@@ -73,7 +73,7 @@ class InteractionHandler:
 
     async def _handle_message_component(self, request: Request) -> Any:
         payload: dict = await request.json()
-        payload.update({"request":request, "is_response_done": False})
+        payload.update({"request": request, "is_response_done": False})
         ctx = ComponentContext.parse_obj(payload)
         if data := ctx.data:
             comp = self.client._components.get(data.custom_id)
@@ -108,4 +108,3 @@ class InteractionHandler:
             await self._handle_message_component(request)
 
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
-

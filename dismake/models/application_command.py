@@ -18,9 +18,9 @@ class ApplicationCommandChoice(BaseModel):
 class ApplicationCommandOption(BaseModel):
     type: int
     name: str
-    name_localizations: Optional[dict[str, str]]
+    name_localizations: Optional[Dict[str, str]]
     description: Optional[str] = "No description provided"
-    description_localizations: Optional[dict[str, str]]
+    description_localizations: Optional[Dict[str, str]]
     required: Optional[bool] = False
     choices: Optional[List[ApplicationCommandChoice]]
     options: Optional[List["ApplicationCommandOption"]]

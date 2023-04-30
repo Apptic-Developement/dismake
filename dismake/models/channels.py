@@ -5,15 +5,16 @@ from typing import Optional
 from pydantic import BaseModel
 from ..types import SnowFlake
 
-__all__ = (
-    "PartialMessagable",
-    "TextChannel"
-)
+__all__ = ("PartialMessagable", "TextChannel")
+
 
 class PartialMessagable(BaseModel):
     id: SnowFlake
 
+
 class CategoryChannel(PartialMessagable):
     ...
+
+
 class TextChannel(PartialMessagable):
     ...
