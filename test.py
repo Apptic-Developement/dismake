@@ -27,15 +27,19 @@
 
 
 # print(command_1.to_dict())
-import inspect, dismake
-from dismake import app_commands
-def func(name: str, age: int = 1):
-    return name
+# import inspect, dismake
+# from dismake import app_commands
+# from typing import Annotated, get_origin
 
-def get_args(function):
-    params = inspect.signature(function).parameters
-    ret = list()
-    for k, v in params.items():
-        ret.append(v.default)
-    return ret
-print(get_args(func))
+
+# group = app_commands.Group(name="slash", description="This is main command.")
+# sub_group = group.create_sub_group(
+#     name="sub_group", description="This is sub group command."
+# )
+
+# @group.command("sub_command1", "This is a sub command 1.")
+# async def sub_command1(ctx, name: Annotated[str, app_commands.Option("name", "What is your name?")]):
+    
+#     await ctx.send(f"Your name is: {name} ?")
+
+# print(group.to_dict())

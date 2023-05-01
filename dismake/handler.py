@@ -53,7 +53,6 @@ class InteractionHandler:
     async def _handle_command(self, request: Request) -> Any:
         payload: dict = await request.json()
         payload.update({"request": request, "is_response_done": False})
-        print(payload)
         context = Context.parse_obj(payload)
         if (data := context.data) is not None:
             command = self.client._app_commands.get(data.name)

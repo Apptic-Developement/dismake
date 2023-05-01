@@ -27,10 +27,10 @@ class Context(Interaction):
 
         opts = list()
         for option in options:
-            if option.type == OptionType.SUB_COMMAND and option.options:
+            if option.type == OptionType.SUB_COMMAND.value and option.options:
                 for command in option.options:
                     opts.append(command)
-            elif option.type == OptionType.SUB_COMMAND_GROUP and (
+            elif option.type == OptionType.SUB_COMMAND_GROUP.value and (
                 sub_commands := option.options
             ):
                 for sub_command in sub_commands:

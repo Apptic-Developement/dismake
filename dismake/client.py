@@ -201,7 +201,6 @@ class Bot(FastAPI):
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-        options: list[Option] | None = None
     ):
         def decorator(coro: AsyncFunction):
             @wraps(coro)
@@ -216,7 +215,6 @@ class Bot(FastAPI):
                     guild_only=guild_only,
                     name_localizations=name_localizations,
                     description_localizations=description_localizations,
-                    options=options
                 )
                 self._app_commands[command.name] = command
 

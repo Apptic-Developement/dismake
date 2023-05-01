@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Generic, TypeVar
+from typing import Any, TYPE_CHECKING, Annotated, get_origin
 
 
 from ..permissions import Permissions
@@ -16,17 +16,20 @@ if TYPE_CHECKING:
 
 
 
-
-T = TypeVar("T")
 __all__ = ("Command", "Option", "Choice", "Group")
 
 
-def _get_options(function):
+def _get_options(function: AsyncFunction) -> list[Option] | None:
     params = inspect.signature(function).parameters
     ret = list()
     for _, v in params.items():
-        if v.default != inspect._empty:
-            ret.append(v.default)
+        if v.default == inspect._empty and v.annotation is not None:
+            if get_origin(v.annotation) == Annotated:
+                args = v.annotation.__args__ + v.annotation.__metadata__
+                if not len(args) > 2:
+                    option = args[1]
+                    if isinstance(option, Option):
+                        ret.append(option)
     return ret
     
 _option_types = {
@@ -51,7 +54,6 @@ class Command:
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
-        options: list[Option] | None = None,
     ) -> None:
         self.name = name
         self.description = description
@@ -66,7 +68,7 @@ class Command:
         self.type: CommandType | OptionType = (
             CommandType.SLASH if self.parent is not None else OptionType.SUB_COMMAND
         )
-        self.options = options
+        self.options = _get_options(self.callback)
 
     async def invoke(self, ctx: Context):
         opt_data = dict()
@@ -74,16 +76,18 @@ class Command:
         if options is None:
             return await self.callback(ctx)
         for option in options:
-            if option.type not in (OptionType.SUB_COMMAND_GROUP.value, OptionType.SUB_COMMAND.value):
-                opt_data[option.name] = option.value
-        
-        arg, kwargs = [], {}
-        for k, v in inspect.signature(self.callback).parameters.items():
+            opt_data[option.name] = option.value
+        args = list()
+        for _, v in inspect.signature(self.callback).parameters.items():
             if v.default == inspect._empty:
-                arg.append(opt_data[v.name])
-            else:
-                kwargs[v.name] = opt_data[v.name]
-        await self.callback(ctx, *tuple(arg), **kwargs)
+                annotation = v.annotation
+                if get_origin(annotation) == Annotated:
+                    callback_params = annotation.__args__ + annotation.__metadata__
+                    if len(callback_params) == 2:
+                        option_object = callback_params[1].name
+                        args.append(opt_data.get(option_object))
+        args.insert(0, ctx)
+        await self.callback(*tuple(args))
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -164,7 +168,6 @@ class Group:
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-        options: list[Option] | None = None
     ):
         def decorator(coro: AsyncFunction):
             command = Command(
@@ -177,7 +180,6 @@ class Group:
                 guild_only=guild_only,
                 name_localizations=name_localizations,
                 description_localizations=description_localizations,
-                options=options
             )
             return self.add_command(command)
 
