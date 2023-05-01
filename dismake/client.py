@@ -138,20 +138,24 @@ class Bot(FastAPI):
 
         return decorator
 
-    def add_command(self, command: SlashCommand):
-        if self._slash_commands.get(command.name):
-            raise ValueError(
-                f"You can not create more than one command with same name."
-            )
-        self._slash_commands[command.name] = command
+    # def add_command(self, command: SlashCommand):
+    #     if self._slash_commands.get(command.name):
+    #         raise ValueError(
+    #             f"You can not create more than one command with same name."
+    #         )
+    #     self._slash_commands[command.name] = command
 
-    def add_commands(self, commands: List[SlashCommand]):
-        for command in commands:
-            self.add_command(command)
+    # def add_commands(self, commands: List[SlashCommand]):
+    #     for command in commands:
+    #         self.add_command(command)
 
+    # async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
+    #     return await self._http.bulk_override_commands(
+    #         [command for command in self._slash_commands.values()]
+    #     )
     async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
         return await self._http.bulk_override_commands(
-            [command for command in self._slash_commands.values()]
+            [command for command in self._app_commands.values()]
         )
 
     def on_app_command_error(self, coro: AsyncFunction):
@@ -182,6 +186,10 @@ class Bot(FastAPI):
                 continue
             self._components[custom_id] = component
 
+
+    def add_command(self, command: Union[Command, Group]):
+        self._app_commands[command.name] = command
+
     def command(
         self,
         name: str,
@@ -191,9 +199,9 @@ class Bot(FastAPI):
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
-        options: list[Option] | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
+        options: list[Option] | None = None
     ):
         def decorator(coro: AsyncFunction):
             @wraps(coro)
@@ -206,9 +214,9 @@ class Bot(FastAPI):
                     nsfw=nsfw,
                     default_member_permissions=default_member_permissions,
                     guild_only=guild_only,
-                    options=options,
                     name_localizations=name_localizations,
                     description_localizations=description_localizations,
+                    options=options
                 )
                 self._app_commands[command.name] = command
 
@@ -227,6 +235,7 @@ class Bot(FastAPI):
         guild_only: bool | None = None,
         nsfw: bool | None = None,
         parent: Group | None = None,
+        options: list[Option] | None = None
     ):
         command = Group(
             name=name,

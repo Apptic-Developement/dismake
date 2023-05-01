@@ -1,39 +1,34 @@
 from __future__ import annotations
+
+import inspect
 from typing import Any, TYPE_CHECKING, Generic, TypeVar
-from enum import Enum
+
 
 from ..permissions import Permissions
 from ..types import AsyncFunction
 from ..models import User, Member, Role
+from ..commands import Context
+from ..enums import CommandType, OptionType
 
 if TYPE_CHECKING:
     from ..types import AsyncFunction
     from ..permissions import Permissions
 
 
+
+
 T = TypeVar("T")
 __all__ = ("Command", "Option", "Choice", "Group")
 
 
-class CommandType(Enum):
-    SLASH = 1
-    USER = 2
-    MESSAGE = 3
-
-
-class OptionType(Enum):
-    SUB_COMMAND = 1
-    SUB_COMMAND_GROUP = 2
-    STRING = 3
-    INTEGER = 4
-    BOOLEAN = 5
-    USER = 6
-    CHANNEL = 7
-    ROLE = 8
-    MENTIONABLE = 9
-    NUMBER = 10
-
-
+def _get_options(function):
+    params = inspect.signature(function).parameters
+    ret = list()
+    for _, v in params.items():
+        if v.default != inspect._empty:
+            ret.append(v.default)
+    return ret
+    
 _option_types = {
     User: OptionType.USER,
     Member: OptionType.USER,
@@ -53,10 +48,10 @@ class Command:
         guild_id: int | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-        options: list[Option] | None = None,
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
+        options: list[Option] | None = None,
     ) -> None:
         self.name = name
         self.description = description
@@ -64,7 +59,6 @@ class Command:
         self.guild_id = guild_id
         self.name_localizations = name_localizations
         self.description_localizations = description_localizations
-        self.options = options
         self.default_member_permissions = default_member_permissions
         self.dm_permission = not guild_only
         self.nsfw = nsfw
@@ -72,7 +66,24 @@ class Command:
         self.type: CommandType | OptionType = (
             CommandType.SLASH if self.parent is not None else OptionType.SUB_COMMAND
         )
+        self.options = options
 
+    async def invoke(self, ctx: Context):
+        opt_data = dict()
+        options = ctx.get_options
+        if options is None:
+            return await self.callback(ctx)
+        for option in options:
+            if option.type not in (OptionType.SUB_COMMAND_GROUP.value, OptionType.SUB_COMMAND.value):
+                opt_data[option.name] = option.value
+        
+        arg, kwargs = [], {}
+        for k, v in inspect.signature(self.callback).parameters.items():
+            if v.default == inspect._empty:
+                arg.append(opt_data[v.name])
+            else:
+                kwargs[v.name] = opt_data[v.name]
+        await self.callback(ctx, *tuple(arg), **kwargs)
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -151,9 +162,9 @@ class Group:
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
-        options: list[Option] | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
+        options: list[Option] | None = None
     ):
         def decorator(coro: AsyncFunction):
             command = Command(
@@ -164,14 +175,16 @@ class Group:
                 nsfw=nsfw,
                 default_member_permissions=default_member_permissions,
                 guild_only=guild_only,
-                options=options,
                 name_localizations=name_localizations,
                 description_localizations=description_localizations,
+                options=options
             )
             return self.add_command(command)
 
         return decorator
-
+    def create_sub_group(self, name: str, description: str):
+        command = Group(name=name, description=description, parent=self)
+        return command
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -197,18 +210,17 @@ class Group:
         return base
 
 
-class Option(Generic[T]):
+class Option:
     def __init__(
         self,
-        type: type,
         name: str,
         description: str,
         *,
+        type: type = str,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
         required: bool | None = None,
         choices: list[Choice] | None = None,
-        options: list[Option] | None = None,
         channel_types: list[str] | None = None,
         min_value: int | None = None,
         max_value: int | None = None,
@@ -220,7 +232,6 @@ class Option(Generic[T]):
         self.description_localizations = description_localizations
         self.required = required
         self.choices = choices
-        self.options = options
         self.channel_types = channel_types
         self.min_value = min_value
         self.max_value = max_value
@@ -229,6 +240,7 @@ class Option(Generic[T]):
             self.type = _option_types[type]
         except:
             self.type = _option_types[str]
+
 
     def to_dict(self) -> dict[str, Any]:
         base = {
@@ -244,8 +256,6 @@ class Option(Generic[T]):
             base["required"] = self.required
         if self.choices is not None:
             base["choices"] = [choice.to_dict() for choice in self.choices]
-        if self.options is not None:
-            base["options"] = [option.to_dict() for option in self.options]
         if self.channel_types is not None:
             base["channel_types"] = self.channel_types
         if self.min_value is not None:
