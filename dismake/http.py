@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import List, Optional, Union
+from typing import List, Optional
 from httpx import AsyncClient, Response
 
 from .models import User
-from .models import ApplicationCommand
+from .models import AppCommand
 from .commands import SlashCommand
 
 
@@ -40,7 +40,7 @@ class HttpClient:
     #         headers=self.headers,
     #     )
 
-    async def get_global_commands(self) -> Optional[list[ApplicationCommand]]:
+    async def get_global_commands(self) -> Optional[list[AppCommand]]:
         res = await self.client.request(
             method="GET",
             url=f"/applications/{self.client_id}/commands",
@@ -51,7 +51,7 @@ class HttpClient:
         if not _json:
             return
 
-        return [ApplicationCommand(**command) for command in _json]
+        return [AppCommand(**command) for command in _json]
 
     async def bulk_override_commands(
         self, commands: List[SlashCommand], guild_id: Optional[int] = None

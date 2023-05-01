@@ -11,7 +11,7 @@ from ..errors import ComponentException
 from ..utils import chunk
 
 if TYPE_CHECKING:
-    from ..models import ComponentContext
+    from .context import ComponentContext
 
 __all__ = ("House",)
 

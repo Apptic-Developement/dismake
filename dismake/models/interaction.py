@@ -164,7 +164,7 @@ class Interaction(BaseModel):
         house: Optional[House] = None,
         ephemeral: bool = False,
     ):
-        if not self.respond:
+        if self.is_responded != False:
             raise InteractionNotResponded(self)
 
         if house:

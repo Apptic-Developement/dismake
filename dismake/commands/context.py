@@ -57,7 +57,7 @@ class Context(Interaction):
         if (data := self.data) is None or (options := data.options) is None:
             return Subcommands()
 
-        s_commands: Optional[List[ApplicationCommandOption]] = list()
+        s_commands: List[ApplicationCommandOption] = list()
         for option in options:
             if option.type == OptionType.SUB_COMMAND_GROUP and (
                 commands := option.options
@@ -76,16 +76,17 @@ class Context(Interaction):
     def sub_group_commands(self) -> Subcommands:
         if (data := self.data) is None or (options := data.options) is None:
             return Subcommands()
-        
-        sg_command: Optional[List[ApplicationCommandOption]] = list()
+
+        sg_command: List[ApplicationCommandOption] = list()
         for option in options:
             if option.type == OptionType.SUB_COMMAND_GROUP:
                 sg_command.append(option)
-        
+
         kwargs = {}
         for command in sg_command:
             kwargs[command.name.replace("-", "_")] = command
         return Subcommands(**kwargs)
+
     @property
     def options(self) -> Options:
         assert self.data is not None
@@ -93,7 +94,7 @@ class Context(Interaction):
         if (options := self.get_options) is None:
             return Options()
 
-        opts: Optional[List[ApplicationCommandOption]] = list()
+        opts: List[ApplicationCommandOption] = list()
         for option in options:
             if o_opts := option.options:
                 for o_opt in o_opts:

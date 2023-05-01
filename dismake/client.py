@@ -1,8 +1,9 @@
 from __future__ import annotations
 import asyncio
+from functools import wraps
 from logging import getLogger
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING, Callable, Coroutine
+from typing import Any, List, Dict, Optional, TYPE_CHECKING, Callable, Coroutine, Union
 from fastapi import FastAPI
 from .models import Guild
 from .handler import InteractionHandler
@@ -11,11 +12,14 @@ from .models import User
 from .utils import LOGGING_CONFIG
 from .commands import SlashCommand
 from .errors import CommandInvokeError
+from .app_commands import Command, Group
 
 if TYPE_CHECKING:
     from .commands import Context
     from .ui import House, Component
     from .types import AsyncFunction, SnowFlake
+    from .app_commands import Option
+    from .permissions import Permissions
 
 
 log = getLogger("uvicorn")
@@ -67,8 +71,12 @@ class Bot(FastAPI):
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._slash_commands: Dict[str, SlashCommand] = {}
         self._components: Dict[str, Component] = {}
-        self._error_handler: Callable[[Context, Exception], Coroutine[Any, Any, Any]] = self._default_error_handler
-        self.log = log
+        self._error_handler: Callable[
+            [Context, Exception], Coroutine[Any, Any, Any]
+        ] = self._default_error_handler
+
+        # Slash Commands
+        self._app_commands: Dict[str, Union[Group, Command]] = {}
 
     @property
     def user(self) -> User:
@@ -143,8 +151,8 @@ class Bot(FastAPI):
 
     async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
         return await self._http.bulk_override_commands(
-                [command for command in self._slash_commands.values()]
-            )
+            [command for command in self._slash_commands.values()]
+        )
 
     def on_app_command_error(self, coro: AsyncFunction):
         @wraps(coro)
@@ -173,3 +181,63 @@ class Bot(FastAPI):
             if self._components.get((custom_id := component.custom_id)):
                 continue
             self._components[custom_id] = component
+
+    def command(
+        self,
+        name: str,
+        description: str,
+        *,
+        guild_id: int | None = None,
+        default_member_permissions: Permissions | None = None,
+        guild_only: bool | None = None,
+        nsfw: bool | None = None,
+        options: list[Option] | None = None,
+        name_localizations: dict[str, str] | None = None,
+        description_localizations: dict[str, str] | None = None,
+    ):
+        def decorator(coro: AsyncFunction):
+            @wraps(coro)
+            def wrapper(*_, **__):
+                command = Command(
+                    name=name,
+                    description=description,
+                    guild_id=guild_id,
+                    callback=coro,
+                    nsfw=nsfw,
+                    default_member_permissions=default_member_permissions,
+                    guild_only=guild_only,
+                    options=options,
+                    name_localizations=name_localizations,
+                    description_localizations=description_localizations,
+                )
+                self._app_commands[command.name] = command
+
+            return wrapper()
+
+        return decorator
+
+    def create_group(
+        self,
+        name: str,
+        description: str,
+        guild_id: int | None = None,
+        name_localizations: dict[str, str] | None = None,
+        description_localizations: dict[str, str] | None = None,
+        default_member_permissions: Permissions | None = None,
+        guild_only: bool | None = None,
+        nsfw: bool | None = None,
+        parent: Group | None = None,
+    ):
+        command = Group(
+            name=name,
+            description=description,
+            guild_id=guild_id,
+            name_localizations=name_localizations,
+            description_localizations=description_localizations,
+            default_member_permissions=default_member_permissions,
+            guild_only=guild_only,
+            nsfw=nsfw,
+            parent=parent,
+        )
+        self._app_commands[command.name] = command
+        return command

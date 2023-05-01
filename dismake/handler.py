@@ -1,22 +1,24 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
-from ._types import ClientT
 from .commands import Context
 from .models import Interaction
 from .ui import ComponentContext
 from .errors import CommandInvokeError, NotImplemented
+
+if TYPE_CHECKING:
+    from .client import Bot
 log = getLogger("uvicorn")
 
 
 class InteractionHandler:
-    def __init__(self, client: ClientT) -> None:
+    def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
 
@@ -47,7 +49,6 @@ class InteractionHandler:
                 await self.client._error_handler(
                     context, CommandInvokeError(command, e)
                 )
-
 
     async def _handle_autocomplete(self, request: Request) -> Any:
         payload: dict = await request.json()

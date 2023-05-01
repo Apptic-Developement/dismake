@@ -1,28 +1,29 @@
-# from discord import app_commands
+from dismake import app_commands
 
-# c = app_commands.Group(name="slash", description="Hmm...")
-# c2 = app_commands.Group(name="sub_group", description="Hmm...2", parent=c)
-# a = {
-#     "name": "slash",
-#     "description": "Hmm...",
-#     "type": 1,
-#     "options": [
-#         {"name": "sub_group", "description": "Hmm...2", "type": 2, "options": []}
-#     ],
-#     "nsfw": False,
-#     "dm_permission": True,
-#     "default_member_permissions": None,
-# }
-# print(c.to_dict())
-
-from dismake import app_commands, Permissions
-
-c = app_commands.Group(
-    name="slash",
-    description="Hmm...",
-    guild_only=True,
-    default_member_permissions=Permissions(manage_guild=True),
+command_1 = app_commands.Group(name="slash", description="This is main command.")
+command_2 = app_commands.Group(
+    name="slash_group", description="This is slash group command.", parent=command_1
 )
-c2 = app_commands.Group(name="sub_group", description="Hmm...2", parent=c)
 
-print(c.to_dict())
+
+@command_1.command("sub_command1", "This is a sub command")
+async def sub_command_c1_1():
+    ...
+
+
+@command_1.command("sub_command2", "This is a sub command")
+async def sub_command_c1_2():
+    ...
+
+
+@command_2.command("sub_command3", "This is a sub command")
+async def sub_command_c2_1():
+    ...
+
+
+@command_2.command("sub_command4", "This is a sub command")
+async def sub_command_c2_2():
+    ...
+
+
+print(command_1.to_dict())

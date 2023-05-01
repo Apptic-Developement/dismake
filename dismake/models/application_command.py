@@ -4,26 +4,26 @@ from ..types import SnowFlake
 
 
 __all__ = (
-    "ApplicationCommandChoice",
-    "ApplicationCommandOption",
-    "ApplicationCommand",
+    "AppCommandChoice",
+    "AppCommandOption",
+    "AppCommand",
 )
 
 
-class ApplicationCommandChoice(BaseModel):
+class AppCommandChoice(BaseModel):
     name: str
     value: Union[str, int, float]
 
 
-class ApplicationCommandOption(BaseModel):
+class AppCommandOption(BaseModel):
     type: int
     name: str
     name_localizations: Optional[Dict[str, str]]
     description: Optional[str] = "No description provided"
     description_localizations: Optional[Dict[str, str]]
     required: Optional[bool] = False
-    choices: Optional[List[ApplicationCommandChoice]]
-    options: Optional[List["ApplicationCommandOption"]]
+    choices: Optional[List[AppCommandChoice]]
+    options: Optional[List["AppCommandOption"]]
     channel_types: Optional[List[str]]
     min_value: Optional[int]
     max_value: Optional[int]
@@ -32,16 +32,16 @@ class ApplicationCommandOption(BaseModel):
     autocomplete: Optional[bool]
 
 
-class ApplicationCommand(BaseModel):
+class AppCommand(BaseModel):
     id: SnowFlake
     type: int = 1
-    application_id: SnowFlake
+    App_id: SnowFlake
     guild_id: Optional[SnowFlake]
     name: str
     name_localizations: Optional[Dict[str, str]]
     description: Optional[str] = "No description provided"
     description_localizations: Optional[Dict[str, str]]
-    options: Optional[List[ApplicationCommandOption]]
+    options: Optional[List[AppCommandOption]]
     default_member_permissions: Optional[str]
     dm_permission: Optional[bool] = True
     nsfw: Optional[bool] = False

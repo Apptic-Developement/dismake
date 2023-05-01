@@ -21,18 +21,17 @@ class NestedCommand(dismake.SlashCommand):
                     ],
                 ),
                 dismake.Option(
-                            name="groups",
-                            description="This is a command group.",
-                            type=dismake.OptionType.SUB_COMMAND_GROUP,
-                            options=[
-                                dismake.Option(
-                                    name="string",
-                                    description="This is a string option.",
-                                    type=OptionType.SUB_COMMAND
-                                )
-                            ]
-                        ),
-
+                    name="groups",
+                    description="This is a command group.",
+                    type=dismake.OptionType.SUB_COMMAND_GROUP,
+                    options=[
+                        dismake.Option(
+                            name="string",
+                            description="This is a string option.",
+                            type=OptionType.SUB_COMMAND,
+                        )
+                    ],
+                ),
             ],
         )
         self.bot = bot

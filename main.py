@@ -1,5 +1,6 @@
-import dismake, config, logging
-from commands import get_commands
+import dismake, config
+
+# from commands import get_commands
 
 
 app = dismake.Bot(
@@ -17,7 +18,6 @@ async def on_ready():
     print(sync.text)
 
 
-
-app.add_commands(get_commands(app))
+# app.add_commands(get_commands(app))
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
