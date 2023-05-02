@@ -1,3 +1,22 @@
 {
-    "index": "Introduction"
+  "index": {
+    "type": "page",
+    "title": "The bot framework you need",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw"
+    }
+  },
+  "documentation": {
+    "type": "page",
+    "title": "Documentation"
+  },
+  "roadmap": {
+    "type": "page",
+    "title": "Roadmap & Future Goals",
+    "theme": {
+      "typesetting": "article",
+      "layout": "full"
+    }
+  }
 }
