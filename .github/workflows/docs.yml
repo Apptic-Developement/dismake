@@ -19,7 +19,8 @@ jobs:
     steps:
     - name: "Checkout Code"
       uses: actions/checkout@v3
+      
     - name: "Build Site"
-      runs: cd docs && npm i && npx next build
+      run: cd docs && npm i && npx next build
 
 
