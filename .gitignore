@@ -132,3 +132,7 @@ dmypy.json
 config.py
 .vercel
 bot/
+
+# Docs
+docs/.next
+docs/node_modules

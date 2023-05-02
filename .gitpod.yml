@@ -9,3 +9,4 @@ vscode:
   extensions:
     - ms-python.black-formatter
     - ms-pyright.pyright
+    - unifiedjs.vscode-mdx

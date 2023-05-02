@@ -3,7 +3,7 @@ from trees import group
 
 
 from discord.ext import commands
-commands.Bot.add_view
+commands.Bot.event
 
 app = dismake.Bot(
     token=config.token,

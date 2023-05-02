@@ -10,17 +10,14 @@ from .handler import InteractionHandler
 from .http import HttpClient
 from .models import User
 from .utils import LOGGING_CONFIG
-from .commands import SlashCommand
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
 
 if TYPE_CHECKING:
     from .commands import Context
     from .ui import House, Component
-    from .types import AsyncFunction, SnowFlake
-    from .app_commands import Option
+    from .types import AsyncFunction
     from .permissions import Permissions
-
 
 
 log = getLogger("uvicorn")
@@ -70,7 +67,6 @@ class Bot(FastAPI):
         self.add_event_handler("startup", self._http.fetch_me)
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
-        self._slash_commands: Dict[str, SlashCommand] = {}
         self._components: Dict[str, Component] = {}
         self._error_handler: Callable[
             [Context, Exception], Coroutine[Any, Any, Any]
@@ -91,7 +87,7 @@ class Bot(FastAPI):
         """
         return self._http._user
 
-    def get_command(self, name: str) -> Optional[SlashCommand]:
+    def get_command(self, name: str) -> Union[Command, Group, None]:
         """
         Get a SlashCommand object with the specified name.
 
@@ -105,7 +101,7 @@ class Bot(FastAPI):
         Optional[SlashCommand]
             The SlashCommand object with the specified name, or None if no such object exists.
         """
-        return self._slash_commands.get(name)
+        return self._app_commands.get(name)
 
     def run(self, **kwargs):
         """
@@ -145,6 +141,23 @@ class Bot(FastAPI):
             asyncio.ensure_future(self._dispatch_callback(coro, *args, **kwargs))
 
     def event(self, event_name: str):
+        """
+        A decorator that registers an event to listen to.
+
+        Parameters
+        ----------
+        event_name: str
+            The event name you want to listen.
+
+        Example usage
+        -------------
+            >>> import dismake
+            >>> app = dismake.Bot(...)
+            >>> @app.event('ready')
+            ... async def ready_event():
+            ...     print(f"Logged in as {app.user}.")
+        """
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
@@ -198,6 +211,7 @@ class Bot(FastAPI):
             ...     # Your error handler logics
             ...     pass
         """
+
         @wraps(coro)
         def wrapper(*_, **__):
             self._error_handler = coro
@@ -252,8 +266,15 @@ class Bot(FastAPI):
                 continue
             self._components[custom_id] = component
 
-
     def add_command(self, command: Union[Command, Group]):
+        """
+        The add_command function is used to add a command or group of commands to the application.
+        
+        Parameters
+        ----------
+        command: Union[Command, Group]
+            The command you want to add to dismake.Bot
+        """
         self._app_commands[command.name] = command
 
     def command(
@@ -268,6 +289,29 @@ class Bot(FastAPI):
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
     ):
+        """
+        The `command` function is a decorator that registers a function as an application command.
+
+        Parameters
+        ----------
+        name : str
+            The name of the command.
+        description : str
+            The description of the command.
+        guild_id : int | None
+            The guild ID, if you want this command to only be visible on a specific guild.
+        default_member_permissions : Permissions | None
+            The permissions a user needs to invoke this command.
+        guild_only : bool | None
+            If set to True, this command will only be visible to guilds, not in user DM channels.
+        nsfw : bool | None
+            If set to True, this command will only be visible in NSFW channels.
+        name_localizations : dict[str, str] | None
+            Localization dictionary for name field. Values follow the same restrictions as name
+        description_localizations : dict[str, str] | None
+            Localization dictionary for description field. Values follow the same restrictions as description
+        """
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
@@ -298,8 +342,29 @@ class Bot(FastAPI):
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
-        parent: Group | None = None,
     ):
+        """
+        The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
+        
+        Parameters
+        ----------
+        name: str
+            The name of the command.
+        description: str
+            The description of the command.
+        guild_id : int | None
+            The guild ID, if you want this command to only be visible on a specific guild.
+        default_member_permissions : Permissions | None
+            The permissions a user needs to invoke this command.
+        guild_only : bool | None
+            If set to True, this command will only be visible to guilds, not in user DM channels.
+        nsfw : bool | None
+            If set to True, this command will only be visible in NSFW channels.
+        name_localizations : dict[str, str] | None
+            Localization dictionary for name field. Values follow the same restrictions as name
+        description_localizations : dict[str, str] | None
+            Localization dictionary for description field. Values follow the same restrictions as description
+        """
         command = Group(
             name=name,
             description=description,
@@ -309,8 +374,6 @@ class Bot(FastAPI):
             default_member_permissions=default_member_permissions,
             guild_only=guild_only,
             nsfw=nsfw,
-            parent=parent,
         )
         self._app_commands[command.name] = command
         return command
-
