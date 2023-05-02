@@ -1,9 +1,9 @@
-from typing import Optional, Annotated
 import dismake, config
-from dismake import app_commands
+from trees import group
 
-# from commands import get_commands
 
+from discord.ext import commands
+commands.Bot.add_view
 
 app = dismake.Bot(
     token=config.token,
@@ -12,22 +12,14 @@ app = dismake.Bot(
     route="/",
 )
 
-
+group.tree.load(app)
 @app.event("ready")
 async def on_ready():
     print("Logged in as %s" % app.user)
     # sync = await app.sync_commands()
     # print(sync.text)
 
-
-@app.command("choose", "This is a sub command 1.")
-async def sub_command1(
-    ctx, 
-    name: Annotated[str, app_commands.Option("name", "What is your name?", required=True)],
-    age: Annotated[int, app_commands.Option("age", "What is your age?", required=True, type=int)]
-):
     
-    await ctx.send(f"Your name is: {name} and agee is: {age}?")
 
 
 

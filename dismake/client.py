@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .permissions import Permissions
 
 
+
 log = getLogger("uvicorn")
 __all__ = ("Bot",)
 
@@ -107,18 +108,36 @@ class Bot(FastAPI):
         return self._slash_commands.get(name)
 
     def run(self, **kwargs):
+        """
+        Starts the web server to handle HTTP interactions with Discord.
+        """
         import uvicorn
 
         kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
+        """
+        Dispatches an event to a single event listener.
+        """
         try:
             await coro(*args, **kwargs)
         except Exception as e:
             log.error("An error occured in %s" % coro.__name__, exc_info=e)
 
     def dispatch(self, event_name: str, *args, **kwargs):
+        """
+        Dispatches an event to all registered event listeners.
+
+        Parameters
+        ----------
+        event_name: str
+            The name of the event to dispatch.
+        *args: Any
+            positional arguments to pass to the event listeners.
+        **kwargs: Any
+            keyword arguments to pass to the event listeners.
+        """
         event = self._events.get(event_name)
         if not event:
             return
@@ -138,27 +157,47 @@ class Bot(FastAPI):
 
         return decorator
 
-    # def add_command(self, command: SlashCommand):
-    #     if self._slash_commands.get(command.name):
-    #         raise ValueError(
-    #             f"You can not create more than one command with same name."
-    #         )
-    #     self._slash_commands[command.name] = command
+    async def sync_commands(self, guild_ids: Optional[int]):
+        """
+        Synchronizes all application commands to Discord.
 
-    # def add_commands(self, commands: List[SlashCommand]):
-    #     for command in commands:
-    #         self.add_command(command)
+        Parameters
+        ----------
+        guild_ids: Optional[int]:
+            An optional list of guild IDs to sync commands for. If not specified, commands will be synced globally.
 
-    # async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
-    #     return await self._http.bulk_override_commands(
-    #         [command for command in self._slash_commands.values()]
-    #     )
-    async def sync_commands(self, guild_ids: Optional[SnowFlake] = None):
+        Returns
+        -------
+        A list of the updated application commands on success.
+
+        Example usage
+        -------------
+            >>> from dismake import Dismake
+            >>> app = Dismake()
+            >>> @app.command()
+            ... async def hello(ctx):
+            ...     await ctx.respond("Hello, world!")
+            >>> @app.event('ready')
+            ... async def on_ready():
+            ...     await app.sync_commands()
+        """
         return await self._http.bulk_override_commands(
             [command for command in self._app_commands.values()]
         )
 
     def on_app_command_error(self, coro: AsyncFunction):
+        """
+        A decorator which overrides the `:meth: _default_error_handler`.
+
+        Example usage
+        -------------
+            >>> import dismake
+            >>> app = dismake.Bot(...)
+            >>> @app.on_app_command_error
+            ... async def custom_error_handler(ctx, error):
+            ...     # Your error handler logics
+            ...     pass
+        """
         @wraps(coro)
         def wrapper(*_, **__):
             self._error_handler = coro
@@ -167,6 +206,9 @@ class Bot(FastAPI):
         return wrapper()
 
     async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
+        """
+        A default error handler which handles the CommandInvokeError
+        """
         if isinstance(error, CommandInvokeError):
             await ctx.respond(
                 f"Oops! Something went wrong while running the command.", ephemeral=True
@@ -174,11 +216,35 @@ class Bot(FastAPI):
         raise error
 
     async def fetch_guild(self, guild_id: int) -> Guild:
+        """
+        Fetches a guild from discord by its ID.
+
+        Parameters
+        ----------
+        guild_id: int
+            The ID of the guild to fetch.
+
+        Returns
+        -------
+        A Guild object representing the requested guild.
+
+        Raises
+        ------
+        HTTPException: If the API request fails.
+        """
         res = await self._http.client.request(method="GET", url=f"/guilds/{guild_id}")
         res.raise_for_status()
         return Guild(**res.json())
 
     def add_house(self, house: House) -> None:
+        """
+        Registers a :class:`~dismake.ui.House` for persistent listening.
+
+        Parameters
+        ----------
+        house: House
+            The House object to register for dispatching.
+        """
         if not (components := house.components):
             return
         for component in components:
@@ -233,7 +299,6 @@ class Bot(FastAPI):
         guild_only: bool | None = None,
         nsfw: bool | None = None,
         parent: Group | None = None,
-        options: list[Option] | None = None
     ):
         command = Group(
             name=name,
@@ -248,3 +313,4 @@ class Bot(FastAPI):
         )
         self._app_commands[command.name] = command
         return command
+
