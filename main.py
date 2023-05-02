@@ -1,9 +1,6 @@
 import dismake, config
-from trees import group
+from plugins import group
 
-
-from discord.ext import commands
-commands.Bot.event
 
 app = dismake.Bot(
     token=config.token,
@@ -12,14 +9,14 @@ app = dismake.Bot(
     route="/",
 )
 
-group.tree.load(app)
+group.plugin.load(app)
+
+
 @app.event("ready")
 async def on_ready():
     print("Logged in as %s" % app.user)
     # sync = await app.sync_commands()
     # print(sync.text)
-
-    
 
 
 

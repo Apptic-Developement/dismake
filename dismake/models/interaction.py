@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from pydantic import BaseModel, root_validator
 
+from dismake.ui.context import MessageComponentData, ModalSubmitData
+
 from .user import Member, User
 from .guild import Guild
 from .role import Role
@@ -212,3 +214,44 @@ class Interaction(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class Interaction2:
+    def __init__(self, request: Request, data: Dict[str, Any]) -> None:
+        self.__request = request
+        self.__is_response_done = False
+        self.id: int = int(data["id"])
+        self.application_id: SnowFlake = data["application_id"]
+        self.type: int = data["type"]
+        self.token: str = data["token"]
+        self.version: int = data["version"]
+        self.guild_id: Optional[int] = data.get("guild_id")
+        self.channel: Optional[Any] = data.get("channel")
+        self.channel_id: Optional[SnowFlake] = data.get("channel_id")
+        self.message: Optional[Message] = data.get("message")
+        self.app_permissions: Optional[int] = data.get("app_permissions")
+        self.locale: Optional[str] = data.get("locale")
+        self.guild_locale: Optional[str] = data.get("guild_locale")
+        self.user: Union[User, Member]
+        if self.guild_id:
+            try:
+                member = data["member"]
+            except:
+                pass
+            else:
+                self.user = Member(**member)
+        else:
+            self.user = User(**data["user"])
+
+        if self.type == InteractionType.APPLICATION_COMMAND.value:
+            command_data = data.get("data")
+            if command_data:
+                self.data = ApplicationCommandData(**command_data)
+        elif self.type == InteractionType.MESSAGE_COMPONENT.value:
+            component_data = data.get("data")
+            if component_data:
+                self.data = MessageComponentData(**component_data)
+        else:
+            modal_submit_data = data.get("data")
+            if modal_submit_data:
+                self.data = ModalSubmitData(**modal_submit_data)

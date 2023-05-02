@@ -86,7 +86,7 @@ class Option:
         name: str,
         description: Optional[str] = "No description provided",
         *,
-        type: int = OptionType.STRING,
+        type: OptionType = OptionType.STRING,
         name_localizations: Optional[dict[str, str]] = None,
         description_localizations: Optional[dict[str, str]] = None,
         required: Optional[bool] = False,

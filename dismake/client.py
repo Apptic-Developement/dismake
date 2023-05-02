@@ -89,17 +89,17 @@ class Bot(FastAPI):
 
     def get_command(self, name: str) -> Union[Command, Group, None]:
         """
-        Get a SlashCommand object with the specified name.
+        Get a slash command with the specified name.
 
         Parameters
         ----------
         name : str
-            The name of the SlashCommand object to retrieve.
+            The name of the command to retrieve.
 
         Returns
         -------
-        Optional[SlashCommand]
-            The SlashCommand object with the specified name, or None if no such object exists.
+        Union[Command, Group, None]
+            The command object with the specified name, or None if no such object exists.
         """
         return self._app_commands.get(name)
 
@@ -377,3 +377,4 @@ class Bot(FastAPI):
         )
         self._app_commands[command.name] = command
         return command
+

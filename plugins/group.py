@@ -2,9 +2,9 @@ import dismake
 from dismake import app_commands
 from typing import Annotated
 
-tree = dismake.CommandTree()
+plugin = dismake.Plugin()
 
-mentions = tree.create_group(
+mentions = plugin.create_group(
     name="mentions", description="This group holds only mentions commands."
 )
 # channels = mentions.create_sub_group(

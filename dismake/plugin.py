@@ -10,10 +10,10 @@ if TYPE_CHECKING:
     from .app_commands import Command, Group
     from .client import Bot
 __all__ = (
-    "CommandTree",
+    "Plugin",
 )
 
-class CommandTree:
+class Plugin:
     def __init__(self, name: str = __name__) -> None:
         self.name = name
         self.bot: Bot

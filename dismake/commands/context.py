@@ -1,13 +1,13 @@
 from __future__ import annotations
 from re import sub
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING, Union
 
 from ..models import Interaction, ApplicationCommandData, ApplicationCommandOption
 from ..enums import OptionType
 
 if TYPE_CHECKING:
-    from .command import SlashCommand
+    from ..app_commands import Command, Group
 
 __all__ = ("Context",)
 
@@ -16,7 +16,7 @@ class Context(Interaction):
     data: Optional[ApplicationCommandData]
 
     @property
-    def command(self) -> Optional[SlashCommand]:
+    def command(self) -> Optional[Union[Command, Group]]:
         assert self.data is not None
         return self.bot.get_command(self.data.name)
 
