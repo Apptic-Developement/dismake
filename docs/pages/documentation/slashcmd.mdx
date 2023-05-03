@@ -1,0 +1,17 @@
+# Slash Command with Dismake
+
+## Your First Slash Command
+
+```py showLineNumbers copy
+import dismake
+import typing
+
+app = dismake.Bot(...)
+
+# first command
+@app.command(name="ping")
+async def ping(ctx: dismake.Context):
+    await ctx.respond("Pong!")
+```
+
+## Todo
