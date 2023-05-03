@@ -28,4 +28,9 @@ setup(
         "PyNaCl",
         "rich",
     ],
+    entry_points={
+        "console_scripts": [
+            "dismake=dismake.cli:app"
+        ]
+    }
 )

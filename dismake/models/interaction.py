@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from pydantic import BaseModel, root_validator
-
-from dismake.ui.context import MessageComponentData, ModalSubmitData
-
 from .user import Member, User
 from .guild import Guild
 from .role import Role
@@ -84,6 +81,9 @@ class Interaction(BaseModel):
 
     @property
     def is_application_command(self) -> bool:
+        """
+        The is_application_command function checks if the interaction type is an application command.
+        """
         return self.type == InteractionType.APPLICATION_COMMAND.value
 
     @property
@@ -216,42 +216,88 @@ class Interaction(BaseModel):
         arbitrary_types_allowed = True
 
 
-class Interaction2:
-    def __init__(self, request: Request, data: Dict[str, Any]) -> None:
-        self.__request = request
-        self.__is_response_done = False
-        self.id: int = int(data["id"])
-        self.application_id: SnowFlake = data["application_id"]
-        self.type: int = data["type"]
-        self.token: str = data["token"]
-        self.version: int = data["version"]
-        self.guild_id: Optional[int] = data.get("guild_id")
-        self.channel: Optional[Any] = data.get("channel")
-        self.channel_id: Optional[SnowFlake] = data.get("channel_id")
-        self.message: Optional[Message] = data.get("message")
-        self.app_permissions: Optional[int] = data.get("app_permissions")
-        self.locale: Optional[str] = data.get("locale")
-        self.guild_locale: Optional[str] = data.get("guild_locale")
-        self.user: Union[User, Member]
-        if self.guild_id:
-            try:
-                member = data["member"]
-            except:
-                pass
-            else:
-                self.user = Member(**member)
-        else:
-            self.user = User(**data["user"])
+# class Interaction2:
+#     def __init__(self, request: Request, data: Dict[str, Any]) -> None:
+#         self._request = request
+#         self._is_response_done = False
+#         self.id: int = int(data["id"])
+#         self.application_id: SnowFlake = data["application_id"]
+#         self.type: int = data["type"]
+#         self.token: str = data["token"]
+#         self.version: int = data["version"]
+#         self.guild_id: Optional[int] = data.get("guild_id")
+#         self.channel_id: Optional[SnowFlake] = data.get("channel_id")
+#         self.app_permissions: Optional[int] = data.get("app_permissions")
+#         self.locale: Optional[str] = data.get("locale")
+#         self.guild_locale: Optional[str] = data.get("guild_locale")
+#         self.user: Union[User, Member]
+#         self.data: Optional[dict] = data.get('data')
+#         if self.guild_id:
+#             try:
+#                 member = data["member"]
+#             except:
+#                 pass
+#             else:
+#                 self.user = Member(**member)
+#         else:
+#             self.user = User(**data["user"])
+#         self.channel: Optional[Any] = data.get("channel")
+#         self.__message: Optional[dict] = data.get("message")
+#         self.message: Optional[Message]
+#         if self.__message is not None:
+#             self.message = Message(_request=self._request, **self.__message)
 
-        if self.type == InteractionType.APPLICATION_COMMAND.value:
-            command_data = data.get("data")
-            if command_data:
-                self.data = ApplicationCommandData(**command_data)
-        elif self.type == InteractionType.MESSAGE_COMPONENT.value:
-            component_data = data.get("data")
-            if component_data:
-                self.data = MessageComponentData(**component_data)
-        else:
-            modal_submit_data = data.get("data")
-            if modal_submit_data:
-                self.data = ModalSubmitData(**modal_submit_data)
+#     @property
+#     def bot(self) -> Bot:
+#         """
+#         :class:`Bot`: The bot that is handling this interaction.
+#         """
+#         return self._request.app
+
+#     @property
+#     def is_done(self) -> bool:
+#         """
+#         :class:`bool`: Indicates whether an interaction response has been done before.
+#         An interaction can only be responded to once.
+#         """
+#         return self._is_response_done
+
+#     @property
+#     def is_application_command(self) -> bool:
+#         """
+#         The is_application_command function checks if the interaction type is an application command.
+#         """
+#         return self.type == InteractionType.APPLICATION_COMMAND.value
+
+#     @property
+#     def is_autocomplete(self) -> bool:
+#         """
+#         The is_autocomplete function checks if the interaction type is an autocomplete.
+#         """
+#         return self.type == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
+
+#     @property
+#     def is_modal_submit(self) -> bool:
+#         """
+#         The is_modal_submit function checks if the interaction type is a modal submit.
+#         """
+#         return self.type == InteractionType.MODAL_SUBMIT.value
+
+#     @property
+#     def is_ping(self) -> bool:
+#         """
+#         The is_ping function checks if the interaction type is a ping.
+#         """
+#         return self.type == InteractionType.PING.value
+
+#     @property
+#     def is_component(self) -> bool:
+#         """
+#         The is_component function checks if the interaction is a component.
+#         """
+#         return self.type == InteractionType.MESSAGE_COMPONENT.value
+
+#     async def fetch_guild(self) -> Optional[Guild]:
+#         if self.guild_id is None:
+#             return None
+#         return await self.bot.fetch_guild(self.guild_id)

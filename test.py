@@ -43,3 +43,6 @@
 #     await ctx.send(f"Your name is: {name} ?")
 
 # print(group.to_dict())
+
+from discord.interactions import Interaction 
+Interaction

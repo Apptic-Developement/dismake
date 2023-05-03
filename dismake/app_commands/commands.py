@@ -7,17 +7,13 @@ from typing import Any, TYPE_CHECKING, Annotated, get_origin
 from ..permissions import Permissions
 from ..types import AsyncFunction
 from ..models import User, Member, Role
-from ..commands import Context
+from .context import Context
 from ..enums import CommandType, OptionType
 
 if TYPE_CHECKING:
     from ..types import AsyncFunction
     from ..permissions import Permissions
-    from ..tree import CommandTree
-
-    _BaseOption = Any
-else:
-    _BaseOption = object
+    from ..plugin import Plugin
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
@@ -38,12 +34,13 @@ def _get_options(function: AsyncFunction) -> list[Option] | None:
 
 
 _option_types = {
-    User: OptionType.USER,
-    Member: OptionType.USER,
-    Role: OptionType.ROLE,
-    str: OptionType.STRING,
-    int: OptionType.INTEGER,
-    bool: OptionType.BOOLEAN,
+    # fmt: off
+    User:           OptionType.USER,
+    Member:         OptionType.USER,
+    Role:           OptionType.ROLE,
+    str:            OptionType.STRING,
+    int:            OptionType.INTEGER,
+    bool:           OptionType.BOOLEAN,
 }
 
 
@@ -74,7 +71,7 @@ class Command:
             CommandType.SLASH if self.parent is not None else OptionType.SUB_COMMAND
         )
         self.options = _get_options(self.callback)
-        self.tree: CommandTree | None = None
+        self.plugin: Plugin | None = None
 
     async def invoke(self, ctx: Context):
         opt_data = dict()
@@ -82,12 +79,20 @@ class Command:
         if options is None:
             return await self.callback(ctx)
         for option in options:
-            if option.type in (OptionType.USER.value, OptionType.ROLE.value, OptionType.CHANNEL.value):
+            if option.type in (
+                OptionType.USER.value,
+                OptionType.ROLE.value,
+                OptionType.CHANNEL.value,
+            ):
                 if (data := ctx.data) is not None:
                     if (resolved := data.resolved) is not None:
-                        if (users := resolved.users) is not None and option.type == OptionType.USER.value:
+                        if (
+                            users := resolved.users
+                        ) is not None and option.type == OptionType.USER.value:
                             opt_data[option.name] = users.get(str(option.value))
-                        elif (roles := resolved.roles) is not None and option.type == OptionType.ROLE.value:
+                        elif (
+                            roles := resolved.roles
+                        ) is not None and option.type == OptionType.ROLE.value:
                             opt_data[option.name] = roles.get(str(option.value))
             else:
                 opt_data[option.name] = option.value
@@ -156,7 +161,7 @@ class Group:
             CommandType.SLASH if not self.parent else OptionType.SUB_COMMAND_GROUP
         )
         self.commands: dict[str, Command | Group] = {}
-        self.tree: CommandTree | None = None
+        self.plugin: Plugin | None = None
         if self.parent:
             if self.parent.parent:
                 raise ValueError("groups can only be nested at most one level")
@@ -230,7 +235,7 @@ class Group:
         return base
 
 
-class Option(_BaseOption):
+class Option:
     def __init__(
         self,
         name: str,

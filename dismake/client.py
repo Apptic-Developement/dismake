@@ -14,7 +14,7 @@ from .errors import CommandInvokeError
 from .app_commands import Command, Group
 
 if TYPE_CHECKING:
-    from .commands import Context
+    from .app_commands import Context
     from .ui import House, Component
     from .types import AsyncFunction
     from .permissions import Permissions

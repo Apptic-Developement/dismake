@@ -4,7 +4,6 @@ from httpx import AsyncClient, Response
 
 from .models import User
 from .models import AppCommand
-from .commands import SlashCommand
 from .app_commands import Command, Group
 
 __all__ = ("HttpClient",)

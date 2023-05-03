@@ -1,8 +1,5 @@
 from __future__ import annotations
-from re import sub
-
 from typing import Optional, List, TYPE_CHECKING, Union
-
 from ..models import Interaction, ApplicationCommandData, ApplicationCommandOption
 from ..enums import OptionType
 

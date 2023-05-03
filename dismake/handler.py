@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
-from .commands import Context
+from .app_commands import Context
 from .models import Interaction
 from .ui import ComponentContext
 from .errors import CommandInvokeError, NotImplemented
@@ -69,27 +69,27 @@ class InteractionHandler:
                         await child_3.invoke(context)
                     if isinstance(child_2, Command):
                         await child_2.invoke(context)
-    async def _handle_autocomplete(self, request: Request) -> Any:
-        payload: dict = await request.json()
-        payload.update({"request": request, "is_response_done": False})
-        context = Context.parse_obj(payload)
-        if (data := context.data) is not None:
-            if command := self.client.get_command(data.name):
-                if choices := await command.autocomplete(context):
-                    return JSONResponse(
-                        {
-                            "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-                            "data": {
-                                "choices": [choice.to_dict() for choice in choices]
-                            },
-                        }
-                    )
-                return JSONResponse(
-                    {
-                        "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-                        "data": {"choices": []},
-                    }
-                )
+    # async def _handle_autocomplete(self, request: Request) -> Any:
+    #     payload: dict = await request.json()
+    #     payload.update({"request": request, "is_response_done": False})
+    #     context = Context.parse_obj(payload)
+    #     if (data := context.data) is not None:
+    #         if command := self.client.get_command(data.name):
+    #             if choices := await command.autocomplete(context):
+    #                 return JSONResponse(
+    #                     {
+    #                         "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+    #                         "data": {
+    #                             "choices": [choice.to_dict() for choice in choices]
+    #                         },
+    #                     }
+    #                 )
+    #             return JSONResponse(
+    #                 {
+    #                     "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+    #                     "data": {"choices": []},
+    #                 }
+    #             )
 
     async def _handle_message_component(self, request: Request) -> Any:
         payload: dict = await request.json()
@@ -122,8 +122,8 @@ class InteractionHandler:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if payload["type"] == InteractionType.APPLICATION_COMMAND.value:
             await self._handle_command(request)
-        elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
-            return await self._handle_autocomplete(request)
+        # elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
+        #     return await self._handle_autocomplete(request)
         elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
             await self._handle_message_component(request)
 
