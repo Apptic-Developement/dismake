@@ -73,20 +73,25 @@ class InteractionHandler:
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
         if (data := interaction.data) is not None:
-            command = self.client._app_commands.get(data["name"])
+            command = self.client._app_commands.get(data.name)
             if command is not None:
                 if isinstance(command, Command):
                     await command.invoke(interaction)
                 elif isinstance(command, Group):
-                    assert data['options'] is not None, "Invalid data recieved."
-                    child_2 = command.commands.get(data["options"][0]["name"])
+                    assert data.options is not None, "Invalid data recieved."
+                    child_2 = command.commands.get(data.options[0].name)
                     if isinstance(child_2, Group):
-                        assert data["options"][0]["options"] is not None, "Invalid data recieved."
-                        child_3 = child_2.commands.get(data["options"][0]["options"][0]["name"])
-                        assert isinstance(child_3, Command)
+                        assert (
+                            data.options[0].options is not None
+                        ), "Invalid data recieved."
+                        child_3 = child_2.commands.get(
+                            data.options[0].options[0].name
+                        )
+                        assert isinstance(child_3, Command), f"command {child_3} is too nested."
                         await child_3.invoke(interaction)
                     if isinstance(child_2, Command):
                         await child_2.invoke(interaction)
+
     # async def _handle_autocomplete(self, request: Request) -> Any:
     #     payload: dict = await request.json()
     #     payload.update({"request": request, "is_response_done": False})
@@ -129,8 +134,7 @@ class InteractionHandler:
             return Response(content="Bad Signature", status_code=401)
 
         payload: dict = await request.json()
-        payload.update({"request": request, "is_response_done": False})
-        interaction = Interaction(**payload)
+        interaction = Interaction(request=request, data=payload)
         self.client.dispatch(
             "interaction_create",
             interaction,

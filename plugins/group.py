@@ -22,12 +22,7 @@ async def echo_command(
     ctx,
     text: Annotated[
         str,
-        app_commands.Option(
-            name="echo",
-            description="Type something...",
-            required=True,
-            type=str,
-        ),
+        app_commands.Option(),
     ],
 ):
     await ctx.send(f"{text}")
@@ -38,12 +33,7 @@ async def user_command(
     ctx,
     user: Annotated[
         dismake.User,
-        app_commands.Option(
-            name="user",
-            description="Select a user...",
-            required=True,
-            type=dismake.OptionType.USER,
-        ),
+        app_commands.Option(),
     ],
 ):
     await ctx.send(f"Mentioned: {user.mention}")
@@ -54,30 +44,15 @@ async def role_command(
     ctx,
     role1: Annotated[
         dismake.Role,
-        app_commands.Option(
-            name="role",
-            description="Select a role...",
-            required=True,
-            type=dismake.Role,
-        ),
+        app_commands.Option(),
     ],
     role2: Annotated[
         dismake.Role,
-        app_commands.Option(
-            name="role2",
-            description="Select a role...",
-            required=True,
-            type=dismake.Role,
-        ),
+        app_commands.Option(),
     ],
     role3: Annotated[
         dismake.Role,
-        app_commands.Option(
-            name="role3",
-            description="Select a role...",
-            required=True,
-            type=dismake.Role,
-        ),
+        app_commands.Option(),
     ],
 ):
     await ctx.send(

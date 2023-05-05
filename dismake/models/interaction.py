@@ -6,7 +6,7 @@ from .user import Member, User
 from .guild import Guild
 from .role import Role
 from .message import Message
-from ..enums import InteractionType, InteractionResponseType, MessageFlags
+from ..enums import InteractionType, InteractionResponseType, MessageFlags, OptionType
 from ..errors import InteractionNotResponded, InteractionResponded
 from ..params import handle_send_params, handle_edit_params
 from fastapi import Request
@@ -231,7 +231,10 @@ class Interaction:
         self.locale: Optional[str] = data.get("locale")
         self.guild_locale: Optional[str] = data.get("guild_locale")
         self.user: Union[User, Member]
-        self.data: Optional[dict] = data.get('data')
+        self._data: Optional[dict] = None
+        self.data: Optional[ApplicationCommandData] = (
+            ApplicationCommandData(**self._data) if self._data else None
+        )
         if self.guild_id:
             try:
                 member = data["member"]
@@ -304,22 +307,31 @@ class Interaction:
         """
         return self._is_response_done
 
+    @property
+    def namespace(self) -> Namespace:
+        if self.type not in (InteractionType.APPLICATION_COMMAND.value, InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value):
+            return Namespace(**{})
+        if (data := self.data) is None or (options := data.options) is None:
+            return Namespace(**{})
+        kwargs = {}
+        filtered_options: List[ApplicationCommandOption] = list()
+        return Namespace(**{})
+
     async def fetch_guild(self) -> Optional[Guild]:
         """
         This function is a coroutine that returns the Guild object for this interaction.
         It is used to get the guild object from its ID, which is stored in self.guild_id.
-        
+
         Returns
         -------
         Optional[Guild]:
             A guild object if the guild_id is not none.
-        
+
         :doc-author: Trelent
         """
         if self.guild_id is None:
             return None
         return await self.bot.fetch_guild(self.guild_id)
-
 
     async def respond(
         self,
@@ -414,3 +426,16 @@ class Interaction:
                 content, tts=tts, house=house, ephemeral=ephemeral
             )
         return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
+
+
+class Namespace:
+    """
+    Inspired from discord.py
+    """
+
+    def __init__(self, **kwargs) -> None:
+        for k, v in kwargs.items():
+            self.__dict__[k] = v
+
+    def __getattr__(self, value) -> None:
+        return None

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, get_origin
+from typing import Any, TYPE_CHECKING, Annotated, Literal, get_origin
 
 
 from ..permissions import Permissions
@@ -19,21 +19,6 @@ if TYPE_CHECKING:
 
 __all__ = ("Command", "Option", "Choice", "Group")
 
-
-def _get_options(function: AsyncFunction) -> list[Option] | None:
-    params = inspect.signature(function).parameters
-    ret = list()
-    for _, v in params.items():
-        if v.default == inspect._empty and v.annotation is not None:
-            if get_origin(v.annotation) == Annotated:
-                args = v.annotation.__args__ + v.annotation.__metadata__
-                if not len(args) > 2:
-                    option = args[1]
-                    if isinstance(option, Option):
-                        ret.append(option)
-    return ret
-
-
 _option_types = {
     # fmt: off
     User:           OptionType.USER,
@@ -45,6 +30,38 @@ _option_types = {
 }
 
 
+def _get_options(func: AsyncFunction):
+    params = inspect.signature(func).parameters
+    options: list[Option] = list()
+    for k, v in params.items():
+        """
+        k: The name of the function
+            - name
+        v: The annotation of the function
+            - typing.Annotated[str, <Option name="foo">]
+        """
+        annotation = v.annotation
+        if get_origin(annotation) != Annotated:
+            continue
+        option_type: type = annotation.__args__[0]
+        option_object: Option = annotation.__metadata__[0]
+        option_object.type = _option_types[option_type]
+        if option_object.description is None and (doc := func.__doc__) is not None:
+            option_object.description = inspect.cleandoc(doc)
+        if option_object.description is None and func.__doc__ is None:
+            option_object.description = "..."
+
+        if option_object.name is None:
+            option_object.name = k
+
+        if option_object.required is None:
+            if v.default != inspect._empty:
+                option_object.required = False
+            else:
+                option_object.required = True
+
+        options.append(option_object)
+    return options
 class Command:
     def __init__(
         self,
@@ -76,42 +93,14 @@ class Command:
 
     def __str__(self) -> str:
         return self.name
-    # async def invoke(self, ctx: Context):
-    #     opt_data = dict()
-    #     options = ctx.get_options
-    #     if options is None:
-    #         return await self.callback(ctx)
-    #     for option in options:
-    #         if option.type in (
-    #             OptionType.USER.value,
-    #             OptionType.ROLE.value,
-    #             OptionType.CHANNEL.value,
-    #         ):
-    #             if (data := ctx.data) is not None:
-    #                 if (resolved := data.resolved) is not None:
-    #                     if (
-    #                         users := resolved.users
-    #                     ) is not None and option.type == OptionType.USER.value:
-    #                         opt_data[option.name] = users.get(str(option.value))
-    #                     elif (
-    #                         roles := resolved.roles
-    #                     ) is not None and option.type == OptionType.ROLE.value:
-    #                         opt_data[option.name] = roles.get(str(option.value))
-    #         else:
-    #             opt_data[option.name] = option.value
-    #     args = list()
-    #     for _, v in inspect.signature(self.callback).parameters.items():
-    #         if v.default == inspect._empty:
-    #             annotation = v.annotation
-    #             if get_origin(annotation) == Annotated:
-    #                 callback_params = annotation.__args__ + annotation.__metadata__
-    #                 if len(callback_params) == 2:
-    #                     option_object = callback_params[1].name
-    #                     args.append(opt_data.get(option_object))
-    #     args.insert(0, ctx)
-    #     await self.callback(*tuple(args))
+
     async def invoke(self, interaction: Interaction):
-        pass
+        args = tuple()
+        kwargs = dict()
+        await self.callback(interaction)
+
+        
+
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -176,6 +165,7 @@ class Group:
 
     def __str__(self) -> str:
         return self.name
+
     def add_command(self, command: Group | Command):
         if isinstance(command, Group) and self.parent:
             raise ValueError("groups can only be nested at most one level")
@@ -244,10 +234,8 @@ class Group:
 class Option:
     def __init__(
         self,
-        name: str,
-        description: str,
-        *,
-        type: OptionType | type = str,
+        name: str | None = None,
+        description: str | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
         required: bool | None = None,
@@ -268,10 +256,10 @@ class Option:
         self.max_value = max_value
         self.autocomplete = autocomplete
         self.type: OptionType = OptionType.STRING
-    
 
     def __repr__(self) -> str:
         return f"<Option name={self.name}>"
+
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,

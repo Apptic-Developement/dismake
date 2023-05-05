@@ -9,7 +9,7 @@ app = dismake.Bot(
     route="/",
 )
 
-group.plugin.load(app)
+# group.plugin.load(app)
 
 
 @app.event("ready")
@@ -18,8 +18,9 @@ async def on_ready():
     # sync = await app.sync_commands()
     # print(sync.text)
 
-
-
+@app.command(name="test_interaction", description="...")
+async def ti(interaction: dismake.Interaction):
+    print(interaction.data)
 
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)

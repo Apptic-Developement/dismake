@@ -170,7 +170,7 @@ class Bot(FastAPI):
 
         return decorator
 
-    async def sync_commands(self, guild_ids: Optional[int]):
+    async def sync_commands(self, guild_ids: Optional[int] = None):
         """
         Synchronizes all application commands to Discord.
 
@@ -269,7 +269,7 @@ class Bot(FastAPI):
     def add_command(self, command: Union[Command, Group]):
         """
         The add_command function is used to add a command or group of commands to the application.
-        
+
         Parameters
         ----------
         command: Union[Command, Group]
@@ -345,7 +345,7 @@ class Bot(FastAPI):
     ):
         """
         The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
-        
+
         Parameters
         ----------
         name: str
@@ -377,4 +377,3 @@ class Bot(FastAPI):
         )
         self._app_commands[command.name] = command
         return command
-

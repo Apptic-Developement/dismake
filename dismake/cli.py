@@ -16,10 +16,15 @@ def make_prompt_text(text: str, default: Optional[str]):
         return f"[bold][cyan]?[/cyan] {text} [black]({default})[/black][/bold]"
     return f"[cyan]?[/cyan] {text}"
 
+
 @app.command(name="init")
 def init_command(path: Optional[Path] = Path(".")):
     assert path is not None, "Path doesn't exists."
-    project_name = Prompt.ask(make_prompt_text("What is your project name", "my-project"))     
+    project_name = Prompt.ask(
+        make_prompt_text("What is your project name", "my-project")
+    )
+
+
 @app.command(name="sync")
 def sync_command():
     console.print("[bold][red]Sync command is still in developement.[/red][/bold]")

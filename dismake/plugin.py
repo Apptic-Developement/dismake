@@ -9,9 +9,8 @@ from .app_commands import Command, Group
 if TYPE_CHECKING:
     from .app_commands import Command, Group
     from .client import Bot
-__all__ = (
-    "Plugin",
-)
+__all__ = ("Plugin",)
+
 
 class Plugin:
     def __init__(self, name: str = __name__) -> None:
