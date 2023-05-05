@@ -1,48 +1,35 @@
-# from dismake import app_commands
-
-# command_1 = app_commands.Group(name="slash", description="This is main command.")
-# command_2 = app_commands.Group(
-#     name="slash_group", description="This is slash group command.", parent=command_1
-# )
+import typing as t
+import inspect
+from dismake import app_commands
+from dismake.app_commands.commands import Option
 
 
-# @command_1.command("sub_command1", "This is a sub command")
-# async def sub_command_c1_1():
-#     ...
+def command(
+    name: t.Annotated[
+        str, app_commands.Option(name="name", description="This is name field")
+    ],
+    age: t.Annotated[
+        int, app_commands.Option(name="age", description="This is age field")
+    ],
+    optional: str = "Hmm"
+):
+    ...
 
 
-# @command_1.command("sub_command2", "This is a sub command")
-# async def sub_command_c1_2():
-#     ...
+def validate_options(func: t.Callable):
+    params = inspect.signature(command).parameters
+    for k, v in params.items():
+        """
+        k: The name of the function
+            - name
+        v: The annotation of the function
+            - typing.Annotated[str, <dismake.app_commands.commands.Option object at 0x7f050fade0d0>]
+        """
+        annotation = v.annotation
+        if t.get_origin(annotation) != t.Annotated:
+            continue
+        option_type: type = annotation.__args__[0]
+        option_object: Option = annotation.__metadata__[0]
+        print(option_object.name)
 
-
-# @command_2.command("sub_command3", "This is a sub command")
-# async def sub_command_c2_1():
-#     ...
-
-
-# @command_2.command("sub_command4", "This is a sub command")
-# async def sub_command_c2_2():
-#     ...
-
-
-# print(command_1.to_dict())
-# import inspect, dismake
-# from dismake import app_commands
-# from typing import Annotated, get_origin
-
-
-# group = app_commands.Group(name="slash", description="This is main command.")
-# sub_group = group.create_sub_group(
-#     name="sub_group", description="This is sub group command."
-# )
-
-# @group.command("sub_command1", "This is a sub command 1.")
-# async def sub_command1(ctx, name: Annotated[str, app_commands.Option("name", "What is your name?")]):
-    
-#     await ctx.send(f"Your name is: {name} ?")
-
-# print(group.to_dict())
-
-from discord.interactions import Interaction 
-Interaction
+validate_options(command)

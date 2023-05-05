@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from ..types import AsyncFunction
     from ..permissions import Permissions
     from ..plugin import Plugin
+    from ..models import Interaction
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
@@ -73,41 +74,44 @@ class Command:
         self.options = _get_options(self.callback)
         self.plugin: Plugin | None = None
 
-    async def invoke(self, ctx: Context):
-        opt_data = dict()
-        options = ctx.get_options
-        if options is None:
-            return await self.callback(ctx)
-        for option in options:
-            if option.type in (
-                OptionType.USER.value,
-                OptionType.ROLE.value,
-                OptionType.CHANNEL.value,
-            ):
-                if (data := ctx.data) is not None:
-                    if (resolved := data.resolved) is not None:
-                        if (
-                            users := resolved.users
-                        ) is not None and option.type == OptionType.USER.value:
-                            opt_data[option.name] = users.get(str(option.value))
-                        elif (
-                            roles := resolved.roles
-                        ) is not None and option.type == OptionType.ROLE.value:
-                            opt_data[option.name] = roles.get(str(option.value))
-            else:
-                opt_data[option.name] = option.value
-        args = list()
-        for _, v in inspect.signature(self.callback).parameters.items():
-            if v.default == inspect._empty:
-                annotation = v.annotation
-                if get_origin(annotation) == Annotated:
-                    callback_params = annotation.__args__ + annotation.__metadata__
-                    if len(callback_params) == 2:
-                        option_object = callback_params[1].name
-                        args.append(opt_data.get(option_object))
-        args.insert(0, ctx)
-        await self.callback(*tuple(args))
-
+    def __str__(self) -> str:
+        return self.name
+    # async def invoke(self, ctx: Context):
+    #     opt_data = dict()
+    #     options = ctx.get_options
+    #     if options is None:
+    #         return await self.callback(ctx)
+    #     for option in options:
+    #         if option.type in (
+    #             OptionType.USER.value,
+    #             OptionType.ROLE.value,
+    #             OptionType.CHANNEL.value,
+    #         ):
+    #             if (data := ctx.data) is not None:
+    #                 if (resolved := data.resolved) is not None:
+    #                     if (
+    #                         users := resolved.users
+    #                     ) is not None and option.type == OptionType.USER.value:
+    #                         opt_data[option.name] = users.get(str(option.value))
+    #                     elif (
+    #                         roles := resolved.roles
+    #                     ) is not None and option.type == OptionType.ROLE.value:
+    #                         opt_data[option.name] = roles.get(str(option.value))
+    #         else:
+    #             opt_data[option.name] = option.value
+    #     args = list()
+    #     for _, v in inspect.signature(self.callback).parameters.items():
+    #         if v.default == inspect._empty:
+    #             annotation = v.annotation
+    #             if get_origin(annotation) == Annotated:
+    #                 callback_params = annotation.__args__ + annotation.__metadata__
+    #                 if len(callback_params) == 2:
+    #                     option_object = callback_params[1].name
+    #                     args.append(opt_data.get(option_object))
+    #     args.insert(0, ctx)
+    #     await self.callback(*tuple(args))
+    async def invoke(self, interaction: Interaction):
+        pass
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -170,6 +174,8 @@ class Group:
         if len(self.commands.values()) > 25:
             raise TypeError("groups cannot have more than 25 commands")
 
+    def __str__(self) -> str:
+        return self.name
     def add_command(self, command: Group | Command):
         if isinstance(command, Group) and self.parent:
             raise ValueError("groups can only be nested at most one level")
@@ -240,8 +246,8 @@ class Option:
         self,
         name: str,
         description: str,
-        type: OptionType | type = str,
         *,
+        type: OptionType | type = str,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
         required: bool | None = None,
@@ -261,12 +267,11 @@ class Option:
         self.min_value = min_value
         self.max_value = max_value
         self.autocomplete = autocomplete
-        self.type: OptionType
-        if isinstance(type, OptionType):
-            self.type = type
-        else:
-            self.type = _option_types[type]
+        self.type: OptionType = OptionType.STRING
+    
 
+    def __repr__(self) -> str:
+        return f"<Option name={self.name}>"
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
