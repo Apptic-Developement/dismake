@@ -1,7 +1,9 @@
 from __future__ import annotations
+from re import I
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel
+from ..ui import SelectOption
 from .user import Member, User
 from .guild import Guild
 from .role import Role
@@ -50,6 +52,15 @@ class ApplicationCommandData(BaseModel):
     guild_id: Optional[SnowFlake]
     target_id: Optional[SnowFlake]
 
+class MessageComponentData(BaseModel):
+    custom_id: str
+    component_type: int
+    values: Optional[List[SelectOption]]
+
+
+class ModalSubmitData(BaseModel):
+    custom_id: str
+    # components	array of message components	the values submitted by the user
 
 # class Interaction(BaseModel):
 #     request: Request
@@ -231,10 +242,16 @@ class Interaction:
         self.locale: Optional[str] = data.get("locale")
         self.guild_locale: Optional[str] = data.get("guild_locale")
         self.user: Union[User, Member]
-        self._data: Optional[dict] = None
-        self.data: Optional[ApplicationCommandData] = (
-            ApplicationCommandData(**self._data) if self._data else None
-        )
+        self._data: Optional[dict] = data.get("data")
+        self.data: Optional[
+            Union[ApplicationCommandData, ModalSubmitData, MessageComponentData]
+        ]
+        if self.is_application_command or self.is_autocomplete:
+            self.data = ApplicationCommandData(**self._data) if self._data else None
+        elif self.is_message_component:
+            self.data = MessageComponentData(**self._data) if self._data else None
+        else:
+            self.data = ModalSubmitData(**self._data) if self._data else None
         if self.guild_id:
             try:
                 member = data["member"]
@@ -294,7 +311,7 @@ class Interaction:
         return self.type == InteractionType.PING.value
 
     @property
-    def is_component(self) -> bool:
+    def is_message_component(self) -> bool:
         """
         The is_component function checks if the interaction is a component.
         """
@@ -309,13 +326,43 @@ class Interaction:
 
     @property
     def namespace(self) -> Namespace:
-        if self.type not in (InteractionType.APPLICATION_COMMAND.value, InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value):
+        if not isinstance(self.data, ApplicationCommandData):
             return Namespace(**{})
         if (data := self.data) is None or (options := data.options) is None:
             return Namespace(**{})
         kwargs = {}
         filtered_options: List[ApplicationCommandOption] = list()
-        return Namespace(**{})
+        for option in options:
+            if option.type == OptionType.SUB_COMMAND.value and option.options:
+                for sub_command_option in option.options:
+                    filtered_options.append(sub_command_option)
+            elif option.type == OptionType.SUB_COMMAND_GROUP.value and option.options:
+                for sub_command_groups in option.options:
+                    if sub_command_groups.options:
+                        for sub_command in sub_command_groups.options:
+                            if sub_command.options:
+                                for sub_command_option in sub_command.options:
+                                    filtered_options.append(sub_command_option)
+            else:
+                filtered_options.append(option)
+
+        if not filtered_options:
+            return Namespace(**{})
+
+        for foption in filtered_options:
+            if foption.type == OptionType.USER.value:
+                if data.resolved is not None and data.resolved.users is not None:
+                    kwargs[foption.name.replace("-", "_")] = data.resolved.users.get(str(foption.value))
+                else:
+                    continue
+            elif foption.type == OptionType.ROLE.value:
+                if data.resolved is not None and data.resolved.roles is not None:
+                    kwargs[foption.name.replace("-", "_")] = data.resolved.roles.get(str(foption.value))
+                else:
+                    continue
+            else:
+                kwargs[foption.name.replace("-", "_")] = foption.value
+        return Namespace(**kwargs)
 
     async def fetch_guild(self) -> Optional[Guild]:
         """
@@ -427,7 +474,24 @@ class Interaction:
             )
         return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
 
-
+    async def edit_message(
+        self, content: str, *, tts: bool = False, house: Optional[House] = None
+    ):
+        if not self.is_message_component:
+            return
+        if self.is_responded:
+            raise InteractionResponded(self)
+        if house:
+            self.bot.add_house(house)
+        payload = handle_edit_params(content=content, tts=tts, house=house)
+        return await self.bot._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.UPDATE_MESSAGE.value,
+                "data": payload,
+            },
+        )
 class Namespace:
     """
     Inspired from discord.py

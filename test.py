@@ -51,5 +51,3 @@ def validate_options(func: t.Callable):
 
 
 validate_options(command)
-
-import discord.interactions

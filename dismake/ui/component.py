@@ -5,7 +5,7 @@ from ..enums import ComponentTypes
 
 if TYPE_CHECKING:
     from .house import House
-    from .context import ComponentContext
+    from ..models import Interaction
 
 __all__ = ("Component",)
 
@@ -28,7 +28,7 @@ class Component:
         self._house = h
         return self._house
 
-    async def callback(self, ctx: ComponentContext) -> Any:
+    async def callback(self, interaction: Interaction) -> Any:
         ...
 
     def to_dict(self) -> Dict[str, Any]:

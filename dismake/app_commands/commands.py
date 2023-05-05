@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, Literal, get_origin
+from typing import Any, TYPE_CHECKING, Annotated, get_origin
 
 
 from ..permissions import Permissions
 from ..types import AsyncFunction
 from ..models import User, Member, Role
-from .context import Context
 from ..enums import CommandType, OptionType
 
 if TYPE_CHECKING:
     from ..types import AsyncFunction
     from ..permissions import Permissions
     from ..plugin import Plugin
-    from ..models import Interaction
+    from ..models import Interaction, ApplicationCommandOption
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
@@ -34,21 +33,17 @@ def _get_options(func: AsyncFunction):
     params = inspect.signature(func).parameters
     options: list[Option] = list()
     for k, v in params.items():
-        """
-        k: The name of the function
-            - name
-        v: The annotation of the function
-            - typing.Annotated[str, <Option name="foo">]
-        """
+        # k: The name of the function
+        #     - name
+        # v: The annotation of the function
+        #     - typing.Annotated[str, <Option name="foo">]
         annotation = v.annotation
         if get_origin(annotation) != Annotated:
             continue
         option_type: type = annotation.__args__[0]
         option_object: Option = annotation.__metadata__[0]
         option_object.type = _option_types[option_type]
-        if option_object.description is None and (doc := func.__doc__) is not None:
-            option_object.description = inspect.cleandoc(doc)
-        if option_object.description is None and func.__doc__ is None:
+        if option_object.description is None:
             option_object.description = "..."
 
         if option_object.name is None:
@@ -62,6 +57,8 @@ def _get_options(func: AsyncFunction):
 
         options.append(option_object)
     return options
+
+
 class Command:
     def __init__(
         self,
@@ -97,9 +94,16 @@ class Command:
     async def invoke(self, interaction: Interaction):
         args = tuple()
         kwargs = dict()
-        await self.callback(interaction)
-
-        
+        options = interaction.namespace.__dict__
+        params = inspect.signature(self.callback).parameters
+        for k, v in params.items():
+            option: type | None = options.get(k)
+            if option is not None:
+                if v.default != inspect._empty:
+                    kwargs[k] = option
+                else:
+                    args += (option,)
+        await self.callback(interaction, *args, **kwargs)
 
     def to_dict(self) -> dict[str, Any]:
         base = {
@@ -246,7 +250,7 @@ class Option:
         autocomplete: bool | None = None,
     ) -> None:
         self.name = name
-        self.description = description
+        self.description = description or "..."
         self.name_localizations = name_localizations
         self.description_localizations = description_localizations
         self.required = required

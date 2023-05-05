@@ -7,10 +7,7 @@ from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
-from .app_commands import Context
-from .models import Interaction
-from .ui import ComponentContext
-from .errors import CommandInvokeError, NotImplemented
+from .models import Interaction, ApplicationCommandData
 from .app_commands import Command, Group
 
 if TYPE_CHECKING:
@@ -34,44 +31,10 @@ class InteractionHandler:
             log.exception(e)
             return False
 
-    # async def _handle_command(self, request: Request) -> Any:
-    #     payload: dict = await request.json()
-    #     payload.update({"request": request, "is_response_done": False})
-    #     context = Context.parse_obj(payload)
-    #     if (data := context.data) is not None:
-    #         command = self.client._slash_commands.get(data.name)
-    #         if not command:
-    #             raise NotImplemented(f"Command {data.name!r} not found.")
-    #         try:
-    #             await command.before_invoke(context)
-    #             await command.callback(context)
-    #             await command.after_invoke(context)
-    #         except Exception as e:
-    #             await self.client._error_handler(
-    #                 context, CommandInvokeError(command, e)
-    #             )
-    # async def _handle_command(self, request: Request) -> Any:
-    #     payload: dict = await request.json()
-    #     payload.update({"request": request, "is_response_done": False})
-    #     context = Context.parse_obj(payload)
-    #     if (data := context.data) is not None:
-    #         command = self.client._app_commands.get(data.name)
-    #         if command is not None:
-    #             if isinstance(command, Command):
-    #                 await command.invoke(context)
-    #             elif isinstance(command, Group):
-    #                 assert data.options is not None, "Invalid data recieved."
-    #                 child_2 = command.commands.get(data.options[0].name)
-    #                 if isinstance(child_2, Group):
-    #                     assert data.options[0].options is not None, "Invalid data recieved."
-    #                     child_3 = child_2.commands.get(data.options[0].options[0].name)
-    #                     assert isinstance(child_3, Command)
-    #                     await child_3.invoke(context)
-    #                 if isinstance(child_2, Command):
-    #                     await child_2.invoke(context)
     async def _handle_command(self, request: Request) -> Any:
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
+        assert isinstance(interaction.data, ApplicationCommandData)
         if (data := interaction.data) is not None:
             command = self.client._app_commands.get(data.name)
             if command is not None:
@@ -84,10 +47,10 @@ class InteractionHandler:
                         assert (
                             data.options[0].options is not None
                         ), "Invalid data recieved."
-                        child_3 = child_2.commands.get(
-                            data.options[0].options[0].name
-                        )
-                        assert isinstance(child_3, Command), f"command {child_3} is too nested."
+                        child_3 = child_2.commands.get(data.options[0].options[0].name)
+                        assert isinstance(
+                            child_3, Command
+                        ), f"command {child_3} is too nested."
                         await child_3.invoke(interaction)
                     if isinstance(child_2, Command):
                         await child_2.invoke(interaction)
