@@ -1,9 +1,35 @@
-// imports 
-import { useConfig } from 'nextra-theme-docs'
+// imports
+import { useConfig } from "nextra-theme-docs";
+import Image from "next/image";
+import { useMounted } from "nextra/hooks";
+import { useTheme } from "next-themes";
 
 // theme config
 export default {
-  logo: <strong>Dismake</strong>,
+  logo: function Logo() {
+    // get theme
+    let mounted = useMounted();
+    let theme = mounted && useTheme().resolvedTheme;
+
+    return (
+      <>
+        <Image
+          style={{
+            filter: `brightness(${
+              theme == "light" ? "100" : "0"
+            }) saturate(100%) invert(100%)`,
+          }}
+          width={32}
+          height={32}
+          alt="Logo"
+          src="/logo.png "
+        />
+        <span>
+          <strong>Dismake</strong>
+        </span>
+      </>
+    );
+  },
   logoLink: "/",
   project: {
     link: "https://github.com/PranoyMajumdar/dismake",
@@ -50,7 +76,7 @@ export default {
           content="Dismake is a robust framework designed to assist you in developing stateless and independent Discord bots that employ Slash Commands. The framework is built on top of the FastAPI, a high-performance Python web framework, making it easy to use, efficient, and speedy."
         />
         <meta name="og:title" content={title} />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" type="image/svg+xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </>
     );
