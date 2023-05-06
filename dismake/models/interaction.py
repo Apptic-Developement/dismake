@@ -62,172 +62,40 @@ class ModalSubmitData(BaseModel):
     custom_id: str
     # components	array of message components	the values submitted by the user
 
-# class Interaction(BaseModel):
-#     request: Request
-#     is_response_done: bool
-#     id: SnowFlake
-#     application_id: SnowFlake
-#     type: int
-#     guild_id: Optional[int]
-#     channel: Optional[Any]
-#     channel_id: Optional[SnowFlake]
-#     member: Optional[Member]
-#     user: Optional[User]
-#     token: str
-#     version: int
-#     message: Optional[Message]
-#     app_permissions: Optional[str]
-#     locale: Optional[str]
-#     guild_locale: Optional[str]
-
-#     @root_validator
-#     def _validate_requests(cls, values):
-#         if values["message"]:
-#             values["message"]._request = values["request"]
-#         return values
-
-#     @property
-#     def is_responded(self) -> bool:
-#         return self.is_response_done
-
-#     @property
-#     def is_application_command(self) -> bool:
-#         """
-#         The is_application_command function checks if the interaction type is an application command.
-#         """
-#         return self.type == InteractionType.APPLICATION_COMMAND.value
-
-#     @property
-#     def is_autocomplete(self) -> bool:
-#         return self.type == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value
-
-#     @property
-#     def is_modal_submit(self) -> bool:
-#         return self.type == InteractionType.MODAL_SUBMIT.value
-
-#     @property
-#     def is_ping(self) -> bool:
-#         return self.type == InteractionType.PING.value
-
-#     @property
-#     def is_component(self) -> bool:
-#         return self.type == InteractionType.MESSAGE_COMPONENT.value
-
-#     @property
-#     def author(self) -> Union[Member, User]:
-#         if self.guild_id:
-#             assert self.member is not None
-#             return self.member
-#         assert self.user is not None
-#         return self.user
-
-#     async def fetch_guild(self) -> Guild:
-#         assert self.guild_id is not None, "Guild id is none."
-#         return await self.bot.fetch_guild(self.guild_id)
-
-#     @property
-#     def bot(self) -> Bot:
-#         return self.request.app
-
-#     async def respond(
-#         self,
-#         content: str,
-#         *,
-#         tts: bool = False,
-#         ephemeral: bool = False,
-#         house: Optional[House] = None,
-#     ):
-#         if self.is_responded:
-#             raise InteractionResponded(self)
-
-#         if house:
-#             self.bot.add_house(house)
-#         await self.bot._http.client.request(
-#             method="POST",
-#             url=f"/interactions/{self.id}/{self.token}/callback",
-#             json={
-#                 "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
-#                 "data": handle_send_params(
-#                     content=content, tts=tts, ephemeral=ephemeral, house=house
-#                 ),
-#             },
-#             headers=self.bot._http.headers,
-#         )
-#         self.is_response_done = True
-
-#     async def defer(self, thinking: bool = True):
-#         if self.is_responded:
-#             raise InteractionResponded(self)
-#         await self.bot._http.client.request(
-#             method="POST",
-#             url=f"/interactions/{self.id}/{self.token}/callback",
-#             json={
-#                 "type": InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.value,
-#                 "data": {"flags": MessageFlags.LOADING.value} if not thinking else None,
-#             },
-#             headers=self.bot._http.headers,
-#         )
-#         self.is_response_done = True
-
-#     async def send_followup(
-#         self,
-#         content: str,
-#         *,
-#         tts: bool = False,
-#         house: Optional[House] = None,
-#         ephemeral: bool = False,
-#     ):
-#         if self.is_responded != False:
-#             raise InteractionNotResponded(self)
-
-#         if house:
-#             self.bot.add_house(house)
-#         return await self.bot._http.client.request(
-#             method="POST",
-#             url=f"/webhooks/{self.application_id}/{self.token}",
-#             json=handle_send_params(
-#                 content=content, tts=tts, house=house, ephemeral=ephemeral
-#             ),
-#         )
-
-#     async def edit_original_response(
-#         self, content: str, *, tts: bool = False, house: Optional[House] = None
-#     ):
-#         if house:
-#             self.bot.add_house(house)
-#         return await self.bot._http.client.request(
-#             method="PATCH",
-#             url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
-#             json=handle_edit_params(content=content, tts=tts, house=house),
-#         )
-
-#     async def get_original_response(self) -> Message:
-#         res = await self.bot._http.client.request(
-#             method="GET",
-#             url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
-#         )
-#         res.raise_for_status()
-#         return Message(**res.json())
-
-#     async def send(
-#         self,
-#         content: str,
-#         *,
-#         tts: bool = False,
-#         house: Optional[House] = None,
-#         ephemeral: bool = False,
-#     ):
-#         if self.is_responded:
-#             return await self.send_followup(
-#                 content, tts=tts, house=house, ephemeral=ephemeral
-#             )
-#         return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
-
-#     class Config:
-#         arbitrary_types_allowed = True
-
-
+import discord.interactions
 class Interaction:
+    """Represents a Discord interaction.
+
+    An interaction happens when a user does an action that needs to
+    be notified. Current examples are slash commands and components.
+
+    Parameters
+    -----------
+    request: Request
+        The request object.
+    data: Dict[str, Any]
+        The interaction data
+    """
+    __slots__ = (
+        "_request",
+        "_is_response_done",
+        "id",
+        "application_id",
+        "type",
+        "token",
+        "version",
+        "guild_id",
+        "channel_id",
+        "app_permissions",
+        "locale",
+        "guild_locale",
+        "user",
+        "_data",
+        "data",
+        "channel",
+        "__message",
+        "message",
+    )
     def __init__(self, request: Request, data: Dict[str, Any]) -> None:
         self._request = request
         self._is_response_done = False
@@ -274,13 +142,6 @@ class Interaction:
         """
         return self._request.app
 
-    @property
-    def is_done(self) -> bool:
-        """
-        :class:`bool`: Indicates whether an interaction response has been done before.
-        An interaction can only be responded to once.
-        """
-        return self._is_response_done
 
     @property
     def is_application_command(self) -> bool:
@@ -320,7 +181,8 @@ class Interaction:
     @property
     def is_responded(self) -> bool:
         """
-        The is_responded function checks if the response is done.
+        :class:`bool`: Indicates whether an interaction response has been done before.
+        An interaction can only be responded to once.
         """
         return self._is_response_done
 
@@ -373,8 +235,6 @@ class Interaction:
         -------
         Optional[Guild]:
             A guild object if the guild_id is not none.
-
-        :doc-author: Trelent
         """
         if self.guild_id is None:
             return None
@@ -404,7 +264,7 @@ class Interaction:
             },
             headers=self.bot._http.headers,
         )
-        self.is_response_done = True
+        self._is_response_done = True
 
     async def defer(self, thinking: bool = True):
         if self.is_responded:
@@ -418,7 +278,7 @@ class Interaction:
             },
             headers=self.bot._http.headers,
         )
-        self.is_response_done = True
+        self._is_response_done = True
 
     async def send_followup(
         self,
