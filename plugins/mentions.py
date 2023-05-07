@@ -1,17 +1,6 @@
 import dismake
-from dismake import app_commands, ui
+from dismake import app_commands
 from typing import Annotated
-
-
-
-
-
-#################################
-############# Components #############
-
-############# Components #############
-#################################
-
 
 
 plugin = dismake.Plugin()
@@ -19,41 +8,32 @@ plugin = dismake.Plugin()
 mentions = plugin.create_group(
     name="mentions", description="This group holds only mentions commands."
 )
-# channels = mentions.create_sub_group(
-#     name="channels", description="This sub group holds only channel mention commands."
-# )
-
-components = mentions.create_sub_group(
-    name="components",
-    description="This sub group holds all the components related commands.",
-)
-
 
 @mentions.command(name="echo", description="Echo command.")
 async def echo_command(
-    ctx,
+    interaction,
     text: Annotated[
         str,
         app_commands.Option(),
     ],
 ):
-    await ctx.send(f"{text}")
+    await interaction.send(f"{text}")
 
 
 @mentions.command(name="user", description="User mention command.")
 async def user_command(
-    ctx,
+    interaction,
     user: Annotated[
         dismake.User,
         app_commands.Option(),
     ],
 ):
-    await ctx.send(f"Mentioned: {user.mention}")
+    await interaction.send(f"Mentioned: {user.mention}")
 
 
 @mentions.command(name="role", description="Role mention command.")
 async def role_command(
-    ctx,
+    interaction,
     role1: Annotated[
         dismake.Role,
         app_commands.Option(),
@@ -67,14 +47,16 @@ async def role_command(
         app_commands.Option(),
     ],
 ):
-    await ctx.send(
+    await interaction.send(
         f"Mentioned -\n>>> \nRole 1: {role1.mention}\nRole 2: {role2.mention}\nRole 3: {role3.mention}"
     )
 
 
-@components.command(
-    name="button", description="A button which says 'Hii' to the invoker."
-)
-async def button_command(ctx):
-    # TODO
-    pass
+
+@mentions.command(name="autocomplete", description="This sub command is have a autocomplete option.")
+async def autocomplete(interaction: dismake.Interaction,
+    fav_fruit: Annotated[str, app_commands.Option(autocomplete=True)],
+    fav_fruit2: Annotated[str, app_commands.Option(autocomplete=True)],
+    fav_fruit3: Annotated[str, app_commands.Option(autocomplete=True)],
+    ):
+    await interaction.send(f"Ok {fav_fruit}")

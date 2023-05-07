@@ -10,7 +10,7 @@ __all__ = ("Button",)
 class Button(Component):
     def __init__(
         self,
-        label: str,
+        label: Optional[str],
         custom_id: Optional[str],
         style: Optional[ButtonStyles],
         emoji: Optional[Union[PartialEmoji, str]] = None,

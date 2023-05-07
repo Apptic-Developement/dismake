@@ -23,6 +23,7 @@ __all__ = (
     "Interaction",
     "ApplicationCommandData",
     "ApplicationCommandOption",
+    "MessageComponentData"
 )
 
 

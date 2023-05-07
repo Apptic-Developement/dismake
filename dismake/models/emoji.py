@@ -28,7 +28,7 @@ class PartialEmoji(BaseModel):
             id = int(groups["id"])
             name = groups['name']
             return cls(id=id, name=name, animated=animated)
-        return cls(id=None, name=None, animated=None)
+        return cls(id=None, name=value, animated=None)
 
         
 

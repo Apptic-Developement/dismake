@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, get_origin
-
+from typing import Any, TYPE_CHECKING, Annotated, Callable, Coroutine, get_origin
+from functools import wraps
 
 from ..permissions import Permissions
 from ..types import AsyncFunction
@@ -27,6 +27,7 @@ _option_types = {
     int:            OptionType.INTEGER,
     bool:           OptionType.BOOLEAN,
 }
+
 
 
 def _get_options(func: AsyncFunction):
@@ -87,6 +88,8 @@ class Command:
         )
         self.options = _get_options(self.callback)
         self.plugin: Plugin | None = None
+        self.autocompletes: dict[str, AsyncFunction] = {}
+        
 
     def __str__(self) -> str:
         return self.name
@@ -105,6 +108,17 @@ class Command:
                     args += (option,)
         await self.callback(interaction, *args, **kwargs)
 
+    async def invoke_autocomplete(self, interaction: Interaction, name: str) -> list[Choice] | None:
+        ...
+    def autocomplete(self, option: str):
+        def decorator(coro: AsyncFunction):
+            @wraps(coro)
+            def wrapper(*_, **__):
+                self.autocompletes[option] = coro
+                return coro
+            return wrapper()
+        return decorator
+    
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,

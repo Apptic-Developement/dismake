@@ -49,7 +49,7 @@ class House:
 
     def button(
         self,
-        label: str,
+        label: Optional[str] = None,
         custom_id: Optional[str] = None,
         emoji: Optional[str] = None,
         style: Optional[ButtonStyles] = None,

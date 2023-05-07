@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
-from .models import Interaction, ApplicationCommandData
+from .models import Interaction, ApplicationCommandData, MessageComponentData
 from .app_commands import Command, Group
 
 if TYPE_CHECKING:
@@ -55,36 +55,38 @@ class InteractionHandler:
                     if isinstance(child_2, Command):
                         await child_2.invoke(interaction)
 
-    # async def _handle_autocomplete(self, request: Request) -> Any:
-    #     payload: dict = await request.json()
-    #     payload.update({"request": request, "is_response_done": False})
-    #     context = Context.parse_obj(payload)
-    #     if (data := context.data) is not None:
-    #         if command := self.client.get_command(data.name):
-    #             if choices := await command.autocomplete(context):
-    #                 return JSONResponse(
-    #                     {
-    #                         "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-    #                         "data": {
-    #                             "choices": [choice.to_dict() for choice in choices]
-    #                         },
-    #                     }
-    #                 )
-    #             return JSONResponse(
-    #                 {
-    #                     "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
-    #                     "data": {"choices": []},
-    #                 }
-    #             )
+    async def _handle_autocomplete(self, request: Request) -> Any:
+        payload: dict = await request.json()
+        interaction = Interaction(request=request, data=payload)
+        print(payload)
+        return
+        if (
+            interaction.data is not None
+            and isinstance(interaction.data, ApplicationCommandData)
+            and interaction.is_autocomplete
+        ):
+            if command := self.client.get_command(interaction.data.name):
+                if isinstance(command, Command):
+                    assert interaction.data.options is not None
+                    choices = await command.invoke_autocomplete(
+                        interaction=interaction, name=interaction.data.options[0].name
+                    )
+                else:
+                    assert isinstance(command, Group) and interaction.data.options is not None
+                    child_2 = command.commands.get(interaction.data.options[0].name)
+                    if isinstance(child_2, Group):
+                        assert interaction.data.options[0].options is not None
+                        child_3 = command.commands.get(interaction.data.options[0].name)
+                        if child_3 and isinstance(child_3, Command):
+                            choices = await child_3.invoke_autocomplete(interaction=interaction, name="ok")
 
-    # async def _handle_message_component(self, request: Request) -> Any:
-    #     payload: dict = await request.json()
-    #     payload.update({"request": request, "is_response_done": False})
-    #     ctx = ComponentContext.parse_obj(payload)
-    #     if data := ctx.data:
-    #         comp = self.client._components.get(data.custom_id)
-    #         if comp:
-    #             await comp.callback(ctx)
+    async def _handle_message_component(self, request: Request) -> Any:
+        payload: dict = await request.json()
+        interaction = Interaction(request=request, data=payload)
+        if interaction.data and isinstance(interaction.data, MessageComponentData):
+            comp = self.client._components.get(interaction.data.custom_id)
+            if comp:
+                await comp.callback(interaction)
 
     async def handle_interactions(self, request: Request):
         signature = request.headers["X-Signature-Ed25519"]
@@ -107,9 +109,9 @@ class InteractionHandler:
             return JSONResponse({"type": InteractionResponseType.PONG.value})
         if payload["type"] == InteractionType.APPLICATION_COMMAND.value:
             await self._handle_command(request)
-        # elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
-        # #     return await self._handle_autocomplete(request)
-        # elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
-        #     await self._handle_message_component(request)
+        elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
+            return await self._handle_autocomplete(request)
+        elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
+            await self._handle_message_component(request)
 
         return JSONResponse({"ack": InteractionResponseType.PONG.value})
