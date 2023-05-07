@@ -11,7 +11,7 @@ from ..errors import ComponentException
 from ..utils import chunk
 
 if TYPE_CHECKING:
-    from .context import ComponentContext
+    from ..models import Interaction
 
 __all__ = ("House",)
 
@@ -32,7 +32,7 @@ class House:
         self.components: List[Component] = []
         self._error_handler: AsyncFunction = self.on_error
 
-    async def on_error(self, ctx: ComponentContext) -> Any:
+    async def on_error(self, interaction: Interaction) -> Any:
         pass
 
     def add_component(self, component: Component):
@@ -51,6 +51,7 @@ class House:
         self,
         label: str,
         custom_id: Optional[str] = None,
+        emoji: Optional[str] = None,
         style: Optional[ButtonStyles] = None,
         url: Optional[str] = None,
         disabled: Optional[bool] = None,
@@ -64,6 +65,7 @@ class House:
                     style=style,
                     url=url,
                     disabled=disabled,
+                    emoji=emoji
                 )
                 button.callback = coro
                 self.add_component(button)

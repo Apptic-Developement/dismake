@@ -139,14 +139,14 @@ class Locale(StrEnum):
     ko = "ko"  # 	Korean	한국어
 
 
-class ComponentTypes(IntEnum):
+class ComponentTypes(Enum):
     ACTION_ROW = 1
     BUTTON = 2
     SELECT_MENU = 3
     TEXT_INPUT = 4
 
 
-class ButtonStyles(IntEnum):
+class ButtonStyles(Enum):
     PRIMARY = primary = 1
     SECONDARY = secondary = 2
     SUCCESS = success = 3
@@ -154,6 +154,6 @@ class ButtonStyles(IntEnum):
     LINK = link = 5
 
 
-class TextInputStyle(IntEnum):
+class TextInputStyle(Enum):
     SHORT = short = 1
     PARAGRAPH = paragraph = 2

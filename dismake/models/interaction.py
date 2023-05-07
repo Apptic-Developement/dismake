@@ -3,7 +3,7 @@ from re import I
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from pydantic import BaseModel
-from ..ui import SelectOption
+from .components import SelectOption
 from .user import Member, User
 from .guild import Guild
 from .role import Role
