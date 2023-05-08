@@ -32,9 +32,9 @@ export default {
   },
   logoLink: "/",
   project: {
-    link: "https://github.com/PranoyMajumdar/dismake",
+    link: "https://github.com/Apptic-Developement/dismake",
   },
-  docsRepositoryBase: "https://github.com/PranoyMajumdar/dismake/docs/pages",
+  docsRepositoryBase: "https://github.com/Apptic-Developement/dismake/docs/pages",
   chat: {
     link: "https://dsc.gg/apptic",
   },
@@ -47,7 +47,7 @@ export default {
     key: "dismake-dev",
     dismissible: true,
     text: (
-      <a href="https://github.com/PranoyMajumdar/dismake/pulls" target="_blank">
+      <a href="https://github.com/Apptic-Developement/dismake/pulls" target="_blank">
         💖 Contribute now →
       </a>
     ),
@@ -56,7 +56,7 @@ export default {
     text: (
       <span>
         MIT {new Date().getFullYear()} ©{" "}
-        <a href="https://github.com/PranoyMajumdar/dismake" target="_blank">
+        <a href="https://github.com/Apptic-Developement/dismake" target="_blank">
           Apptic Development
         </a>
         .

@@ -7,3 +7,5 @@ from .role import *
 from .interaction import *
 from .emoji import *
 from .components import *
+from .permission_overwrites import *
+from .channels import *

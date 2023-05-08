@@ -13,7 +13,7 @@ from ..errors import InteractionNotResponded, InteractionResponded
 from ..params import handle_send_params, handle_edit_params
 from fastapi import Request
 from ..types import SnowFlake
-
+from .channels import Channel
 if TYPE_CHECKING:
     from ..ui import House
     from ..client import Bot
@@ -58,6 +58,9 @@ def _options_to_dict(
                 namespace_dict[option.name.replace("-", "_")] = resolved_data.roles.get(
                     str(option.value)
                 )
+        elif option.type == OptionType.CHANNEL.value and resolved_data is not None:
+            if resolved_data.channels is not None:
+                namespace_dict[option.name.replace("-", "_")] = resolved_data.channels.get(str(option.value))
         else:
             namespace_dict[option.name.replace("-", "_")] = option.value
     return namespace_dict
@@ -66,7 +69,7 @@ def _options_to_dict(
 class ResolvedData(BaseModel):
     users: Optional[Dict[str, User]]
     members: Optional[Any]
-    channels: Optional[Any]
+    channels: Optional[Dict[str, Channel]]
     roles: Optional[Dict[str, Role]]
     messages: Optional[Any]
     attachments: Optional[Any]
@@ -75,7 +78,7 @@ class ResolvedData(BaseModel):
 class ApplicationCommandOption(BaseModel):
     name: str
     type: int
-    value: Optional[Union[str, int, float, bool, User, Role]]
+    value: Optional[Union[str, int, float, bool, User, Role, Channel]]
     options: Optional[List[ApplicationCommandOption]]
     focused: bool = False
 
@@ -101,8 +104,9 @@ class ModalSubmitData(BaseModel):
     # components	array of message components	the values submitted by the user
 
 class Interaction:
-    """Represents a Discord interaction.
-
+    """
+    Represents a Discord interaction.
+    
     An interaction happens when a user does an action that needs to
     be notified. Current examples are slash commands and components.
 

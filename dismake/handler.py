@@ -8,11 +8,10 @@ from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
-
+from .app_commands import Command, Group
 
 if TYPE_CHECKING:
     from .client import Bot
-    from .app_commands import Command, Group
 
 
     

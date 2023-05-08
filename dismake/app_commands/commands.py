@@ -4,6 +4,8 @@ import inspect
 from typing import Any, TYPE_CHECKING, Annotated, Callable, Coroutine, get_origin
 from functools import wraps
 
+from dismake.models.channels import Channel
+
 from ..permissions import Permissions
 from ..types import AsyncFunction
 from ..models import User, Member, Role
@@ -20,12 +22,13 @@ __all__ = ("Command", "Option", "Choice", "Group")
 
 _option_types = {
     # fmt: off
+    bool:           OptionType.BOOLEAN,
+    int:            OptionType.INTEGER,
+    str:            OptionType.STRING,
+    Channel:        OptionType.CHANNEL,
     User:           OptionType.USER,
     Member:         OptionType.USER,
     Role:           OptionType.ROLE,
-    str:            OptionType.STRING,
-    int:            OptionType.INTEGER,
-    bool:           OptionType.BOOLEAN,
 }
 
 
@@ -110,8 +113,8 @@ class Command:
         autocomplete = self.autocompletes.get(name)
         if not autocomplete:
             return
-
-        choices: list[Choice] | None = await autocomplete(interaction)
+        
+        choices: list[Choice] | None = await autocomplete(interaction, name=interaction.namespace.__dict__[name])
         if choices is not None:
             return await interaction.autocomplete(choices)
 

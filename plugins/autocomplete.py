@@ -58,6 +58,6 @@ async def sub_group_command(
 @command.autocomplete("fruit1")
 @command.autocomplete("fruit2")
 @command.autocomplete("fruit3")
-async def autocomplete_callback(interaction: dismake.Interaction):
+async def autocomplete_callback(interaction: dismake.Interaction, name: str):
     fruits = ["Mango", "Apple", "Banana", "Pineaple", "Graps", "Strawberry", "Berry"]
     return [app_commands.Choice(name=fruit) for fruit in fruits]

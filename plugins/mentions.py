@@ -9,6 +9,10 @@ mentions = plugin.create_group(
     name="mentions", description="This group holds only mentions commands."
 )
 
+channels = plugin.create_group(
+    name="channels", description="This group holds only channels commands."
+)
+
 
 @mentions.command(name="echo", description="Echo command.")
 async def echo_command(
@@ -53,13 +57,9 @@ async def role_command(
     )
 
 
-@mentions.command(
-    name="autocomplete", description="This sub command is have a autocomplete option."
+@channels.command(
+    name="text",
+    description="This channel mentions a text channel."
 )
-async def autocomplete(
-    interaction: dismake.Interaction,
-    fav_fruit: Annotated[str, app_commands.Option(autocomplete=True)],
-    fav_fruit2: Annotated[str, app_commands.Option(autocomplete=True)],
-    fav_fruit3: Annotated[str, app_commands.Option(autocomplete=True)],
-):
-    await interaction.send(f"Ok {fav_fruit}")
+async def text_mention(interaction: dismake.Interaction, channel: Annotated[dismake.Channel, app_commands.Option()]):
+    await interaction.send(f"Mentioned: {channel.mention}")
