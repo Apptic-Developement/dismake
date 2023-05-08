@@ -65,7 +65,7 @@ class House:
                     style=style,
                     url=url,
                     disabled=disabled,
-                    emoji=emoji
+                    emoji=emoji,
                 )
                 button.callback = coro
                 self.add_component(button)

@@ -4,6 +4,7 @@ from typing import Optional, Any, Dict, Union
 from .component import Component
 from ..enums import ButtonStyles, ComponentTypes
 from ..models import PartialEmoji
+
 __all__ = ("Button",)
 
 

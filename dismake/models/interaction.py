@@ -17,14 +17,50 @@ from ..types import SnowFlake
 if TYPE_CHECKING:
     from ..ui import House
     from ..client import Bot
+    from ..app_commands import Choice
 
 
 __all__ = (
     "Interaction",
     "ApplicationCommandData",
     "ApplicationCommandOption",
-    "MessageComponentData"
+    "MessageComponentData",
 )
+
+
+def _extract_options(
+    option: ApplicationCommandOption,
+) -> List[ApplicationCommandOption]:
+    """Recursively extract options from commands"""
+    if option.type == OptionType.SUB_COMMAND.value and option.options is not None:
+        return [o for sub_opt in option.options for o in _extract_options(sub_opt)]
+    elif (
+        option.type == OptionType.SUB_COMMAND_GROUP.value and option.options is not None
+    ):
+        return [o for sub_group in option.options for o in _extract_options(sub_group)]
+    else:
+        return [option]
+
+
+def _options_to_dict(
+    options: List[ApplicationCommandOption], resolved_data: Optional[ResolvedData]
+) -> Dict[str, Any]:
+    """Convert options to a dictionary"""
+    namespace_dict = {}
+    for option in options:
+        if option.type == OptionType.USER.value and resolved_data is not None:
+            if resolved_data.users is not None:
+                namespace_dict[option.name.replace("-", "_")] = resolved_data.users.get(
+                    str(option.value)
+                )
+        elif option.type == OptionType.ROLE.value and resolved_data is not None:
+            if resolved_data.roles is not None:
+                namespace_dict[option.name.replace("-", "_")] = resolved_data.roles.get(
+                    str(option.value)
+                )
+        else:
+            namespace_dict[option.name.replace("-", "_")] = option.value
+    return namespace_dict
 
 
 class ResolvedData(BaseModel):
@@ -53,6 +89,7 @@ class ApplicationCommandData(BaseModel):
     guild_id: Optional[SnowFlake]
     target_id: Optional[SnowFlake]
 
+
 class MessageComponentData(BaseModel):
     custom_id: str
     component_type: int
@@ -63,7 +100,6 @@ class ModalSubmitData(BaseModel):
     custom_id: str
     # components	array of message components	the values submitted by the user
 
-import discord.interactions
 class Interaction:
     """Represents a Discord interaction.
 
@@ -77,6 +113,7 @@ class Interaction:
     data: Dict[str, Any]
         The interaction data
     """
+
     __slots__ = (
         "_request",
         "_is_response_done",
@@ -97,6 +134,7 @@ class Interaction:
         "__message",
         "message",
     )
+
     def __init__(self, request: Request, data: Dict[str, Any]) -> None:
         self._request = request
         self._is_response_done = False
@@ -143,7 +181,6 @@ class Interaction:
         """
         return self._request.app
 
-
     @property
     def is_application_command(self) -> bool:
         """
@@ -187,45 +224,71 @@ class Interaction:
         """
         return self._is_response_done
 
+    # @property
+    # def namespace(self) -> Namespace:
+    #     if not isinstance(self.data, ApplicationCommandData):
+    #         return Namespace(**{})
+    #     if (data := self.data) is None or (options := data.options) is None:
+    #         return Namespace(**{})
+    #     kwargs = {}
+    #     filtered_options: List[ApplicationCommandOption] = list()
+    #     for option in options:
+    #         if (
+    #             option.type == OptionType.SUB_COMMAND.value
+    #             and option.options is not None
+    #         ):
+    #             for sub_command_option in option.options:
+    #                 filtered_options.append(sub_command_option)
+    #         elif (
+    #             option.type == OptionType.SUB_COMMAND_GROUP.value
+    #             and option.options is not None
+    #         ):
+    #             for sub_command_groups in option.options:
+    #                 if not sub_command_groups.options:
+    #                     filtered_options.append(sub_command_groups)
+    #                 else:
+    #                     for sub_command in sub_command_groups.options:
+    #                         if sub_command.options:
+    #                             for sub_command_option in sub_command.options:
+    #                                 filtered_options.append(sub_command_option)
+    #                         else:
+    #                             filtered_options.append(sub_command)
+    #         else:
+    #             filtered_options.append(option)
+    #     if not filtered_options:
+    #         return Namespace(**{})
+
+    #     for foption in filtered_options:
+    #         if foption.type == OptionType.USER.value:
+    #             if data.resolved is not None and data.resolved.users is not None:
+    #                 kwargs[foption.name.replace("-", "_")] = data.resolved.users.get(
+    #                     str(foption.value)
+    #                 )
+    #             else:
+    #                 continue
+    #         elif foption.type == OptionType.ROLE.value:
+    #             if data.resolved is not None and data.resolved.roles is not None:
+    #                 kwargs[foption.name.replace("-", "_")] = data.resolved.roles.get(
+    #                     str(foption.value)
+    #                 )
+    #             else:
+    #                 continue
+    #         else:
+    #             kwargs[foption.name.replace("-", "_")] = foption.value
+    #     return Namespace(**kwargs)
+
     @property
     def namespace(self) -> Namespace:
         if not isinstance(self.data, ApplicationCommandData):
             return Namespace(**{})
         if (data := self.data) is None or (options := data.options) is None:
             return Namespace(**{})
-        kwargs = {}
-        filtered_options: List[ApplicationCommandOption] = list()
-        for option in options:
-            if option.type == OptionType.SUB_COMMAND.value and option.options:
-                for sub_command_option in option.options:
-                    filtered_options.append(sub_command_option)
-            elif option.type == OptionType.SUB_COMMAND_GROUP.value and option.options:
-                for sub_command_groups in option.options:
-                    if sub_command_groups.options:
-                        for sub_command in sub_command_groups.options:
-                            if sub_command.options:
-                                for sub_command_option in sub_command.options:
-                                    filtered_options.append(sub_command_option)
-            else:
-                filtered_options.append(option)
 
-        if not filtered_options:
+        options = [o for option in options for o in _extract_options(option)]
+        if not options:
             return Namespace(**{})
 
-        for foption in filtered_options:
-            if foption.type == OptionType.USER.value:
-                if data.resolved is not None and data.resolved.users is not None:
-                    kwargs[foption.name.replace("-", "_")] = data.resolved.users.get(str(foption.value))
-                else:
-                    continue
-            elif foption.type == OptionType.ROLE.value:
-                if data.resolved is not None and data.resolved.roles is not None:
-                    kwargs[foption.name.replace("-", "_")] = data.resolved.roles.get(str(foption.value))
-                else:
-                    continue
-            else:
-                kwargs[foption.name.replace("-", "_")] = foption.value
-        return Namespace(**kwargs)
+        return Namespace(**_options_to_dict(options, data.resolved))
 
     async def fetch_guild(self) -> Optional[Guild]:
         """
@@ -353,6 +416,21 @@ class Interaction:
                 "data": payload,
             },
         )
+
+    async def autocomplete(self, choices: List[Choice]):
+        if not self.is_autocomplete:
+            return
+
+        return await self.bot._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT.value,
+                "data": {"choices": [choice.to_dict() for choice in choices]},
+            },
+        )
+
+
 class Namespace:
     """
     Inspired from discord.py

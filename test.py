@@ -53,22 +53,45 @@
 # validate_options(command)
 
 
-from typing import Optional
-from discord import ui
-from discord.ext import commands
-from config import token
-import discord
+# type: ignore
+# from typing import Dict, List, Union
 
-import discord.state
+# def extract_options(option: ApplicationCommandOption) -> List[ApplicationCommandOption]:
+#     """Recursively extract options from sub-command groups"""
+#     if option.type == OptionType.SUB_COMMAND.value and option.options is not None:
+#         return [o for sub_opt in option.options for o in extract_options(sub_opt)]
+#     elif option.type == OptionType.SUB_COMMAND_GROUP.value and option.options is not None:
+#         return [o for sub_group in option.options for o in extract_options(sub_group)]
+#     else:
+#         return [option]
 
-class MyView(ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.add_item(ui.Button(emoji="😂"))
+# def options_to_dict(options: List[ApplicationCommandOption], resolved_data: ApplicationCommandInteractionDataResolved) -> Dict[str, Union[str, None]]:
+#     """Convert options to a dictionary"""
+#     namespace_dict = {}
+#     for option in options:
+#         if option.type == OptionType.USER.value:
+#             if resolved_data is not None and resolved_data.users is not None:
+#                 user_id = str(option.value)
+#                 namespace_dict[option.name.replace("-", "_")] = resolved_data.users.get(user_id)
+#         elif option.type == OptionType.ROLE.value:
+#             if resolved_data is not None and resolved_data.roles is not None:
+#                 role_id = str(option.value)
+#                 namespace_dict[option.name.replace("-", "_")] = resolved_data.roles.get(role_id)
+#         else:
+#             namespace_dict[option.name.replace("-", "_")] = option.value if not isinstance(option, ApplicationCommandGroup) else None
+#     return namespace_dict
 
-bot = discord.Client(intents=discord.Intents.none())
-@bot.event
-async def on_ready():
-    v = MyView()
-    print(v.to_components())
-bot.run(token)
+# @property
+# def namespace(self) -> Dict[str, Union[str, None]]:
+#     """Extract options from interaction payload and return them as a dictionary"""
+#     if not isinstance(self.data, ApplicationCommandData):
+#         return {}
+#     data = self.data
+#     if data.options is None:
+#         return {}
+#     resolved_data = data.resolved
+#     options = [o for option in data.options for o in extract_options(option)]
+#     if not options:
+#         return {}
+
+#     return options_to_dict(options, resolved_data)

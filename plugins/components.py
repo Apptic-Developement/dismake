@@ -3,9 +3,11 @@ import dismake
 
 house = ui.House()
 
+
 @house.button(emoji="<:prishu_juicepeetihui:928222783069093888>")
 async def bcb(interaction: dismake.Interaction):
     await interaction.send(f"Ok? {interaction.user}")
+
 
 @house.button(emoji="👀")
 async def bcb2(interaction: dismake.Interaction):

@@ -9,6 +9,7 @@ mentions = plugin.create_group(
     name="mentions", description="This group holds only mentions commands."
 )
 
+
 @mentions.command(name="echo", description="Echo command.")
 async def echo_command(
     interaction,
@@ -52,11 +53,13 @@ async def role_command(
     )
 
 
-
-@mentions.command(name="autocomplete", description="This sub command is have a autocomplete option.")
-async def autocomplete(interaction: dismake.Interaction,
+@mentions.command(
+    name="autocomplete", description="This sub command is have a autocomplete option."
+)
+async def autocomplete(
+    interaction: dismake.Interaction,
     fav_fruit: Annotated[str, app_commands.Option(autocomplete=True)],
     fav_fruit2: Annotated[str, app_commands.Option(autocomplete=True)],
     fav_fruit3: Annotated[str, app_commands.Option(autocomplete=True)],
-    ):
+):
     await interaction.send(f"Ok {fav_fruit}")

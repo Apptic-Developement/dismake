@@ -1,6 +1,5 @@
-from typing import Annotated
 import dismake, config
-from plugins import mentions, components
+from plugins import mentions, components, autocomplete
 
 app = dismake.Bot(
     token=config.token,
@@ -11,6 +10,7 @@ app = dismake.Bot(
 
 mentions.plugin.load(app)
 components.plugin.load(app)
+autocomplete.plugin.load(app)
 
 
 @app.event("ready")

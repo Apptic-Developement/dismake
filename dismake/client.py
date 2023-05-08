@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 
 log = getLogger("uvicorn")
+
+
 __all__ = ("Bot",)
 
 
@@ -43,6 +45,7 @@ class Bot(FastAPI):
     **kwargs
         Additional keyword arguments that will be passed to the FastAPI constructor.
     """
+
     def __init__(
         self,
         token: str,

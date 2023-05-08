@@ -29,7 +29,6 @@ _option_types = {
 }
 
 
-
 def _get_options(func: AsyncFunction):
     params = inspect.signature(func).parameters
     options: list[Option] = list()
@@ -89,7 +88,6 @@ class Command:
         self.options = _get_options(self.callback)
         self.plugin: Plugin | None = None
         self.autocompletes: dict[str, AsyncFunction] = {}
-        
 
     def __str__(self) -> str:
         return self.name
@@ -108,17 +106,26 @@ class Command:
                     args += (option,)
         await self.callback(interaction, *args, **kwargs)
 
-    async def invoke_autocomplete(self, interaction: Interaction, name: str) -> list[Choice] | None:
-        ...
+    async def invoke_autocomplete(self, interaction: Interaction, name: str):
+        autocomplete = self.autocompletes.get(name)
+        if not autocomplete:
+            return
+
+        choices: list[Choice] | None = await autocomplete(interaction)
+        if choices is not None:
+            return await interaction.autocomplete(choices)
+
     def autocomplete(self, option: str):
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
                 self.autocompletes[option] = coro
                 return coro
+
             return wrapper()
+
         return decorator
-    
+
     def to_dict(self) -> dict[str, Any]:
         base = {
             "name": self.name,
@@ -216,7 +223,8 @@ class Group:
                 name_localizations=name_localizations,
                 description_localizations=description_localizations,
             )
-            return self.add_command(command)
+            self.add_command(command)
+            return command
 
         return decorator
 

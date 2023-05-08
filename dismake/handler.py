@@ -8,10 +8,14 @@ from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
-from .app_commands import Command, Group
+
 
 if TYPE_CHECKING:
     from .client import Bot
+    from .app_commands import Command, Group
+
+
+    
 log = getLogger("uvicorn")
 
 
@@ -58,27 +62,53 @@ class InteractionHandler:
     async def _handle_autocomplete(self, request: Request) -> Any:
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
-        print(payload)
-        return
-        if (
+
+        if not (
             interaction.data is not None
             and isinstance(interaction.data, ApplicationCommandData)
             and interaction.is_autocomplete
         ):
-            if command := self.client.get_command(interaction.data.name):
-                if isinstance(command, Command):
-                    assert interaction.data.options is not None
-                    choices = await command.invoke_autocomplete(
-                        interaction=interaction, name=interaction.data.options[0].name
+            return
+        if not (command := self.client.get_command(interaction.data.name)):
+            return
+
+        if isinstance(command, Command) and interaction.data.options is not None:
+            options = interaction.data.options
+            focused = list(filter(lambda x: x.focused == True, options))
+            if not focused:
+                raise ValueError("No focus items! Probably this is a discord bug.")
+            return await command.invoke_autocomplete(interaction, name=focused[0].name)
+
+        if isinstance(command, Group) and interaction.data.options is not None:
+            child_2 = command.commands.get(interaction.data.options[0].name)
+            if (
+                isinstance(child_2, Command)
+                and interaction.data.options[0].options is not None
+            ):
+                options = interaction.data.options[0].options
+                focused = list(filter(lambda x: x.focused == True, options))
+                if not focused:
+                    raise ValueError("No focus items! Probably this is a discord bug.")
+                return await child_2.invoke_autocomplete(
+                    interaction, name=focused[0].name
+                )
+            if isinstance(child_2, Group) and interaction.data.options[0].options:
+                child_3 = child_2.commands.get(
+                    interaction.data.options[0].options[0].name
+                )
+                if (
+                    isinstance(child_3, Command)
+                    and interaction.data.options[0].options[0].options is not None
+                ):
+                    options = interaction.data.options[0].options[0].options
+                    focused = list(filter(lambda x: x.focused == True, options))
+                    if not focused:
+                        raise ValueError(
+                            "No focus items! Probably this is a discord bug."
+                        )
+                    return await child_3.invoke_autocomplete(
+                        interaction, name=focused[0].name
                     )
-                else:
-                    assert isinstance(command, Group) and interaction.data.options is not None
-                    child_2 = command.commands.get(interaction.data.options[0].name)
-                    if isinstance(child_2, Group):
-                        assert interaction.data.options[0].options is not None
-                        child_3 = command.commands.get(interaction.data.options[0].name)
-                        if child_3 and isinstance(child_3, Command):
-                            choices = await child_3.invoke_autocomplete(interaction=interaction, name="ok")
 
     async def _handle_message_component(self, request: Request) -> Any:
         payload: dict = await request.json()
@@ -110,7 +140,7 @@ class InteractionHandler:
         if payload["type"] == InteractionType.APPLICATION_COMMAND.value:
             await self._handle_command(request)
         elif payload["type"] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE.value:
-            return await self._handle_autocomplete(request)
+            await self._handle_autocomplete(request)
         elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
             await self._handle_message_component(request)
 

@@ -44,8 +44,9 @@ class Plugin:
                     name_localizations=name_localizations,
                     description_localizations=description_localizations,
                 )
-                command.tree = self
+                command.plugin = self
                 self._app_commands[command.name] = command
+                return command
 
             return wrapper()
 
@@ -74,7 +75,7 @@ class Plugin:
             nsfw=nsfw,
             parent=parent,
         )
-        command.tree = self
+        command.plugin = self
         self._app_commands[command.name] = command
         return command
 
