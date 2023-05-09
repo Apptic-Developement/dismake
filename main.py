@@ -12,12 +12,15 @@ mentions.plugin.load(app)
 components.plugin.load(app)
 autocomplete.plugin.load(app)
 
+import discord.channel
 
 @app.event("ready")
 async def on_ready():
     print("Logged in as %s" % app.user)
     # sync = await app.sync_commands()
     # print(sync.text)
+
+
 
 
 if __name__ == "__main__":

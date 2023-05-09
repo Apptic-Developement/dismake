@@ -90,7 +90,7 @@ class MessageFlags(Enum):
     SUPPRESS_NOTIFICATIONS = 1 << 12
 
 
-class ChannelType:
+class ChannelType(Enum):
     GUILD_TEXT = 0
     DM = 1
     GUILD_VOICE = 2

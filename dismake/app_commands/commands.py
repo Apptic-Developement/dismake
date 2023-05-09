@@ -1,34 +1,45 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, Callable, Coroutine, get_origin
+from typing import Any, TYPE_CHECKING, Annotated, get_origin
 from functools import wraps
-
-from dismake.models.channels import Channel
 
 from ..permissions import Permissions
 from ..types import AsyncFunction
-from ..models import User, Member, Role
-from ..enums import CommandType, OptionType
+from ..models import (
+    User,
+    Member,
+    Role,
+    Channel,
+    TextChannel,
+    CategoryChannel,
+    AnnouncementChannel,
+)
+from ..enums import ChannelType, CommandType, OptionType
 
 if TYPE_CHECKING:
     from ..types import AsyncFunction
     from ..permissions import Permissions
     from ..plugin import Plugin
-    from ..models import Interaction, ApplicationCommandOption
+    from ..models import Interaction
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
+
 
 _option_types = {
     # fmt: off
     bool:           OptionType.BOOLEAN,
     int:            OptionType.INTEGER,
     str:            OptionType.STRING,
-    Channel:        OptionType.CHANNEL,
     User:           OptionType.USER,
     Member:         OptionType.USER,
     Role:           OptionType.ROLE,
+    # Channels
+    Channel:        OptionType.CHANNEL,
+    TextChannel:        OptionType.CHANNEL,
+    CategoryChannel:        OptionType.CHANNEL,
+    AnnouncementChannel:        OptionType.CHANNEL,
 }
 
 
@@ -113,8 +124,10 @@ class Command:
         autocomplete = self.autocompletes.get(name)
         if not autocomplete:
             return
-        
-        choices: list[Choice] | None = await autocomplete(interaction, name=interaction.namespace.__dict__[name])
+
+        choices: list[Choice] | None = await autocomplete(
+            interaction, name=interaction.namespace.__dict__[name]
+        )
         if choices is not None:
             return await interaction.autocomplete(choices)
 
@@ -269,7 +282,7 @@ class Option:
         description_localizations: dict[str, str] | None = None,
         required: bool | None = None,
         choices: list[Choice] | None = None,
-        channel_types: list[str] | None = None,
+        channel_types: list[ChannelType] = list(),
         min_value: int | None = None,
         max_value: int | None = None,
         autocomplete: bool | None = None,
@@ -303,8 +316,8 @@ class Option:
             base["required"] = self.required
         if self.choices is not None:
             base["choices"] = [choice.to_dict() for choice in self.choices]
-        if self.channel_types is not None:
-            base["channel_types"] = self.channel_types
+        if self.channel_types:
+            base["channel_types"] = [t.value for t in self.channel_types]
         if self.min_value is not None:
             base["min_value"] = self.min_value
         if self.max_value is not None:

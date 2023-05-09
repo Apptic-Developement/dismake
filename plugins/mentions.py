@@ -57,9 +57,22 @@ async def role_command(
     )
 
 
-@channels.command(
-    name="text",
-    description="This channel mentions a text channel."
-)
-async def text_mention(interaction: dismake.Interaction, channel: Annotated[dismake.Channel, app_commands.Option()]):
+@channels.command(name="text", description="This channel mentions a text channel.")
+async def text_mention(
+    interaction: dismake.Interaction,
+    channel: Annotated[dismake.TextChannel, app_commands.Option()],
+):
     await interaction.send(f"Mentioned: {channel.mention}")
+
+
+@channels.command(
+    name="category", description="This channel mentions a category channel."
+)
+async def category_mention(
+    interaction: dismake.Interaction,
+    channel: Annotated[dismake.CategoryChannel, app_commands.Option(channel_types=[dismake.ChannelType.GUILD_CATEGORY])],
+):
+    await interaction.send(f"Mentioned: {channel.mention}")
+
+
+

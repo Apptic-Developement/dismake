@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 from typing import Optional, Union
 from pydantic import BaseModel, PrivateAttr
 from fastapi import Request
+
+from .user import User
 from ..types import SnowFlake
-from ..enums import ChannelType
 from .permission_overwrites import PermissionOverwrites
 
 
-__all__ = ("PartialMessagable", "TextChannel", "CategoryChannel", "Channel")
+
+
+
+__all__ = ("PartialMessagable", "TextChannel", "CategoryChannel", "Channel", "AnnouncementChannel")
 
 
 
@@ -52,7 +57,7 @@ class TextChannel(PartialMessagable):
 
 class CategoryChannel(PartialMessagable):
     permission_overwrites: list[PermissionOverwrites] = list()
-    name: str
+    name: Optional[str]
     nsfw: Optional[bool] = False
     position: int
     guild_id: SnowFlake
@@ -61,5 +66,28 @@ class CategoryChannel(PartialMessagable):
         return f"<CategoryChannel name={self.name}>"
     
     def __str__(self) -> str:
-        return self.name
-Channel = Union[TextChannel, CategoryChannel]
+        return str(self.name)
+
+class AnnouncementChannel(PartialMessagable):
+    guild_id: SnowFlake
+    name: Optional[str]
+    type: int
+    position: Optional[int]
+    permission_overwrites: list[PermissionOverwrites] = list()
+    nsfw: Optional[bool] = False
+    topic: Optional[str]
+    last_message_id: Optional[SnowFlake]
+    parent_id: Optional[SnowFlake]
+    default_auto_archive_duration: Optional[int]
+
+
+
+
+class DMChannel(PartialMessagable):
+    last_message_id: Optional[SnowFlake]
+    recipitents: Optional[list[User]]
+    icon: Optional[str]
+
+class GroupDmChannel(DMChannel):
+    owner_id: Optional[SnowFlake]
+Channel = Union[TextChannel, CategoryChannel, AnnouncementChannel, DMChannel, GroupDmChannel]
