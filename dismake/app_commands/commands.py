@@ -237,8 +237,8 @@ class Group:
 
     def command(
         self,
-        name: str,
-        description: str,
+        name: str | None = None,
+        description: str = "No description provided.",
         *,
         guild_id: int | None = None,
         default_member_permissions: Permissions | None = None,
@@ -249,7 +249,7 @@ class Group:
     ):
         def decorator(coro: AsyncFunction):
             command = Command(
-                name=name,
+                name=name or coro.__name__,
                 description=description,
                 guild_id=guild_id,
                 callback=coro,
