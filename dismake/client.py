@@ -1,7 +1,6 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from logging import getLogger
 from functools import wraps
 from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
@@ -9,9 +8,10 @@ from .models import Guild
 from .handler import InteractionHandler
 from .http import HttpClient
 from .models import User
-from .utils import LOGGING_CONFIG, init_logging
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
+from .utils import LOGGING_CONFIG, getLogger
+
 
 if TYPE_CHECKING:
     from .ui import House, Component
@@ -19,9 +19,10 @@ if TYPE_CHECKING:
     from .permissions import Permissions
     from .models import Interaction
 
+from discord.utils import setup_logging
 
-log = getLogger("dismake")
-init_logging(log)
+log = getLogger(__name__)
+
 __all__ = ("Bot",)
 
 
@@ -71,7 +72,7 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._app_commands: Dict[str, Union[Group, Command]] = {}
         self.error_handler: Optional[AsyncFunction] = self.on_command_error
-        log.warn("OK")
+        log.info("Ok")
     @property
     def user(self) -> User:
         """

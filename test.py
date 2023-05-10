@@ -96,13 +96,14 @@
 
 #     return options_to_dict(options, resolved_data)
 
-import dismake, typing as t, inspect
-def command(channel: t.Union[dismake.TextChannel, dismake.CategoryChannel]):
-    ...
+# import dismake, typing as t, inspect
+# def command(channel: t.Union[dismake.TextChannel, dismake.CategoryChannel]):
+#     ...
 
-def get_union_values(func: t.Callable):
-    params = inspect.signature(func).parameters
-    for k, v in params.items():
-        print(t.get_args(v.annotation))
+# def get_union_values(func: t.Callable):
+#     params = inspect.signature(func).parameters
+#     for k, v in params.items():
+#         print(t.get_args(v.annotation))
 
-get_union_values(command)
+# get_union_values(command)
+

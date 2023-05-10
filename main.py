@@ -15,6 +15,7 @@ autocomplete.plugin.load(app)
 
 @app.event()
 async def on_ready():
+    raise ValueError("Ok")
     print("Logged in as %s" % app.user)
     # sync = await app.sync_commands()
     # print(sync.text)

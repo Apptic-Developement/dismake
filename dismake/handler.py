@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from logging import getLogger
+from .utils import getLogger
 from typing import Any, TYPE_CHECKING
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -15,14 +15,14 @@ if TYPE_CHECKING:
 
 
     
-log = getLogger("uvicorn")
+log = getLogger(__name__)
 
 
 class InteractionHandler:
     def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
-
+        log.info("Okieee")
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
         try:

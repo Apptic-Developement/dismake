@@ -72,7 +72,8 @@ async def category_mention(
     interaction: dismake.Interaction,
     channel: Annotated[dismake.CategoryChannel, app_commands.Option(channel_types=[dismake.ChannelType.GUILD_CATEGORY])],
 ):
-    await interaction.send(f"Mentioned: {channel.mention}")
+    # await interaction.send(f"Mentioned: {channel.mention}")
+    raise ValueError("Ok")
 
 
 
