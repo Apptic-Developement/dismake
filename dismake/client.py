@@ -3,26 +3,25 @@ import asyncio
 from functools import wraps
 from logging import getLogger
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING, Callable, Coroutine, Union
+from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
 from .models import Guild
 from .handler import InteractionHandler
 from .http import HttpClient
 from .models import User
-from .utils import LOGGING_CONFIG
+from .utils import LOGGING_CONFIG, init_logging
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
 
 if TYPE_CHECKING:
-    from .app_commands import Context
     from .ui import House, Component
     from .types import AsyncFunction
     from .permissions import Permissions
+    from .models import Interaction
 
 
-log = getLogger("uvicorn")
-
-
+log = getLogger("dismake")
+init_logging(log)
 __all__ = ("Bot",)
 
 
@@ -70,13 +69,9 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._components: Dict[str, Component] = {}
-        self._error_handler: Callable[
-            [Context, Exception], Coroutine[Any, Any, Any]
-        ] = self._default_error_handler
-
-        # Slash Commands
         self._app_commands: Dict[str, Union[Group, Command]] = {}
-
+        self.error_handler: Optional[AsyncFunction] = self.on_command_error
+        log.warn("OK")
     @property
     def user(self) -> User:
         """
@@ -136,13 +131,15 @@ class Bot(FastAPI):
         **kwargs: Any
             keyword arguments to pass to the event listeners.
         """
+        if not event_name.startswith("on_"):
+            event_name = "on_" + event_name
         event = self._events.get(event_name)
         if not event:
             return
         for coro in event:
             asyncio.ensure_future(self._dispatch_callback(coro, *args, **kwargs))
 
-    def event(self, event_name: str):
+    def event(self, event_name: str | None = None):
         """
         A decorator that registers an event to listen to.
 
@@ -155,18 +152,19 @@ class Bot(FastAPI):
         -------------
             >>> import dismake
             >>> app = dismake.Bot(...)
-            >>> @app.event('ready')
-            ... async def ready_event():
+            >>> @app.event()
+            ... async def on_ready():
             ...     print(f"Logged in as {app.user}.")
         """
 
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
-                if self._events.get(event_name) is not None:
-                    self._events[event_name].append(coro)
+                name = event_name or coro.__name__
+                if self._events.get(name) is not None:
+                    self._events[name].append(coro)
                 else:
-                    self._events[event_name] = [coro]
+                    self._events[name] = [coro]
 
             return wrapper()
 
@@ -200,7 +198,7 @@ class Bot(FastAPI):
             [command for command in self._app_commands.values()]
         )
 
-    def on_app_command_error(self, coro: AsyncFunction):
+    def on_error(self, coro: AsyncFunction):
         """
         A decorator which overrides the `:meth: _default_error_handler`.
 
@@ -216,17 +214,17 @@ class Bot(FastAPI):
 
         @wraps(coro)
         def wrapper(*_, **__):
-            self._error_handler = coro
+            self.error_handler = coro
             return coro
 
         return wrapper()
 
-    async def _default_error_handler(self, ctx: Context, error: Exception) -> Any:
+    async def on_command_error(self, interaction: Interaction, error: Exception) -> Any:
         """
         A default error handler which handles the CommandInvokeError
         """
         if isinstance(error, CommandInvokeError):
-            await ctx.respond(
+            await interaction.respond(
                 f"Oops! Something went wrong while running the command.", ephemeral=True
             )
         raise error
@@ -246,7 +244,7 @@ class Bot(FastAPI):
 
         Raises
         ------
-        HTTPException: If the API request fails.
+        HTTPStatusError: If the API request fails.
         """
         res = await self._http.client.request(method="GET", url=f"/guilds/{guild_id}")
         res.raise_for_status()
@@ -281,8 +279,8 @@ class Bot(FastAPI):
 
     def command(
         self,
-        name: str,
-        description: str,
+        name: str | None = None,
+        description: str = "No description provided.",
         *,
         guild_id: int | None = None,
         default_member_permissions: Permissions | None = None,
@@ -318,7 +316,7 @@ class Bot(FastAPI):
             @wraps(coro)
             def wrapper(*_, **__):
                 command = Command(
-                    name=name,
+                    name=name if name else coro.__name__,
                     description=description,
                     guild_id=guild_id,
                     callback=coro,

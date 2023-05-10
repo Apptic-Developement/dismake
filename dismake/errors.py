@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .app_commands import Group, Command
+    from .app_commands import Command
     from .models import Interaction
 
 
@@ -27,10 +27,10 @@ class NotImplemented(DismakeException):
 class CommandInvokeError(DismakeException):
     """TODO"""
 
-    def __init__(self, command: Union[Group, Command], exception: Exception) -> None:
+    def __init__(self, command: Command, exception: Exception) -> None:
         self.command = command
         self.exception = exception
-        super().__init__(f"Command {command!r} raised an exception: {exception}")
+        super().__init__(f"Command {command.name!r} raised an exception: {exception}")
 
 
 class InteractionResponded(DismakeException):

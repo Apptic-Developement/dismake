@@ -4,3 +4,4 @@ from .enums import *
 from .types import *
 from .permissions import *
 from .plugin import *
+from .errors import *

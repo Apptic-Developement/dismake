@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import logging
+from rich.logging import RichHandler
 from typing import Iterable
 
-__all__ = ("chunk",)
+__all__ = ("chunk", "init_logging")
+
+format = f"%(name)s - %(levelname)s %(message)s"
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -17,7 +21,7 @@ LOGGING_CONFIG = {
     },
     "formatters": {
         "default": {
-            "format": "[%(name)s] - %(message)s",
+            "format": format,
         },
     },
     "loggers": {
@@ -29,7 +33,14 @@ LOGGING_CONFIG = {
     },
 }
 
+def init_logging(log: logging.Logger):
+    log.setLevel(logging.DEBUG)
 
+    handler = RichHandler(show_time=False)
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(format)
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
 def chunk(max_size: int, iterator: Iterable):
     if max_size <= 0:
         raise ValueError("Chunk sizes must be greater than 0.")

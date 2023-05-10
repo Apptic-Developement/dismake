@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from datetime import datetime
 from typing import Optional, Union
 from pydantic import BaseModel, PrivateAttr
@@ -9,11 +8,6 @@ from fastapi import Request
 from .user import User
 from ..types import SnowFlake
 from .permission_overwrites import PermissionOverwrites
-
-
-
-
-
 __all__ = ("PartialMessagable", "TextChannel", "CategoryChannel", "Channel", "AnnouncementChannel")
 
 

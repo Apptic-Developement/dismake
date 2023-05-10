@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, get_origin
+from typing import Any, TYPE_CHECKING, Annotated, Optional, get_origin
 from functools import wraps
 
 from ..permissions import Permissions
@@ -14,7 +14,9 @@ from ..models import (
     TextChannel,
     CategoryChannel,
     AnnouncementChannel,
+    ApplicationCommandData
 )
+from ..errors import CommandInvokeError
 from ..enums import ChannelType, CommandType, OptionType
 
 if TYPE_CHECKING:
@@ -102,10 +104,18 @@ class Command:
         self.options = _get_options(self.callback)
         self.plugin: Plugin | None = None
         self.autocompletes: dict[str, AsyncFunction] = {}
+        self.error_handler: Optional[AsyncFunction] = None
 
     def __str__(self) -> str:
         return self.name
 
+    async def _invoke_error_handlers(self, interaction: Interaction, error: CommandInvokeError):
+        if self.error_handler is not None:
+            return await self.error_handler(interaction, error)
+        if self.plugin is not None and self.plugin.error_handler is not None:
+            return await self.plugin.error_handler(interaction, error)
+        if (bot_error_handler := interaction.bot.error_handler) is not None:
+            return await bot_error_handler(interaction, error)
     async def invoke(self, interaction: Interaction):
         args = tuple()
         kwargs = dict()
@@ -118,7 +128,15 @@ class Command:
                     kwargs[k] = option
                 else:
                     args += (option,)
-        await self.callback(interaction, *args, **kwargs)
+        try:
+            await self.callback(interaction, *args, **kwargs)
+        except Exception as e:
+            assert interaction.data is not None and isinstance(
+                interaction.data, ApplicationCommandData
+            )
+            exception = CommandInvokeError(self, e)
+            return await self._invoke_error_handlers(interaction, exception)
+            
 
     async def invoke_autocomplete(self, interaction: Interaction, name: str):
         autocomplete = self.autocompletes.get(name)
