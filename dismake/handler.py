@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from .utils import getLogger
 from typing import Any, TYPE_CHECKING
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -9,20 +8,20 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
 from .app_commands import Command, Group
-
+from logging import getLogger
 if TYPE_CHECKING:
     from .client import Bot
 
 
     
-log = getLogger(__name__)
+log = getLogger("uvicorn")
 
 
 class InteractionHandler:
     def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
-        log.info("Okieee")
+        
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
         try:

@@ -10,8 +10,8 @@ from .http import HttpClient
 from .models import User
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
-from .utils import LOGGING_CONFIG, getLogger
-
+from .utils import LOGGING_CONFIG
+from logging import getLogger
 
 if TYPE_CHECKING:
     from .ui import House, Component
@@ -19,9 +19,10 @@ if TYPE_CHECKING:
     from .permissions import Permissions
     from .models import Interaction
 
-from discord.utils import setup_logging
 
-log = getLogger(__name__)
+
+log = getLogger("uvicorn")
+
 
 __all__ = ("Bot",)
 
@@ -72,7 +73,7 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._app_commands: Dict[str, Union[Group, Command]] = {}
         self.error_handler: Optional[AsyncFunction] = self.on_command_error
-        log.info("Ok")
+
     @property
     def user(self) -> User:
         """
@@ -225,7 +226,7 @@ class Bot(FastAPI):
         A default error handler which handles the CommandInvokeError
         """
         if isinstance(error, CommandInvokeError):
-            await interaction.respond(
+            await interaction.send(
                 f"Oops! Something went wrong while running the command.", ephemeral=True
             )
         raise error
