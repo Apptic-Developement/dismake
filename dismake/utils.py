@@ -30,6 +30,7 @@ LOGGING_CONFIG = {
     },
 }
 
+
 def chunk(max_size: int, iterator: Iterable):
     if max_size <= 0:
         raise ValueError("Chunk sizes must be greater than 0.")

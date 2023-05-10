@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from enum import Flag
+
 # from .flags import BaseFlags, alias_flag_value, fill_with_flags, flag_value
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 __all__ = ("Permissions",)
-
-
 
 
 class Permissions(Flag):
@@ -218,6 +217,8 @@ class Permissions(Flag):
             all_perms |= perm
 
         return all_perms
+
+
 # class permission_alias(alias_flag_value):
 #     alias: str
 

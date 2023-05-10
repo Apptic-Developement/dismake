@@ -14,7 +14,7 @@ from ..models import (
     TextChannel,
     CategoryChannel,
     AnnouncementChannel,
-    ApplicationCommandData
+    ApplicationCommandData,
 )
 from ..errors import CommandInvokeError
 from ..enums import ChannelType, CommandType, OptionType
@@ -109,13 +109,16 @@ class Command:
     def __str__(self) -> str:
         return self.name
 
-    async def _invoke_error_handlers(self, interaction: Interaction, error: CommandInvokeError):
+    async def _invoke_error_handlers(
+        self, interaction: Interaction, error: CommandInvokeError
+    ):
         if self.error_handler is not None:
             return await self.error_handler(interaction, error)
         if self.plugin is not None and self.plugin.error_handler is not None:
             return await self.plugin.error_handler(interaction, error)
         if (bot_error_handler := interaction.bot.error_handler) is not None:
             return await bot_error_handler(interaction, error)
+
     async def invoke(self, interaction: Interaction):
         args = tuple()
         kwargs = dict()
@@ -136,7 +139,6 @@ class Command:
             )
             exception = CommandInvokeError(self, e)
             return await self._invoke_error_handlers(interaction, exception)
-            
 
     async def invoke_autocomplete(self, interaction: Interaction, name: str):
         autocomplete = self.autocompletes.get(name)

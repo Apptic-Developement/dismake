@@ -1,7 +1,6 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from functools import wraps
 from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
 from .models import Guild
@@ -10,18 +9,13 @@ from .http import HttpClient
 from .models import User
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
-from .utils import LOGGING_CONFIG
-from logging import getLogger
+from loguru import logger as log
 
 if TYPE_CHECKING:
     from .ui import House, Component
     from .types import AsyncFunction
     from .permissions import Permissions
     from .models import Interaction
-
-
-
-log = getLogger("uvicorn")
 
 
 __all__ = ("Bot",)
@@ -108,7 +102,7 @@ class Bot(FastAPI):
         """
         import uvicorn
 
-        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):

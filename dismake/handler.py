@@ -8,20 +8,17 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
 from .app_commands import Command, Group
-from logging import getLogger
+from loguru import logger as log
+
 if TYPE_CHECKING:
     from .client import Bot
-
-
-    
-log = getLogger("uvicorn")
 
 
 class InteractionHandler:
     def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
-        
+
     def verify_key(self, body: bytes, signature: str, timestamp: str):
         message = timestamp.encode() + body
         try:

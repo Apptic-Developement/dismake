@@ -8,8 +8,14 @@ from fastapi import Request
 from .user import User
 from ..types import SnowFlake
 from .permission_overwrites import PermissionOverwrites
-__all__ = ("PartialMessagable", "TextChannel", "CategoryChannel", "Channel", "AnnouncementChannel")
 
+__all__ = (
+    "PartialMessagable",
+    "TextChannel",
+    "CategoryChannel",
+    "Channel",
+    "AnnouncementChannel",
+)
 
 
 class PartialMessagable(BaseModel):
@@ -24,7 +30,8 @@ class PartialMessagable(BaseModel):
     def __repr__(self) -> str:
         return f"<Channel id={self.id}>"
 
-    class Config: arbitrary_types_allowed = True
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class TextChannel(PartialMessagable):
@@ -44,7 +51,7 @@ class TextChannel(PartialMessagable):
 
     def __repr__(self) -> str:
         return f"<TextChannel name={self.name}>"
-    
+
     def __str__(self) -> str:
         return f"{self.name}"
 
@@ -58,9 +65,10 @@ class CategoryChannel(PartialMessagable):
 
     def __repr__(self) -> str:
         return f"<CategoryChannel name={self.name}>"
-    
+
     def __str__(self) -> str:
         return str(self.name)
+
 
 class AnnouncementChannel(PartialMessagable):
     guild_id: SnowFlake
@@ -75,13 +83,16 @@ class AnnouncementChannel(PartialMessagable):
     default_auto_archive_duration: Optional[int]
 
 
-
-
 class DMChannel(PartialMessagable):
     last_message_id: Optional[SnowFlake]
     recipitents: Optional[list[User]]
     icon: Optional[str]
 
+
 class GroupDmChannel(DMChannel):
     owner_id: Optional[SnowFlake]
-Channel = Union[TextChannel, CategoryChannel, AnnouncementChannel, DMChannel, GroupDmChannel]
+
+
+Channel = Union[
+    TextChannel, CategoryChannel, AnnouncementChannel, DMChannel, GroupDmChannel
+]

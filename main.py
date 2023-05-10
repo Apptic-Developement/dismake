@@ -19,5 +19,6 @@ async def on_ready():
     # sync = await app.sync_commands()
     # print(sync.text)
 
+
 if __name__ == "__main__":
     app.run(app=f"main:app", reload=True)
