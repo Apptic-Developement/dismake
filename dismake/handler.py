@@ -15,6 +15,10 @@ if TYPE_CHECKING:
 
 
 class InteractionHandler:
+    __slots__ = (
+        "client",
+        "verification_key"
+    )
     def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))

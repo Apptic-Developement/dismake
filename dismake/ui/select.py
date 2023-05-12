@@ -69,7 +69,13 @@ class SelectOption:
     emoji: :class:`PartialEmoji`
     default: :class:`bool`
     """
-
+    __slots__ = (
+        "label",
+        "value",
+        "description",
+        "default",
+        "emoji"
+    )
     def __init__(
         self,
         label: str,
@@ -136,6 +142,10 @@ class StringSelectMenu(BaseSelect):
             disabled=disabled,
         )
         self.options = options
+    def add_option(self, option: SelectOption):
+        self.options.append(option)
+        return self
+
 
     async def callback(self, interaction: Interaction):
         ...

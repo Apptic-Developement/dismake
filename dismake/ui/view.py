@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from typing import Any, List, Optional, TYPE_CHECKING
 from functools import wraps
 
@@ -53,7 +55,6 @@ class View:
         async def click_me(ctx):
             await ctx.respond("Clicked")
     """
-
     def __init__(self) -> None:
         self.rows: List[Row] = list()
         self._error_handler: AsyncFunction = self.on_error

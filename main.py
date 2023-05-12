@@ -12,7 +12,7 @@ mentions.plugin.load(app)
 components.plugin.load(app)
 autocomplete.plugin.load(app)
 
-
+from discord.ui import View
 @app.event()
 async def on_ready():
     print("Logged in as %s" % app.user)

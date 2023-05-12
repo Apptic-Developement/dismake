@@ -119,13 +119,13 @@
 #         super().__init__(timeout=120)
 #         self.add_item
 
-#     @ui.button(label="Button 1")
-#     async def b1cb(self, *_, **__):
-#         ...
+#     # @ui.button(label="Button 1")
+#     # async def b1cb(self, *_, **__):
+#     #     ...
 
-#     @ui.button(label="Button 2")
-#     async def b2cb(self, *_, **__):
-#         ...
+#     # @ui.button(label="Button 2")
+#     # async def b2cb(self, *_, **__):
+#     #     ...
 
 #     # @ui.button(label="Button 3")
 #     # async def b3cb(self, *_, **__):
@@ -139,13 +139,13 @@
 #     # async def b5cb(self, *_, **__):
 #     #     ...
 
-#     @ui.select()
-#     async def select1cb(self, *_, **__):
-#         ...
+#     # @ui.select()
+#     # async def select1cb(self, *_, **__):
+#     #     ...
 
-#     @ui.select()
-#     async def select2cb(self, *_, **__):
-#         ...
+#     # @ui.select()
+#     # async def select2cb(self, *_, **__):
+#     #     ...
 
 #         # @ui.select()
 #         # async def select3cb(self, *_, **__):
