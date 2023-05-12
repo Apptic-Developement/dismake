@@ -134,9 +134,9 @@ config.py
 bot/
 
 # Docs
-docs/.next
-docs/node_modules
-guide/node_modules
+ndocs/.next
+ndocs/node_modules
+
 
 # Repl
 .replit
