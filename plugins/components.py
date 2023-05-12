@@ -1,6 +1,6 @@
 from dismake import app_commands, ui, Plugin
 import dismake
-
+from test import view
 
 plugin = Plugin()
 
@@ -11,7 +11,6 @@ components = plugin.create_group(
 )
 
 
-@components.command(name="button_select", description="...")
+@components.command(name="button_and_select", description="...")
 async def button_command(interaction: dismake.Interaction):
-    res = await interaction.respond("Ok")
-    print(res.json())
+    await interaction.respond("Ok", view=view)

@@ -111,7 +111,7 @@ class InteractionHandler:
         if interaction.data and isinstance(interaction.data, MessageComponentData):
             comp = self.client._components.get(interaction.data.custom_id)
             if comp:
-                await comp.callback(interaction)
+                return await comp.callback(interaction)
 
     async def handle_interactions(self, request: Request):
         signature = request.headers["X-Signature-Ed25519"]

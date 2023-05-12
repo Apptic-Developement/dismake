@@ -120,8 +120,8 @@ class StringSelectMenu(BaseSelect):
 
     def __init__(
         self,
+        options: list[SelectOption],
         custom_id: str | None = None,
-        options: list[SelectOption] | None = None,
         placeholder: str | None = None,
         disabled: bool = False,
         min_values: int = 1,
@@ -142,7 +142,5 @@ class StringSelectMenu(BaseSelect):
 
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
-        if self.options is not None:
-            base["options"] = [o.to_dict() for o in self.options]
-
+        base["options"] = [o.to_dict() for o in self.options]
         return base

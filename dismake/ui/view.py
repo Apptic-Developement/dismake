@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING
+from typing import Any, List, Optional, TYPE_CHECKING
 from functools import wraps
 
 from ..enums import ButtonStyles, ComponentType
@@ -106,8 +106,8 @@ class View:
 
     def string_select(
         self,
+        options: List[SelectOption],
         placeholder: Optional[str] = None,
-        options: Optional[List[SelectOption]] = None,
         custom_id: Optional[str] = None,
         min_values: int = 1,
         max_values: int = 1,

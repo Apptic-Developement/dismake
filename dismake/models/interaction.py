@@ -99,7 +99,7 @@ class ApplicationCommandData(BaseModel):
 class MessageComponentData(BaseModel):
     custom_id: str
     component_type: int
-    values: Optional[List[SelectOption]]
+    values: Optional[List[str]]
 
 
 class ModalSubmitData(BaseModel):
@@ -232,58 +232,6 @@ class Interaction:
         """
         return self._is_response_done
 
-    # @property
-    # def namespace(self) -> Namespace:
-    #     if not isinstance(self.data, ApplicationCommandData):
-    #         return Namespace(**{})
-    #     if (data := self.data) is None or (options := data.options) is None:
-    #         return Namespace(**{})
-    #     kwargs = {}
-    #     filtered_options: List[ApplicationCommandOption] = list()
-    #     for option in options:
-    #         if (
-    #             option.type == OptionType.SUB_COMMAND.value
-    #             and option.options is not None
-    #         ):
-    #             for sub_command_option in option.options:
-    #                 filtered_options.append(sub_command_option)
-    #         elif (
-    #             option.type == OptionType.SUB_COMMAND_GROUP.value
-    #             and option.options is not None
-    #         ):
-    #             for sub_command_groups in option.options:
-    #                 if not sub_command_groups.options:
-    #                     filtered_options.append(sub_command_groups)
-    #                 else:
-    #                     for sub_command in sub_command_groups.options:
-    #                         if sub_command.options:
-    #                             for sub_command_option in sub_command.options:
-    #                                 filtered_options.append(sub_command_option)
-    #                         else:
-    #                             filtered_options.append(sub_command)
-    #         else:
-    #             filtered_options.append(option)
-    #     if not filtered_options:
-    #         return Namespace(**{})
-
-    #     for foption in filtered_options:
-    #         if foption.type == OptionType.USER.value:
-    #             if data.resolved is not None and data.resolved.users is not None:
-    #                 kwargs[foption.name.replace("-", "_")] = data.resolved.users.get(
-    #                     str(foption.value)
-    #                 )
-    #             else:
-    #                 continue
-    #         elif foption.type == OptionType.ROLE.value:
-    #             if data.resolved is not None and data.resolved.roles is not None:
-    #                 kwargs[foption.name.replace("-", "_")] = data.resolved.roles.get(
-    #                     str(foption.value)
-    #                 )
-    #             else:
-    #                 continue
-    #         else:
-    #             kwargs[foption.name.replace("-", "_")] = foption.value
-    #     return Namespace(**kwargs)
 
     @property
     def namespace(self) -> Namespace:
@@ -325,7 +273,7 @@ class Interaction:
 
         if view:
             self.bot.add_view(view)
-        res = await self.bot._http.client.request(
+        await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
@@ -337,7 +285,6 @@ class Interaction:
             headers=self.bot._http.headers,
         )
         self._is_response_done = True
-        return res
 
     async def defer(self, thinking: bool = True):
         if self.is_responded:
@@ -361,7 +308,7 @@ class Interaction:
         view: Optional[View] = None,
         ephemeral: bool = False,
     ):
-        if self.is_responded != False:
+        if not self.is_responded:
             raise InteractionNotResponded(self)
 
         if view:

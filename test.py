@@ -172,63 +172,25 @@
 
 from dismake import ui
 from pprint import pprint
+import dismake
 
 view = ui.View()
 
+@view.string_select(options=[
+    ui.SelectOption(label="Lund"),
+    ui.SelectOption(label="Chut"),
+    ui.SelectOption(label="Gand"),
+])
+async def select_callback(interaction: dismake.Interaction):
+    await interaction.edit_message(f"You want {interaction.data.values[0]}")
 
 @view.button(label="1")
-async def b1(*_):
-    ...
+async def b1(interaction: dismake.Interaction):
+    await interaction.send("Hmm What ?", ephemeral=True)
 
 
 @view.button(label="2")
-async def b1(*_):
-    ...
+async def b2(interaction: dismake.Interaction):
+    await interaction.send("Hmm What ?", ephemeral=True)
 
-
-@view.button(label="3")
-async def b1(*_):
-    ...
-
-
-@view.button(label="4")
-async def b1(*_):
-    ...
-
-
-@view.button(label="5")
-async def b1(*_):
-    ...
-
-
-
-@view.string_select()
-async def scb1(*_):
-    ...
-
-
-@view.string_select()
-async def scb1(*_):
-    ...
-
-
-@view.string_select()
-async def scb1(*_):
-    ...
-
-@view.string_select()
-async def scb1(*_):
-    ...
-
-@view.string_select()
-async def scb1(*_):
-    ...
-
-
-
-
-
-
-
-pprint(view.to_dict())
 
