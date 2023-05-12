@@ -4,12 +4,12 @@
     "title": "The bot framework you need",
     "display": "hidden",
     "theme": {
-      "layout": "raw"
+      "layout": "full"
     }
   },
-  "documentation": {
+  "guide": {
     "type": "page",
-    "title": "Documentation"
+    "title": "Guide"
   },
   "roadmap": {
     "type": "page",
