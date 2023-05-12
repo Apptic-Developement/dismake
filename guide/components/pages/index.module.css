@@ -1,0 +1,14 @@
+.main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.main h2{
+    font-size: 3rem;
+    font-weight: bold;
+
+}
+.main p{
+    color: var(--text-color-alt);
+}

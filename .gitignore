@@ -134,8 +134,8 @@ config.py
 bot/
 
 # Docs
-ndocs/.next
-ndocs/node_modules
+guide/.next
+guide/node_modules
 
 
 # Repl

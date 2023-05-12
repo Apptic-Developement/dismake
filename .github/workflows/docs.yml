@@ -3,12 +3,12 @@ name: Build Documention Site
 on:
   push:
     paths:
-      - "docs/**"
+      - "guide/**"
     branches:
       - main
   pull_request:
     paths:
-      - "docs/**"
+      - "guide/**"
     branches:
       - main 
       
@@ -22,7 +22,7 @@ jobs:
       
     - name: "Build Site"
       run: |
-           cd docs
+           cd guide
            npm i
            npx next build
  
