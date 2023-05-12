@@ -16,7 +16,7 @@ from ..types import SnowFlake
 from .channels import Channel
 
 if TYPE_CHECKING:
-    from ..ui import House
+    from ..ui import View
     from ..client import Bot
     from ..app_commands import Choice
 
@@ -318,25 +318,26 @@ class Interaction:
         *,
         tts: bool = False,
         ephemeral: bool = False,
-        house: Optional[House] = None,
+        view: Optional[View] = None,
     ):
         if self.is_responded:
             raise InteractionResponded(self)
 
-        if house:
-            self.bot.add_house(house)
-        await self.bot._http.client.request(
+        if view:
+            self.bot.add_view(view)
+        res = await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
                 "type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE.value,
                 "data": handle_send_params(
-                    content=content, tts=tts, ephemeral=ephemeral, house=house
+                    content=content, tts=tts, ephemeral=ephemeral, view=view
                 ),
             },
             headers=self.bot._http.headers,
         )
         self._is_response_done = True
+        return res
 
     async def defer(self, thinking: bool = True):
         if self.is_responded:
@@ -357,31 +358,31 @@ class Interaction:
         content: str,
         *,
         tts: bool = False,
-        house: Optional[House] = None,
+        view: Optional[View] = None,
         ephemeral: bool = False,
     ):
         if self.is_responded != False:
             raise InteractionNotResponded(self)
 
-        if house:
-            self.bot.add_house(house)
+        if view:
+            self.bot.add_view(view)
         return await self.bot._http.client.request(
             method="POST",
             url=f"/webhooks/{self.application_id}/{self.token}",
             json=handle_send_params(
-                content=content, tts=tts, house=house, ephemeral=ephemeral
+                content=content, tts=tts, view=view, ephemeral=ephemeral
             ),
         )
 
     async def edit_original_response(
-        self, content: str, *, tts: bool = False, house: Optional[House] = None
+        self, content: str, *, tts: bool = False, view: Optional[View] = None
     ):
-        if house:
-            self.bot.add_house(house)
+        if view:
+            self.bot.add_view(view)
         return await self.bot._http.client.request(
             method="PATCH",
             url=f"/webhooks/{self.application_id}/{self.token}/messages/@original",
-            json=handle_edit_params(content=content, tts=tts, house=house),
+            json=handle_edit_params(content=content, tts=tts, view=view),
         )
 
     async def get_original_response(self) -> Message:
@@ -397,25 +398,25 @@ class Interaction:
         content: str,
         *,
         tts: bool = False,
-        house: Optional[House] = None,
+        view: Optional[View] = None,
         ephemeral: bool = False,
     ):
         if self.is_responded:
             return await self.send_followup(
-                content, tts=tts, house=house, ephemeral=ephemeral
+                content, tts=tts, view=view, ephemeral=ephemeral
             )
-        return await self.respond(content, tts=tts, house=house, ephemeral=ephemeral)
+        return await self.respond(content, tts=tts, view=view, ephemeral=ephemeral)
 
     async def edit_message(
-        self, content: str, *, tts: bool = False, house: Optional[House] = None
+        self, content: str, *, tts: bool = False, view: Optional[View] = None
     ):
         if not self.is_message_component:
             return
         if self.is_responded:
             raise InteractionResponded(self)
-        if house:
-            self.bot.add_house(house)
-        payload = handle_edit_params(content=content, tts=tts, house=house)
+        if view:
+            self.bot.add_view(view)
+        payload = handle_edit_params(content=content, tts=tts, view=view)
         return await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",

@@ -13,7 +13,7 @@ __all__ = (
     "ChannelType",
     "StrEnum",
     "Locale",
-    "ComponentTypes",
+    "ComponentType",
     "ButtonStyles",
     "TextInputStyle",
 )
@@ -139,11 +139,15 @@ class Locale(StrEnum):
     ko = "ko"  # 	Korean	한국어
 
 
-class ComponentTypes(Enum):
+class ComponentType(Enum):
     ACTION_ROW = 1
     BUTTON = 2
-    SELECT_MENU = 3
+    STRING_SELECT = 3
     TEXT_INPUT = 4
+    USER_SELECT = 5
+    ROLE_SELECT = 6
+    MENTIONABLE_SELECT = 7
+    CHANNEL_SELECT = 8
 
 
 class ButtonStyles(Enum):

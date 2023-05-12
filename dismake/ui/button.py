@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, Any, Dict, Union
 from .component import Component
-from ..enums import ButtonStyles, ComponentTypes
+from ..enums import ButtonStyles, ComponentType
 from ..models import PartialEmoji
 
 __all__ = ("Button",)
@@ -18,7 +18,7 @@ class Button(Component):
         url: Optional[str] = None,
         disabled: Optional[bool] = None,
     ) -> None:
-        self.type = ComponentTypes.BUTTON
+        self.type = ComponentType.BUTTON
         super().__init__(type=self.type, custom_id=custom_id, disabled=disabled)
         self.label = label
         self.style = style or ButtonStyles.PRIMARY

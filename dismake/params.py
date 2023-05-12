@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from .enums import MessageFlags
 
 if TYPE_CHECKING:
-    from .ui import House
+    from .ui import View
 
 
 __all__ = ("handle_send_params", "handle_edit_params")
@@ -16,7 +16,7 @@ def handle_send_params(
     tts: Optional[bool] = None,
     embeds: Optional[list] = None,
     allowed_mentions: Optional[Any] = None,
-    house: Optional[Union[House, Dict[Any, Any]]] = None,
+    view: Optional[Union[View, Dict[Any, Any]]] = None,
     attachments: Optional[List[Any]] = None,
     embed: Optional[Any] = None,
     ephemeral: bool = False,
@@ -26,11 +26,11 @@ def handle_send_params(
         payload.update({"flags": MessageFlags.EPHEMERAL.value})
     if tts:
         payload.update({"tts": tts})
-    if house:
-        if isinstance(house, dict):
-            payload.update({"components": house})
+    if view:
+        if isinstance(view, dict):
+            payload.update({"components": view})
         else:
-            payload.update({"components": house.to_dict()})
+            payload.update({"components": view.to_dict()})
     _embeds = list()
     if embeds:
         for emb in embeds:
@@ -50,7 +50,7 @@ def handle_edit_params(
     tts: Optional[bool] = None,
     embeds: Optional[list] = None,
     allowed_mentions: Optional[Any] = None,
-    house: Optional[Union[House, Dict[str, Any]]] = None,
+    view: Optional[Union[View, Dict[str, Any]]] = None,
     attachments: Optional[List[Any]] = None,
     embed: Optional[Any] = None,
 ) -> Dict[str, Any]:
@@ -67,11 +67,11 @@ def handle_edit_params(
     if embeds:
         embeds = embs
 
-    if house:
-        if isinstance(house, dict):
-            payload.update({"components": house})
+    if view:
+        if isinstance(view, dict):
+            payload.update({"components": view})
         else:
-            payload.update({"components": house.to_dict()})
+            payload.update({"components": view.to_dict()})
     else:
         payload.update({"components": None})
     return payload

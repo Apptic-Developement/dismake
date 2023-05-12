@@ -11,8 +11,10 @@ from .errors import CommandInvokeError
 from .app_commands import Command, Group
 from loguru import logger as log
 
+# from .utils import LOGGING_CONFIG
+
 if TYPE_CHECKING:
-    from .ui import House, Component
+    from .ui import View, Component
     from .types import AsyncFunction
     from .permissions import Permissions
     from .models import Interaction
@@ -246,17 +248,21 @@ class Bot(FastAPI):
         res.raise_for_status()
         return Guild(**res.json())
 
-    def add_house(self, house: House) -> None:
+    def add_view(self, view: View) -> None:
         """
-        Registers a :class:`~dismake.ui.House` for persistent listening.
+        Registers a :class:`~dismake.ui.View` for persistent listening.
 
         Parameters
         ----------
-        house: House
-            The House object to register for dispatching.
+        view: View
+            The view object to register for dispatching.
         """
-        if not (components := house.components):
-            return
+        components = list()
+        for row in view.rows:
+            for component in row.components:
+                components.append(component)
+                
+        if not components: return
         for component in components:
             if self._components.get((custom_id := component.custom_id)):
                 continue

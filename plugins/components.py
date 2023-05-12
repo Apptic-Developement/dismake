@@ -1,18 +1,6 @@
 from dismake import app_commands, ui, Plugin
 import dismake
 
-house = ui.House()
-
-
-@house.button(emoji="<:prishu_juicepeetihui:928222783069093888>")
-async def bcb(interaction: dismake.Interaction):
-    await interaction.send(f"Ok? {interaction.user}")
-
-
-@house.button(emoji="👀")
-async def bcb2(interaction: dismake.Interaction):
-    await interaction.send(f"Ok? {interaction.user}")
-
 
 plugin = Plugin()
 
@@ -23,8 +11,7 @@ components = plugin.create_group(
 )
 
 
-@components.command(
-    name="button", description="A button which says 'Hii' to the invoker."
-)
+@components.command(name="button_select", description="...")
 async def button_command(interaction: dismake.Interaction):
-    await interaction.send("Ok", house=house)
+    res = await interaction.respond("Ok")
+    print(res.json())

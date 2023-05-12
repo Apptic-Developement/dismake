@@ -46,4 +46,4 @@ class InteractionNotResponded(DismakeException):
 
 
 class ComponentException(DismakeException):
-    """Base Exception for house."""
+    """Base Exception for View."""

@@ -106,3 +106,129 @@
 #         print(t.get_args(v.annotation))
 
 # get_union_values(command)
+
+
+# import discord
+# from config import token
+# from discord.ext import commands
+# from discord import ui
+
+
+# class MyView(ui.View):
+#     def __init__(self):
+#         super().__init__(timeout=120)
+#         self.add_item
+
+#     @ui.button(label="Button 1")
+#     async def b1cb(self, *_, **__):
+#         ...
+
+#     @ui.button(label="Button 2")
+#     async def b2cb(self, *_, **__):
+#         ...
+
+#     # @ui.button(label="Button 3")
+#     # async def b3cb(self, *_, **__):
+#     #     ...
+
+#     # @ui.button(label="Button 4")
+#     # async def b4cb(self, *_, **__):
+#     #     ...
+
+#     # @ui.button(label="Button 5")
+#     # async def b5cb(self, *_, **__):
+#     #     ...
+
+#     @ui.select()
+#     async def select1cb(self, *_, **__):
+#         ...
+
+#     @ui.select()
+#     async def select2cb(self, *_, **__):
+#         ...
+
+#         # @ui.select()
+#         # async def select3cb(self, *_, **__):
+#         #     ...
+
+#         # @ui.select()
+#         # async def select4cb(self, *_, **__):
+#         #     ...
+
+#         # @ui.select()
+#         # async def select5cb(self, *_, **__):
+#         ...
+
+
+# bot = commands.Bot(command_prefix="1", intents=discord.Intents.none())
+
+
+# @bot.event
+# async def on_ready():
+#     print(MyView().to_components())
+
+
+# bot.run(token)
+
+from dismake import ui
+from pprint import pprint
+
+view = ui.View()
+
+
+@view.button(label="1")
+async def b1(*_):
+    ...
+
+
+@view.button(label="2")
+async def b1(*_):
+    ...
+
+
+@view.button(label="3")
+async def b1(*_):
+    ...
+
+
+@view.button(label="4")
+async def b1(*_):
+    ...
+
+
+@view.button(label="5")
+async def b1(*_):
+    ...
+
+
+
+@view.string_select()
+async def scb1(*_):
+    ...
+
+
+@view.string_select()
+async def scb1(*_):
+    ...
+
+
+@view.string_select()
+async def scb1(*_):
+    ...
+
+@view.string_select()
+async def scb1(*_):
+    ...
+
+@view.string_select()
+async def scb1(*_):
+    ...
+
+
+
+
+
+
+
+pprint(view.to_dict())
+

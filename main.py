@@ -1,13 +1,13 @@
 import dismake, config
 from plugins import mentions, components, autocomplete
 
+
 app = dismake.Bot(
     token=config.token,
     client_public_key=config.public_key,
     client_id=config.client_id,
     route="/",
 )
-
 mentions.plugin.load(app)
 components.plugin.load(app)
 autocomplete.plugin.load(app)
