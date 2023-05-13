@@ -6,6 +6,7 @@ typing_extensions==4.5.0
 uvicorn==0.22.0
 loguru==0.7.0
 httpx==0.24.0
+questionary==1.10.0
 
 #           Raw Deps        #
 # fastapi
@@ -15,4 +16,4 @@ httpx==0.24.0
 # httpx
 # loguru
 # typer[rich]
-
+# questionary

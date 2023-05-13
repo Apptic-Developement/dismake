@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import typer
-from typing import Annotated, Optional
+import shutil
+import questionary
+from typing import Optional
 from pathlib import Path
 from rich.prompt import Prompt
 from rich.console import Console
@@ -11,27 +13,27 @@ app = typer.Typer(name="dismake")
 console = Console()
 
 
-def make_prompt_text(text: str, default: Optional[str]):
-    if default:
-        return f"[bold][cyan]?[/cyan] {text} [black]({default})[/black][/bold]"
-    return f"[cyan]?[/cyan] {text}"
-
 @app.command(name="version", help="Show version")
 def help_command():
     console.print(f"[bold]Version[/bold]: {__version__}")
 
 @app.command(name="init", help="Initialize a new project")
 def init_command():
-    project_name = Prompt.ask(
-        make_prompt_text("What is your project name", "my-project")
-    )
-    if not project_name:
-        return console.print(f"[red]Error: [cyan]{project_name!r}[/cyan] is empty.")
-        
+    project_name = Prompt.ask("[bold][cyan]?[/cyan] What is your project name", default="my-project")
+    template_type = questionary.select(
+        "Select a template type.",
+        choices=["Basic", "Advance"],
+    ).ask()
+
     path = Path(project_name)
     if path.is_file():
-        console.print(f"[red]Error: [cyan]{project_name!r}[/cyan] is a file.")
-    elif not path.exists():
-        console.print(f"Creating your project: [cyan]{project_name!r}[/cyan]")
-
+        console.log(f"[red]Error: [cyan]{project_name!r}[/cyan] is a file.")
+    
+    with console.status("[bold green]Working on tasks..."):
+        try:
+            shutil.copytree(f'dismake/templates/{str(template_type).lower()}/', path)
+            console.log(f"[bold]Copied template: [bold cyan]Basic")
+            console.log(f"[bold]Created template: [bold cyan]{project_name}")
+        except FileExistsError:
+            console.log(f"[red]Error: [cyan]{project_name!r}[/cyan] already exists.")
 
