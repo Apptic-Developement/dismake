@@ -10,8 +10,6 @@ from pydantic import BaseModel
 __all__ = ("User", "Member")
 
 
-
-
 class User(BaseModel):
     id: int
     username: str
@@ -37,7 +35,6 @@ class User(BaseModel):
     @classmethod
     def from_resolved_data(cls, **kwargs):
         return cls(**kwargs)
-
 
     @property
     def mention(self) -> str:

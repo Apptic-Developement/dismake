@@ -14,6 +14,7 @@ mentions.plugin.load(app)
 components.plugin.load(app)
 autocomplete.plugin.load(app)
 
+
 @app.event()
 async def on_ready():
     app.log.info("Logged in as %s" % app.user)

@@ -1,16 +1,15 @@
 import dismake
-from dismake import app_commands
 from typing import Annotated
 
 
 plugin = dismake.Plugin()
 
 mentions = plugin.create_group(
-    name="mentions", description="This group holds only mentions commands."
+    name="mentions", description="This group holds only mentions dismake."
 )
 
 channels = plugin.create_group(
-    name="channels", description="This group holds only channels commands."
+    name="channels", description="This group holds only channels dismake."
 )
 
 
@@ -19,7 +18,7 @@ async def echo_command(
     interaction,
     text: Annotated[
         str,
-        app_commands.Option(),
+        dismake.Option(),
     ],
 ):
     await interaction.send(f"{text}")
@@ -30,7 +29,7 @@ async def user_command(
     interaction,
     user: Annotated[
         dismake.User,
-        app_commands.Option(),
+        dismake.Option(),
     ],
 ):
     await interaction.send(f"Mentioned: {user.mention}")
@@ -41,15 +40,15 @@ async def role_command(
     interaction,
     role1: Annotated[
         dismake.Role,
-        app_commands.Option(),
+        dismake.Option(),
     ],
     role2: Annotated[
         dismake.Role,
-        app_commands.Option(),
+        dismake.Option(),
     ],
     role3: Annotated[
         dismake.Role,
-        app_commands.Option(),
+        dismake.Option(),
     ],
 ):
     await interaction.send(
@@ -60,7 +59,7 @@ async def role_command(
 @channels.command(name="text", description="This channel mentions a text channel.")
 async def text_mention(
     interaction: dismake.Interaction,
-    channel: Annotated[dismake.TextChannel, app_commands.Option()],
+    channel: Annotated[dismake.TextChannel, dismake.Option()],
 ):
     await interaction.send(f"Mentioned: {channel.mention}")
 
@@ -72,7 +71,7 @@ async def category_mention(
     interaction: dismake.Interaction,
     channel: Annotated[
         dismake.CategoryChannel,
-        app_commands.Option(channel_types=[dismake.ChannelType.GUILD_CATEGORY]),
+        dismake.Option(channel_types=[dismake.ChannelType.GUILD_CATEGORY]),
     ],
 ):
     await interaction.send(f"Mentioned: {channel.mention}")

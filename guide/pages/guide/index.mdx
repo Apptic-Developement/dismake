@@ -26,7 +26,7 @@ Create a new Python file named `main.py`, and copy and paste the following code:
 
 ```py copy filename="main.py" showLineNumbers
 import dismake
-from dismake import app_commands
+from dismake import commands
 import typing
 
 app = dismake.Bot(...)
@@ -43,7 +43,7 @@ async def echo_command(
     ctx: dismake.Interaction,
     text: typing.Annotated[
         str,
-        app_commands.Option()
+        commands.Option()
     ]
 ):
     await interaction.respond(f"{text}")

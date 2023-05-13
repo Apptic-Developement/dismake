@@ -1,14 +1,14 @@
 # import typing as t
 # import inspect
-# from dismake import app_commands
-# from dismake.app_commands.commands import Option
+# from dismake import commands
+# from dismake.commands.commands import Option
 
 
 # def command(
-#     name: t.Annotated[str, app_commands.Option(max_value=1, min_value=2)],
+#     name: t.Annotated[str, commands.Option(max_value=1, min_value=2)],
 #     age: t.Annotated[
 #         int,
-#         app_commands.Option(
+#         commands.Option(
 #             name="age", description="This is age field", max_value=1, min_value=2
 #         ),
 #     ] = 1,
@@ -32,7 +32,7 @@
 #             continue
 #         option_type: type = annotation.__args__[0]
 #         option_object: Option = annotation.__metadata__[0]
-#         option_object.type = app_commands.commands._option_types[option_type]
+#         option_object.type = commands.commands._option_types[option_type]
 #         if option_object.description is None and (doc := func.__doc__) is not None:
 #             option_object.description = inspect.cleandoc(doc)
 #         if option_object.description is None and func.__doc__ is None:
@@ -176,13 +176,17 @@ import dismake
 
 view = ui.View()
 
-@view.string_select(options=[
-    ui.SelectOption(label="Lund"),
-    ui.SelectOption(label="Chut"),
-    ui.SelectOption(label="Gand"),
-])
+
+@view.string_select(
+    options=[
+        ui.SelectOption(label="Lund"),
+        ui.SelectOption(label="Chut"),
+        ui.SelectOption(label="Gand"),
+    ]
+)
 async def select_callback(interaction: dismake.Interaction):
     await interaction.edit_message(f"You want {interaction.data.values[0]}")
+
 
 @view.button(label="1")
 async def b1(interaction: dismake.Interaction):
@@ -192,5 +196,3 @@ async def b1(interaction: dismake.Interaction):
 @view.button(label="2")
 async def b2(interaction: dismake.Interaction):
     await interaction.send("Hmm What ?", ephemeral=True)
-
-

@@ -29,7 +29,7 @@ Create a new Python file named `main.py`, and copy and paste the following code:
 
 ```py
 import dismake
-from dismake import app_commands
+from dismake import commands
 import typing
 
 app = dismake.Bot(...)
@@ -46,7 +46,7 @@ async def echo_command(
     ctx: dismake.Context, 
     text: typing.Annotated[
         str,
-        app_commands.Option(name="text", description="Type something"), type=str
+        commands.Option(name="text", description="Type something"), type=str
     ]
 ):
     await ctx.respond(f"{text}")

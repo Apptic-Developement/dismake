@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from enum import Flag
 
-__all__ = (
-    "UserFlags",
-    "GuildMemberFlags"
-)
+__all__ = ("UserFlags", "GuildMemberFlags")
+
+
 class UserFlags(Flag):
     STAFF = 1 << 0
     PARTNER = 1 << 1
@@ -22,6 +21,7 @@ class UserFlags(Flag):
     CERTIFIED_MODERATOR = 1 << 18
     BOT_HTTP_INTERACTIONS = 1 << 19
     ACTIVE_DEVELOPER = 1 << 22
+
 
 class GuildMemberFlags(Flag):
     DID_REJOIN = 1 << 0

@@ -18,7 +18,7 @@ from .channels import Channel
 if TYPE_CHECKING:
     from ..ui import View
     from ..client import Bot
-    from ..app_commands import Choice
+    from ..commands import Choice
 
 
 __all__ = (
@@ -231,7 +231,6 @@ class Interaction:
         An interaction can only be responded to once.
         """
         return self._is_response_done
-
 
     @property
     def namespace(self) -> Namespace:

@@ -24,10 +24,9 @@ class Row:
 
     @property
     def is_full(self) -> bool:
-        if not self.components: return False
-        if isinstance(self.components[0], (
-            StringSelectMenu
-        )):
+        if not self.components:
+            return False
+        if isinstance(self.components[0], (StringSelectMenu)):
             return len(self.components) == 1
         return len(self.components) == 5
 
@@ -55,6 +54,7 @@ class View:
         async def click_me(ctx):
             await ctx.respond("Clicked")
     """
+
     def __init__(self) -> None:
         self.rows: List[Row] = list()
         self._error_handler: AsyncFunction = self.on_error

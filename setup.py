@@ -2,6 +2,9 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as file:
     long_description = file.read()
+
+with open("requirements/requirements.txt", "r") as file:
+    requirements = file.read().split("\n")
 setup(
     name="dismake",
     version="0.0.5",
@@ -10,8 +13,8 @@ setup(
     description="None",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/PranoyMajumdar/dismake",
-    project_urls={"Homepage": "https://github.com/PranoyMajumdar/dismake"},
+    url="https://github.com/Apptic-Development/dismake",
+    project_urls={"Homepage": "https://github.com/Apptic-Development/dismake"},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -20,13 +23,6 @@ setup(
     packages=find_packages(),
     python_requires=">=3.9",
     license="MIT",
-    install_requires=[
-        "fastapi",
-        "pydantic",
-        "httpx",
-        "uvicorn",
-        "PyNaCl",
-        "rich",
-    ],
+    install_requires=requirements,
     entry_points={"console_scripts": ["dismake=dismake.cli:app"]},
 )

@@ -8,7 +8,7 @@ from .handler import InteractionHandler
 from .http import HttpClient
 from .models import User
 from .errors import CommandInvokeError
-from .app_commands import Command, Group
+from .commands import Command, Group
 from logging import getLogger
 from .utils import LOGGING_CONFIG
 
@@ -42,6 +42,7 @@ class Bot(FastAPI):
     interaction_handler: Optional[InteractionHandler]
         An interaction handler to process incoming Discord interactions, by default `dismake.InteractionHandler`.
     """
+
     def __init__(
         self,
         token: str,
@@ -66,9 +67,10 @@ class Bot(FastAPI):
         self._events: Dict[str, List[AsyncFunction]] = {}
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._components: Dict[str, Component] = {}
-        self._app_commands: Dict[str, Union[Group, Command]] = {}
+        self._commands: Dict[str, Union[Group, Command]] = {}
         self.error_handler: Optional[AsyncFunction] = self.on_command_error
         self.log = log
+
     @property
     def user(self) -> User:
         """
@@ -82,7 +84,6 @@ class Bot(FastAPI):
             The `User` object representing the bot.
         """
         return self._http._user
-
 
     def get_command(self, name: str) -> Optional[Union[Command, Group]]:
         """
@@ -98,8 +99,7 @@ class Bot(FastAPI):
         Optional[Union[Command, Group]]
             The command object with the specified name, or None if no such object exists.
         """
-        return self._app_commands.get(name)
-
+        return self._commands.get(name)
 
     def run(self, **kwargs):
         """
@@ -111,9 +111,9 @@ class Bot(FastAPI):
         but you can provide your own configuration using the `log_config` keyword argument.
         """
         import uvicorn
+
         kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
-
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
         """
@@ -210,7 +210,7 @@ class Bot(FastAPI):
             ...     await app.sync_commands()
         """
         return await self._http.bulk_override_commands(
-            [command for command in self._app_commands.values()]
+            [command for command in self._commands.values()]
         )
 
     def on_error(self, coro: AsyncFunction):
@@ -278,8 +278,9 @@ class Bot(FastAPI):
         for row in view.rows:
             for component in row.components:
                 components.append(component)
-                
-        if not components: return
+
+        if not components:
+            return
         for component in components:
             if self._components.get((custom_id := component.custom_id)):
                 continue
@@ -294,7 +295,7 @@ class Bot(FastAPI):
         command: Union[Command, Group]
             The command you want to add to dismake.Bot
         """
-        self._app_commands[command.name] = command
+        self._commands[command.name] = command
 
     def command(
         self,
@@ -345,7 +346,7 @@ class Bot(FastAPI):
                     name_localizations=name_localizations,
                     description_localizations=description_localizations,
                 )
-                self._app_commands[command.name] = command
+                self._commands[command.name] = command
 
             return wrapper()
 
@@ -394,5 +395,5 @@ class Bot(FastAPI):
             guild_only=guild_only,
             nsfw=nsfw,
         )
-        self._app_commands[command.name] = command
+        self._commands[command.name] = command
         return command

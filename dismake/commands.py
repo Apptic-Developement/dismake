@@ -4,9 +4,9 @@ import inspect
 from typing import Any, TYPE_CHECKING, Annotated, Optional, get_origin
 from functools import wraps
 
-from ..permissions import Permissions
-from ..types import AsyncFunction
-from ..models import (
+from .permissions import Permissions
+from .types import AsyncFunction
+from .models import (
     User,
     Member,
     Role,
@@ -16,14 +16,14 @@ from ..models import (
     AnnouncementChannel,
     ApplicationCommandData,
 )
-from ..errors import CommandInvokeError
-from ..enums import ChannelType, CommandType, OptionType
+from .errors import CommandInvokeError
+from .enums import ChannelType, CommandType, OptionType
 
 if TYPE_CHECKING:
-    from ..types import AsyncFunction
-    from ..permissions import Permissions
-    from ..plugin import Plugin
-    from ..models import Interaction
+    from .types import AsyncFunction
+    from .permissions import Permissions
+    from .plugin import Plugin
+    from .models import Interaction
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
@@ -114,6 +114,7 @@ class Command:
     error_handler (AsyncFunction|None):
         An optional error handler for the command.
     """
+
     def __init__(
         self,
         name: str,

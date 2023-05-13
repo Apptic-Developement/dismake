@@ -1,22 +1,21 @@
 import dismake
 import typing as t
-from dismake import app_commands
 
 
 plugin = dismake.Plugin()
 
 
 ag = plugin.create_group(
-    name="autocomplete", description="This group holds all the autocomplete commands."
+    name="autocomplete", description="This group holds all the autocomplete dismake."
 )
 
 
 @plugin.command(name="sub_command", description="This is an autocomplete sub command.")
 async def command(
     interaction: dismake.Interaction,
-    fruit1: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit2: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit3: t.Annotated[str, app_commands.Option(autocomplete=True)],
+    fruit1: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit2: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit3: t.Annotated[str, dismake.Option(autocomplete=True)],
 ):
     await interaction.send(f"Fruit 1: {fruit1}\nFruit 2: {fruit2}\nFruit 3: {fruit3}")
 
@@ -24,16 +23,16 @@ async def command(
 @ag.command(name="sub_command", description="This is an autocomplete sub command.")
 async def sub_command(
     interaction: dismake.Interaction,
-    fruit1: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit2: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit3: t.Annotated[str, app_commands.Option(autocomplete=True)],
+    fruit1: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit2: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit3: t.Annotated[str, dismake.Option(autocomplete=True)],
 ):
     await interaction.send(f"Fruit 1: {fruit1}\nFruit 2: {fruit2}\nFruit 3: {fruit3}")
 
 
 sub_group = ag.create_sub_group(
     name="sub_group",
-    description="This sub group also holds some autocomplete commands.",
+    description="This sub group also holds some autocomplete dismake.",
 )
 
 
@@ -42,9 +41,9 @@ sub_group = ag.create_sub_group(
 )
 async def sub_group_command(
     interaction: dismake.Interaction,
-    fruit1: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit2: t.Annotated[str, app_commands.Option(autocomplete=True)],
-    fruit3: t.Annotated[str, app_commands.Option(autocomplete=True)],
+    fruit1: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit2: t.Annotated[str, dismake.Option(autocomplete=True)],
+    fruit3: t.Annotated[str, dismake.Option(autocomplete=True)],
 ):
     await interaction.send(f"Fruit 1: {fruit1}\nFruit 2: {fruit2}\nFruit 3: {fruit3}")
 
@@ -60,4 +59,4 @@ async def sub_group_command(
 @command.autocomplete("fruit3")
 async def autocomplete_callback(interaction: dismake.Interaction, name: str):
     fruits = ["Mango", "Apple", "Banana", "Pineaple", "Graps", "Strawberry", "Berry"]
-    return [app_commands.Choice(name=fruit) for fruit in fruits]
+    return [dismake.Choice(name=fruit) for fruit in fruits]

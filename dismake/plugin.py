@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 from functools import wraps
-from .app_commands import Command, Group
+from .commands import Command, Group
 
 if TYPE_CHECKING:
-    from .app_commands import Command, Group
+    from .commands import Command, Group
     from .client import Bot
     from .types import AsyncFunction
     from .permissions import Permissions
@@ -17,7 +17,7 @@ class Plugin:
     def __init__(self, name: str = __name__) -> None:
         self.name = name
         self.bot: Bot
-        self._app_commands: dict[str, Command | Group] = {}
+        self._commands: dict[str, Command | Group] = {}
         self.error_handler: Optional[AsyncFunction] = None
 
     def command(
@@ -47,7 +47,7 @@ class Plugin:
                     description_localizations=description_localizations,
                 )
                 command.plugin = self
-                self._app_commands[command.name] = command
+                self._commands[command.name] = command
                 return command
 
             return wrapper()
@@ -78,9 +78,9 @@ class Plugin:
             parent=parent,
         )
         command.plugin = self
-        self._app_commands[command.name] = command
+        self._commands[command.name] = command
         return command
 
     def load(self, bot: Bot):
-        bot._app_commands.update(self._app_commands)
+        bot._commands.update(self._commands)
         self.bot = bot

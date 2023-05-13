@@ -7,7 +7,7 @@ from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
-from .app_commands import Command, Group
+from .commands import Command, Group
 from logging import getLogger
 
 if TYPE_CHECKING:
@@ -15,11 +15,10 @@ if TYPE_CHECKING:
 
 log = getLogger("uvicorn")
 
+
 class InteractionHandler:
-    __slots__ = (
-        "client",
-        "verification_key"
-    )
+    __slots__ = ("client", "verification_key")
+
     def __init__(self, client: Bot) -> None:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
@@ -40,7 +39,7 @@ class InteractionHandler:
         interaction = Interaction(request=request, data=payload)
         assert isinstance(interaction.data, ApplicationCommandData)
         if (data := interaction.data) is not None:
-            command = self.client._app_commands.get(data.name)
+            command = self.client._commands.get(data.name)
             if command is not None:
                 if isinstance(command, Command):
                     await command.invoke(interaction)
