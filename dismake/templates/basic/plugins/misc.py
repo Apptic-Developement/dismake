@@ -1,9 +1,7 @@
 import dismake
 import typing
 
-__all__ = (
-    "plugin",
-)
+__all__ = ("plugin",)
 plugin = dismake.Plugin()
 
 

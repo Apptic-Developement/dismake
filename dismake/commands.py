@@ -45,7 +45,20 @@ _option_types = {
 }
 
 
-def _get_options(func: AsyncFunction):
+def _get_options(func: AsyncFunction) -> list[Option]:
+    """
+    Extracts options from the given command callback.
+
+    Parameters
+    ----------
+    func : AsyncFunction
+        The function to get the options from.
+
+    Returns
+    -------
+    list[Option]
+        The options of the command.
+    """
     params = inspect.signature(func).parameters
     options: list[Option] = list()
     for k, v in params.items():
@@ -101,18 +114,6 @@ class Command:
         Whether the command can be executed in DMs or not.
     nsfw (bool|None):
         Whether the command can only be executed in channels marked as NSFW or not.
-    parent (Group|None):
-        The parent command group, if any.
-    type (CommandType|OptionType):
-        The type of command (either a top-level slash command or a sub-command).
-    options (List[Option]):
-        A list of options for the command, if any.
-    plugin (Plugin|None):
-        The plugin this command belongs to, if any.
-    autocompletes (dict[str, AsyncFunction]):
-        A dictionary of autocompletion functions for the command, keyed by option name.
-    error_handler (AsyncFunction|None):
-        An optional error handler for the command.
     """
 
     def __init__(
@@ -151,6 +152,16 @@ class Command:
     async def _invoke_error_handlers(
         self, interaction: Interaction, error: CommandInvokeError
     ):
+        """
+        Invokes the error handlers for the command.
+
+        Parameters
+        ----------
+        interaction: Interaction
+            The interaction that triggered the error.
+        error: CommandInvokeError
+            The error that triggered the command.
+        """
         if self.error_handler is not None:
             return await self.error_handler(interaction, error)
         if self.plugin is not None and self.plugin.error_handler is not None:
@@ -159,6 +170,19 @@ class Command:
             return await bot_error_handler(interaction, error)
 
     async def invoke(self, interaction: Interaction):
+        """
+        Invokes the command.
+
+        Parameters
+        ----------
+        interaction: Interaction
+            The interaction that triggered the command.
+
+        Raises
+        ------
+        CommandInvokeError
+            The command failed to invoke.
+        """
         args = tuple()
         kwargs = dict()
         options = interaction.namespace.__dict__
@@ -180,6 +204,21 @@ class Command:
             return await self._invoke_error_handlers(interaction, exception)
 
     async def invoke_autocomplete(self, interaction: Interaction, name: str):
+        """
+        Invokes the autocomplete for the command.
+
+        Parameters
+        ----------
+        interaction: Interaction
+            The interaction that triggered the command.
+        name: str
+            The name of the option to autocomplete.
+
+        Raises
+        ------
+        CommandInvokeError
+            The command failed to invoke.
+        """
         autocomplete = self.autocompletes.get(name)
         if not autocomplete:
             return
@@ -191,6 +230,20 @@ class Command:
             return await interaction.autocomplete(choices)
 
     def autocomplete(self, option: str):
+        """
+        Decorator that registers an autocomplete for the command.
+
+        Parameters
+        ----------
+        option: str
+            The name of the option to autocomplete.
+
+        Returns
+        -------
+        Callable[[AsyncFunction], AsyncFunction]
+            The decorator.
+        """
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
@@ -202,6 +255,14 @@ class Command:
         return decorator
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Converts the command into a dictionary.
+
+        Returns
+        -------
+        dict[str, Any]
+            The dictionary.
+        """
         base = {
             "name": self.name,
             "description": self.description,
@@ -229,6 +290,33 @@ class Command:
 
 
 class Group:
+    """
+    Represents a slash command group.
+
+    Attributes
+    ----------
+    name (str):
+        The name of the group.
+    description (str):
+        A brief description of what the group does.(Max length 100)
+    guild_id (int|None):
+        The ID of the guild this command is registered in, or None if it's a global command.
+    name_localizations (dict[str, str]|None):
+        A dictionary of localized names for the group, keyed by language code.
+    description_localizations (dict[str, str]|None):
+        A dictionary of localized descriptions for the group, keyed by language code.
+    default_member_permissions (Permissions|None):
+        The default permissions required for members to execute the group.
+    guild_only (bool|None):
+        Whether the group can only be executed in a guild or not.
+    dm_permission (bool):
+        Whether the group can be executed in DMs or not.
+    nsfw (bool|None):
+        Whether the group can only be executed in channels marked as NSFW or not.
+    parent (Group|None):
+        The parent group, if any.
+    """
+
     def __init__(
         self,
         name: str,
@@ -267,9 +355,26 @@ class Group:
         return self.name
 
     def add_command(self, command: Group | Command):
+        """
+        Adds a command to the group.
+
+        Parameters
+        ----------
+        command: Group | Command
+            The command to add.
+
+        Raises
+        ------
+        TypeError
+            The command is not a group or a command.
+        ValueError
+            The command is nested more than one level.
+        """
         if isinstance(command, Group) and self.parent:
             raise ValueError("groups can only be nested at most one level")
 
+        if not isinstance(command, (Group, Command)):
+            raise TypeError("expected Group or Command but got %s" % type(command))
         self.commands[command.name] = command
         command.parent = self
         return command
@@ -286,6 +391,29 @@ class Group:
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
     ):
+        """
+        Decorator that creates a sub command.
+
+        Parameters
+        ----------
+        name: str | None
+            The name of the command.
+        description: str
+            A brief description of what the command does.(Max length 100)
+        guild_id: int | None
+            The ID of the guild this command is registered in, or None if it's a global command.
+        default_member_permissions: Permissions | None
+            The default permissions required for members to execute the command.
+        guild_only: bool | None
+            Whether the command can only be executed in a guild or not.
+        nsfw: bool | None
+            Whether the command can only be executed in channels marked as NSFW or not.
+        name_localizations: dict[str, str]|None
+            A dictionary of localized names for the command, keyed by language code.
+        description_localizations: dict[str, str]|None
+            A dictionary of localized descriptions for the command, keyed by
+        """
+
         def decorator(coro: AsyncFunction):
             command = Command(
                 name=name or coro.__name__,
@@ -304,10 +432,28 @@ class Group:
         return decorator
 
     def create_sub_group(self, name: str, description: str):
+        """
+        Decorator that creates a sub group.
+
+        Parameters
+        ----------
+        name: str
+            The name of the group.
+        description: str
+            A brief description of what the group does.(Max length 100)
+        """
         command = Group(name=name, description=description, parent=self)
         return command
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Creates a dictionary representation of the group.
+
+        Returns
+        -------
+        dict[str, Any]
+            The dictionary representation of the group.
+        """
         base = {
             "name": self.name,
             "description": self.description,
@@ -333,6 +479,33 @@ class Group:
 
 
 class Option:
+    """
+    Represents a slash command option.
+
+    Attributes
+    ----------
+    name (str):
+        The name of the option.
+    description (str):
+        The description of the option.
+    name_localizations (dict[str, str]|None):
+        A dictionary of localized names for the option, keyed by language code.
+    description_localizations (dict[str, str]|None):
+        A dictionary of localized descriptions for the option, keyed by language code.
+    required (bool|None):
+        Whether the option is required or not.
+    choices (list[Choice]|None):
+        A list of choices for the option.
+    channel_types (list[ChannelType]|None):
+        A list of channel types for the option.
+    min_value (int|None):
+        The minimum value for the option.
+    max_value (int|None):
+        The maximum value for the option.
+    autocomplete (bool|None):
+        Whether the option is an autocomplete option or not.
+    """
+
     def __init__(
         self,
         name: str | None = None,
@@ -362,6 +535,14 @@ class Option:
         return f"<Option name={self.name}>"
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Creates a dictionary representation of the option.
+
+        Returns
+        -------
+        dict[str, Any]
+            The dictionary representation of the option.
+        """
         base = {
             "name": self.name,
             "description": self.description,
@@ -387,6 +568,19 @@ class Option:
 
 
 class Choice:
+    """
+    Represents a slash command choice.
+
+    Attributes
+    ----------
+    name (str):
+        The name of the choice.
+    value (str):
+        The value of the choice.
+    name_localizations (dict[str, Any]|None):
+        A dictionary of localized names for the choice, keyed by language code.
+    """
+
     def __init__(
         self,
         name: str,

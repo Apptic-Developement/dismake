@@ -4,9 +4,7 @@ from plugins import misc
 
 
 app = dismake.Bot(
-    token=config.TOKEN,
-    client_id=config.CLIENT_ID,
-    client_public_key=config.PUBLIC_KEY
+    token=config.TOKEN, client_id=config.CLIENT_ID, client_public_key=config.PUBLIC_KEY
 )
 
 

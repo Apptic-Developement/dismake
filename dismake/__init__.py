@@ -7,4 +7,4 @@ from .plugin import *
 from .errors import *
 from .commands import *
 
-__version__ = '0.1.0'
+__version__ = "0.1.0"

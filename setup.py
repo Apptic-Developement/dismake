@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from dismake import __version__
 
 with open("README.md", "r") as file:
     long_description = file.read()
@@ -7,7 +8,7 @@ with open("requirements/requirements.txt", "r") as file:
     requirements = file.read().split("\n")
 setup(
     name="dismake",
-    version="0.0.5",
+    version=__version__,
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",

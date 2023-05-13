@@ -9,7 +9,12 @@ class AssetMixin:
         pass
 
 
+from discord import Asset as s
+
+
 class Asset(AssetMixin):
+    """Represent a CDN asset on Discord."""
+
     BASE = "https://cdn.discordapp.com"
 
     def __init__(self, *, url: str, key: str, animated: bool = False) -> None:
