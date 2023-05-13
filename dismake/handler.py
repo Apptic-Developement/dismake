@@ -8,11 +8,12 @@ from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
 from .models import Interaction, ApplicationCommandData, MessageComponentData
 from .app_commands import Command, Group
-from loguru import logger as log
+from logging import getLogger
 
 if TYPE_CHECKING:
     from .client import Bot
 
+log = getLogger("uvicorn")
 
 class InteractionHandler:
     __slots__ = (

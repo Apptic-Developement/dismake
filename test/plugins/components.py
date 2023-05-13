@@ -1,6 +1,6 @@
 from dismake import app_commands, ui, Plugin
 import dismake
-from test import view
+from tests import view
 
 plugin = Plugin()
 

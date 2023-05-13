@@ -9,9 +9,8 @@ from .http import HttpClient
 from .models import User
 from .errors import CommandInvokeError
 from .app_commands import Command, Group
-from loguru import logger as log
-
-# from .utils import LOGGING_CONFIG
+from logging import getLogger
+from .utils import LOGGING_CONFIG
 
 if TYPE_CHECKING:
     from .ui import View, Component
@@ -19,30 +18,30 @@ if TYPE_CHECKING:
     from .permissions import Permissions
     from .models import Interaction
 
-
+log = getLogger("uvicorn")
 __all__ = ("Bot",)
 
 
 class Bot(FastAPI):
     """
-    A class for creating a Discord bot using FastAPI.
+    Represents a Discord bot.
 
-    Parameters
+    This class is a subclass of `FastAPI`, which means you can create API routes
+    and do whatever you can do with `FastAPI`with this class's instance.
+
+    Attributes
     ----------
-    token (str):
-        The Discord bot's token.
-    client_public_key (str):
-        The Discord client's public key.
-    client_id (str):
-        The Discord client's ID.
-    route (str):
+    token: str
+        The token for the Discord bot.
+    client_public_key: str
+        The public key for the Discord client.
+    client_id: int
+        The ID for the Discord client.
+    route: str
         The route to listen for Discord interactions on, by default "/interactions".
-    interaction_handler (Optional[InteractionHandler]):
-        An interaction handler to process incoming Discord interactions, by default None.
-    **kwargs
-        Additional keyword arguments that will be passed to the FastAPI constructor.
+    interaction_handler: Optional[InteractionHandler]
+        An interaction handler to process incoming Discord interactions, by default `dismake.InteractionHandler`.
     """
-
     def __init__(
         self,
         token: str,
@@ -69,47 +68,65 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._app_commands: Dict[str, Union[Group, Command]] = {}
         self.error_handler: Optional[AsyncFunction] = self.on_command_error
-
+        self.log = log
     @property
     def user(self) -> User:
         """
         Returns the user object representing the bot.
 
+        This property returns a `User` object that represents the bot in the Discord API.
+
         Returns
         -------
         User
-            The user object representing the bot.
+            The `User` object representing the bot.
         """
         return self._http._user
 
-    def get_command(self, name: str) -> Union[Command, Group, None]:
+
+    def get_command(self, name: str) -> Optional[Union[Command, Group]]:
         """
-        Get a slash command with the specified name.
+        Returns the slash command with the specified name, or None if it doesn't exist.
 
         Parameters
         ----------
-        name : str
+        name: str
             The name of the command to retrieve.
 
         Returns
         -------
-        Union[Command, Group, None]
+        Optional[Union[Command, Group]]
             The command object with the specified name, or None if no such object exists.
         """
         return self._app_commands.get(name)
 
+
     def run(self, **kwargs):
         """
         Starts the web server to handle HTTP interactions with Discord.
+
+        This method starts a web server using `uvicorn`, which handles HTTP interactions with Discord.
+        Any additional keyword arguments are passed directly to `uvicorn.run()`.
+        By default, this method uses the `LOGGING_CONFIG` configuration for logging,
+        but you can provide your own configuration using the `log_config` keyword argument.
         """
         import uvicorn
-
-        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
+
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
         """
         Dispatches an event to a single event listener.
+
+        This method is used internally to dispatch an event to a single event listener.
+        It calls the specified coroutine function with the given arguments and keyword arguments.
+        If the coroutine raises an exception, the exception is logged using the `log` module's `error()` method.
+
+        Parameters
+        ----------
+        coro: AsyncFunction
+            The coroutine function to call.
         """
         try:
             await coro(*args, **kwargs)
@@ -174,7 +191,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        guild_ids: Optional[int]:
+        guild_ids: Optional[int]
             An optional list of guild IDs to sync commands for. If not specified, commands will be synced globally.
 
         Returns
