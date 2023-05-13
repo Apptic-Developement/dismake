@@ -1,31 +1,15 @@
 from __future__ import annotations
 from typing import Any, Optional
 
-from dismake.enums import DefaultAvatar
+from ..enums import DefaultAvatar
 from ..asset import Asset
-
+from ..flags import UserFlags, GuildMemberFlags
+from ..permissions import Permissions
 from pydantic import BaseModel
-
 
 __all__ = ("User", "Member")
 
-FLAGS_MAPPING = {
-    1 << 0: "STAFF",
-    1 << 1: "PARTNER",
-    1 << 2: "HYPESQUAD",
-    1 << 3: "BUG_HUNTER_LEVEL_1",
-    1 << 6: "HYPESQUAD_ONLINE_HOUSE_1",
-    1 << 7: "HYPESQUAD_ONLINE_HOUSE_2",
-    1 << 8: "HYPESQUAD_ONLINE_HOUSE_3",
-    1 << 9: "PREMIUM_EARLY_SUPPORTER",
-    1 << 10: "TEAM_PSEUDO_USER",
-    1 << 14: "BUG_HUNTER_LEVEL_2",
-    1 << 16: "VERIFIED_BOT",
-    1 << 17: "VERIFIED_DEVELOPER",
-    1 << 18: "CERTIFIED_MODERATOR",
-    1 << 19: "BOT_HTTP_INTERACTIONS",
-    1 << 22: "ACTIVE_DEVELOPER",
-}
+
 
 
 class User(BaseModel):
@@ -43,7 +27,7 @@ class User(BaseModel):
     locale: Optional[str]
     verified: Optional[bool]
     email: Optional[str]
-    flags: Optional[int]
+    flags: Optional[UserFlags]
     premium_type: Optional[int]
     public_flags: Optional[int]
 
@@ -54,14 +38,6 @@ class User(BaseModel):
     def from_resolved_data(cls, **kwargs):
         return cls(**kwargs)
 
-    @property
-    def get_flags(self) -> Optional[list[str]]:
-        _flag_names = list()
-        for k, v in FLAGS_MAPPING.items():
-            if k == self.flags:
-                _flag_names.append(v)
-
-        return _flag_names
 
     @property
     def mention(self) -> str:
@@ -85,9 +61,9 @@ class Member(BaseModel):
     premium_since: Optional[Any]
     deaf: bool
     mute: bool
-    flags: Any
+    flags: GuildMemberFlags
     pending: Optional[bool]
-    permissions: Any
+    permissions: Optional[Permissions]
     communication_disabled_until: Optional[Any]
 
     def __str__(self) -> str:

@@ -76,6 +76,44 @@ def _get_options(func: AsyncFunction):
 
 
 class Command:
+    """
+    Represents a Discord command or a Discord sub-command.
+
+    Attributes
+    ----------
+    name (str):
+        The name of the command/sub-command.
+    description (str):
+        A brief description of what the command/sub-command does.(Max length 100)
+    callback (AsyncFunction):
+        The function to be executed when the command is called.
+    guild_id (int|None):
+        The ID of the guild this command is registered in, or None if it's a global command.
+    name_localizations (dict[str, str]|None):
+        A dictionary of localized names for the command, keyed by language code.
+    description_localizations (dict[str, str]|None):
+        A dictionary of localized descriptions for the command, keyed by language code.
+    default_member_permissions (Permissions|None):
+        The default permissions required for members to execute the command.
+    guild_only (bool|None):
+        Whether the command can only be executed in a guild or not.
+    dm_permission (bool):
+        Whether the command can be executed in DMs or not.
+    nsfw (bool|None):
+        Whether the command can only be executed in channels marked as NSFW or not.
+    parent (Group|None):
+        The parent command group, if any.
+    type (CommandType|OptionType):
+        The type of command (either a top-level slash command or a sub-command).
+    options (List[Option]):
+        A list of options for the command, if any.
+    plugin (Plugin|None):
+        The plugin this command belongs to, if any.
+    autocompletes (dict[str, AsyncFunction]):
+        A dictionary of autocompletion functions for the command, keyed by option name.
+    error_handler (AsyncFunction|None):
+        An optional error handler for the command.
+    """
     def __init__(
         self,
         name: str,

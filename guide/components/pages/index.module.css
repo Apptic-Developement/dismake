@@ -7,13 +7,16 @@
 .main h2 {
     font-size: 3rem;
     font-weight: bold;
-    background: linear-gradient(to top, rgb(150, 150, 150), rgb(255, 255, 255));
+    /* background: linear-gradient(to top, rgb(150, 150, 150), rgb(255, 255, 255));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
+    text-fill-color: transparent; */
+    color: var(--text-color)
 
 }
+
+
 .main h2::selection{
     background-color: transparent;
 }

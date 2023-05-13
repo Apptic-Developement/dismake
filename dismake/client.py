@@ -29,15 +29,15 @@ class Bot(FastAPI):
 
     Parameters
     ----------
-    token : str
+    token (str):
         The Discord bot's token.
-    client_public_key : str
+    client_public_key (str):
         The Discord client's public key.
-    client_id : int
+    client_id (str):
         The Discord client's ID.
-    route : str
+    route (str):
         The route to listen for Discord interactions on, by default "/interactions".
-    interaction_handler : Optional[InteractionHandler]
+    interaction_handler (Optional[InteractionHandler]):
         An interaction handler to process incoming Discord interactions, by default None.
     **kwargs
         Additional keyword arguments that will be passed to the FastAPI constructor.
