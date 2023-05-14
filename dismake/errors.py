@@ -13,10 +13,14 @@ __all__ = (
     "InteractionResponded",
     "InteractionNotResponded",
     "ComponentException",
+    "PluginException"
 )
 
 
 class DismakeException(Exception):
+    """Base dismake exception."""
+
+class PluginException(Exception):
     """Base dismake exception."""
 
 

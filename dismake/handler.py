@@ -17,6 +17,14 @@ log = getLogger("uvicorn")
 
 
 class InteractionHandler:
+    """
+    Handles interactions.
+
+    Attributes
+    ----------
+    client: (Bot)
+        The bot object.
+    """
     __slots__ = ("client", "verification_key")
 
     def __init__(self, client: Bot) -> None:
@@ -24,6 +32,23 @@ class InteractionHandler:
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
 
     def verify_key(self, body: bytes, signature: str, timestamp: str):
+        """
+        Verifies the signature of the request.
+
+        Parameters
+        ----------
+        body: (bytes)
+            The body of the request.
+        signature: (str)
+            The signature of the request.
+        timestamp: (str)
+            The timestamp of the request.
+
+        Returns
+        -------
+        (bool)
+            Whether the signature is valid.
+        """
         message = timestamp.encode() + body
         try:
             self.verification_key.verify(message, bytes.fromhex(signature))
@@ -35,6 +60,19 @@ class InteractionHandler:
             return False
 
     async def _handle_command(self, request: Request) -> Any:
+        """
+        Handles a command request.
+
+        Parameters
+        ----------
+        request: (Request)
+            The request object.
+
+        Returns
+        -------
+        (Any)
+            The response object.
+        """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
         assert isinstance(interaction.data, ApplicationCommandData)
@@ -59,6 +97,19 @@ class InteractionHandler:
                         await child_2.invoke(interaction)
 
     async def _handle_autocomplete(self, request: Request) -> Any:
+        """
+        Handles an autocomplete request.
+
+        Parameters
+        ----------
+        request: (Request)
+            The request object.
+
+        Returns
+        -------
+        (Any)
+            The response object.
+        """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
 
@@ -110,6 +161,19 @@ class InteractionHandler:
                     )
 
     async def _handle_message_component(self, request: Request) -> Any:
+        """
+        Handles a message component request.
+
+        Parameters
+        ----------
+        request: (Request)
+            The request object.
+
+        Returns
+        -------
+        (Any)
+            The response object.
+        """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
         if interaction.data and isinstance(interaction.data, MessageComponentData):
@@ -118,6 +182,19 @@ class InteractionHandler:
                 return await comp.callback(interaction)
 
     async def handle_interactions(self, request: Request):
+        """
+        The function is meant to handle interactions posted by
+        Discord in the "/interactions" route specified in the bot instance.
+
+        Parameters
+        ----------
+        request: (Request)
+            The request object.
+
+        Returns
+        -------
+        (Response)
+        """
         signature = request.headers["X-Signature-Ed25519"]
         timestamp = request.headers["X-Signature-Timestamp"]
         if (

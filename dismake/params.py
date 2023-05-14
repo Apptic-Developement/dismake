@@ -40,7 +40,6 @@ def handle_send_params(
 
     if _embeds:
         embeds = _embeds
-    # TODO: attachments, components, allowed_mentions
     return payload
 
 
