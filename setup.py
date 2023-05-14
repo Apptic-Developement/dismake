@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from dismake import __version__
 
 with open("README.md", "r") as file:
     long_description = file.read()
@@ -9,7 +8,7 @@ with open("requirements/requirements.txt", "r") as file:
 
 setup(
     name="dismake",
-    version=__version__,
+    version="0.0.6",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",
@@ -26,5 +25,5 @@ setup(
     python_requires=">=3.9",
     license="MIT",
     install_requires=requirements,
-    entry_points={"console_scripts": ["dismake=dismake.cli:app"]},
+    entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
 )

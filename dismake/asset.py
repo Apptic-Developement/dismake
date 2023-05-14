@@ -9,9 +9,6 @@ class AssetMixin:
         pass
 
 
-from discord import Asset as s
-
-
 class Asset(AssetMixin):
     """Represent a CDN asset on Discord."""
 
