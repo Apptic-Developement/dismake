@@ -8,7 +8,7 @@ with open("requirements/requirements.txt", "r") as file:
 
 setup(
     name="dismake",
-    version="0.0.6",
+    version="0.0.7",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",
