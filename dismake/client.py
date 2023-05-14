@@ -39,8 +39,8 @@ class Bot(FastAPI):
         The ID for the Discord client.
     route: :class:`str`
         The route to listen for Discord interactions on, by default "/interactions".
-    interaction_handler: :class:`.handler.InteractionHandler`
-        An interaction handler to process incoming Discord interactions, by default :class:`.handler.InteractionHandler`.
+    interaction_handler: :class:`InteractionHandler`
+        An interaction handler to process incoming Discord interactions, by default :class:`InteractionHandler`.
 
     Attributes
     ----------

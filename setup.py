@@ -4,11 +4,13 @@ with open("README.md", "r") as file:
     long_description = file.read()
 
 with open("requirements/requirements.txt", "r") as file:
-    requirements = list(filter(lambda x: not x.startswith('#') and not x == "",file.read().split('\n')))
+    requirements = list(
+        filter(lambda x: not x.startswith("#") and not x == "", file.read().split("\n"))
+    )
 
 setup(
     name="dismake",
-    version="0.0.7",
+    version="0.0.1",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",

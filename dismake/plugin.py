@@ -20,7 +20,7 @@ class Plugin:
     Represents a plugin.
 
     Plugins help you split your code into different files,
-    similar to 'APIRouter' and discord.py's 'Cog'.
+    similar to `APIRouter` and discord.py's `Cog`.
 
     Parameters
     ----------
@@ -64,16 +64,18 @@ class Plugin:
 
         Parameters
         ----------
-        event_name: str
+        event_name: :class:`str`
             The event name you want to listen.
 
         Example usage
         -------------
-            >>> import dismake
-            >>> plugin = dismake.Plugin()
-            >>> @plugin.event()
-            ... async def on_interaction():
-            ...     print(f"A new interaction received.")
+            import dismake
+
+            plugin = dismake.Plugin()
+            
+            @plugin.event()
+            async def on_interaction():
+                print(f"A new interaction received.")
         """
 
         def decorator(coro: AsyncFunction):
@@ -111,23 +113,23 @@ class Plugin:
 
         Parameters
         ----------
-        name: str
+        name: :class:`str`
             The name of the command.
-        description: str
+        description: :class:`str`
             The description of the command.
-        guild_id: int | None
+        guild_id: :class:`int | None`
             The guild ID, if you want this command to only be visible on a specific guild.
-        default_member_permissions: Permissions | None
+        default_member_permissions: :class:`Permissions | None`
             The permissions a user needs to invoke this command.
-        guild_only: bool | None
+        guild_only: :class:`bool | None`
             If set to True, this command will only be visible to guilds, not in user DM channels.
-        nsfw: bool | None
+        nsfw: :class:`bool | None`
             If set to True, this command will only be visible in NSFW channels.
-        name_localizations: dict[str, str] | None
+        name_localizations: :class:`dict[str, str] | None`
             Localization dictionary for name field. Values follow the same restrictions as name.
-        description_localizations: dict[str, str] | None
+        description_localizations: :class:`dict[str, str] | None`
             Localization dictionary for description field. Values follow the same restrictions as description.
-        plugin_permissions: bool
+        plugin_permissions: :class:`bool`
             If this set to false then the plugin won't override permissions for this command.
         """
 
@@ -180,23 +182,23 @@ class Plugin:
 
         Parameters
         ----------
-        name: str
+        name: :class:`str`
             The name of the command.
-        description: str
+        description: :class:`str`
             The description of the command.
-        guild_id : int | None
+        guild_id: :class:`int | None`
             The guild ID, if you want this command to only be visible on a specific guild.
-        default_member_permissions : Permissions | None
+        default_member_permissions : :class:`Permissions | None`
             The permissions a user needs to invoke this command.
-        guild_only : bool | None
+        guild_only: :class:`bool | None`
             If set to True, this command will only be visible to guilds, not in user DM channels.
-        nsfw : bool | None
+        nsfw: :class:`bool | None`
             If set to True, this command will only be visible in NSFW channels.
-        name_localizations : dict[str, str] | None
+        name_localizations: :class:`dict[str, str] | None`
             Localization dictionary for name field. Values follow the same restrictions as name.
-        description_localizations : dict[str, str] | None
+        description_localizations: :class:`dict[str, str] | None`
             Localization dictionary for description field. Values follow the same restrictions as description.
-        plugin_permissions: bool
+        plugin_permissions: :class:`bool`
             If this set to false then the plugin won't override permissions for this command.
         """
         if self.default_member_permissions is not None and plugin_permissions:
@@ -223,7 +225,7 @@ class Plugin:
 
         Parameters
         ----------
-        bot: Bot
+        bot: :class:`Bot`
             The bot instance.
         """
         bot._commands.update(self._commands)
