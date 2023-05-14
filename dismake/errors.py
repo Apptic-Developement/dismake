@@ -13,7 +13,8 @@ __all__ = (
     "InteractionResponded",
     "InteractionNotResponded",
     "ComponentException",
-    "PluginException"
+    "PluginException",
+    "CommandException"
 )
 
 
@@ -29,14 +30,15 @@ class NotImplemented(DismakeException):
 
 
 class CommandInvokeError(DismakeException):
-    """TODO"""
+    """When a command fails to invoke."""
 
     def __init__(self, command: Command, exception: Exception) -> None:
         self.command = command
         self.exception = exception
         super().__init__(f"Command {command.name!r} raised an exception: {exception}")
 
-
+class CommandException(DismakeException):
+    """Raise when a command raised an exception."""
 class InteractionResponded(DismakeException):
     def __init__(self, interaction: Interaction) -> None:
         self.interaction = interaction

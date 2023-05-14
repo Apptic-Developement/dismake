@@ -4,7 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Optional
 from functools import wraps
 from .commands import Command, Group
-from .errors import PluginException
+from .errors import PluginException, CommandException
 
 if TYPE_CHECKING:
     from .commands import Command, Group
@@ -91,19 +91,42 @@ class Plugin:
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
+        plugin_permissions: bool = True,
     ):
+        """
+        The `command` function is a decorator that registers a function as an application command.
+
+        Parameters
+        ----------
+        name: str
+            The name of the command.
+        description: str
+            The description of the command.
+        guild_id: int | None
+            The guild ID, if you want this command to only be visible on a specific guild.
+        default_member_permissions: Permissions | None
+            The permissions a user needs to invoke this command.
+        guild_only: bool | None
+            If set to True, this command will only be visible to guilds, not in user DM channels.
+        nsfw: bool | None
+            If set to True, this command will only be visible in NSFW channels.
+        name_localizations: dict[str, str] | None
+            Localization dictionary for name field. Values follow the same restrictions as name.
+        description_localizations: dict[str, str] | None
+            Localization dictionary for description field. Values follow the same restrictions as description.
+        plugin_permissions: bool
+            If this set to false then the plugin won't override permissions for this command.
+        """
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
                 if not asyncio.iscoroutinefunction(coro):
                     raise PluginException(f"{coro.__name__!r} command callback must be a coroutine function.")
                 
-                if self.default_member_permissions is not None:
+                if self.default_member_permissions is not None and plugin_permissions:
                     permissions = self.default_member_permissions
-                elif default_member_permissions is not None:
-                    permissions = default_member_permissions
                 else:
-                    permissions = None
+                    permissions = default_member_permissions
                 command = Command(
                     name=name,
                     description=description,
@@ -134,13 +157,37 @@ class Plugin:
         guild_only: bool | None = None,
         nsfw: bool | None = None,
         parent: Group | None = None,
+        plugin_permissions: bool = True
     ):
-        if self.default_member_permissions is not None:
+        """
+        The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
+
+        Parameters
+        ----------
+        name: str
+            The name of the command.
+        description: str
+            The description of the command.
+        guild_id : int | None
+            The guild ID, if you want this command to only be visible on a specific guild.
+        default_member_permissions : Permissions | None
+            The permissions a user needs to invoke this command.
+        guild_only : bool | None
+            If set to True, this command will only be visible to guilds, not in user DM channels.
+        nsfw : bool | None
+            If set to True, this command will only be visible in NSFW channels.
+        name_localizations : dict[str, str] | None
+            Localization dictionary for name field. Values follow the same restrictions as name.
+        description_localizations : dict[str, str] | None
+            Localization dictionary for description field. Values follow the same restrictions as description.
+        plugin_permissions: bool
+            If this set to false then the plugin won't override permissions for this command.
+        """
+        if self.default_member_permissions is not None and plugin_permissions:
             permissions = self.default_member_permissions
-        elif default_member_permissions is not None:
-            permissions = default_member_permissions
         else:
-            permissions = None
+            permissions = default_member_permissions
+
         command = Group(
             name=name,
             description=description,
@@ -157,6 +204,14 @@ class Plugin:
         return command
 
     def load(self, bot: Bot):
+        """
+        Loads the plugin.
+
+        Parameters
+        ----------
+        bot: Bot
+            The bot instance.
+        """
         bot._commands.update(self._commands)
         bot._events.update(self._events)
         if self._on_load is not None:
