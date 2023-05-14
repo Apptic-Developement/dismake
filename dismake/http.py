@@ -48,7 +48,7 @@ class HttpClient:
         res.raise_for_status()
         _json = res.json()
         if not _json:
-            return
+            return list()
 
         return [AppCommand(**command) for command in _json]
 

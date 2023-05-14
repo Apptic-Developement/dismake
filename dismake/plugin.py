@@ -200,9 +200,7 @@ class Plugin:
             If this set to false then the plugin won't override permissions for this command.
         """
         if self.default_member_permissions is not None and plugin_permissions:
-            permissions = self.default_member_permissions
-        else:
-            permissions = default_member_permissions
+            default_member_permissions = self.default_member_permissions
 
         command = Group(
             name=name,
@@ -210,7 +208,7 @@ class Plugin:
             guild_id=guild_id,
             name_localizations=name_localizations,
             description_localizations=description_localizations,
-            default_member_permissions=permissions,
+            default_member_permissions=default_member_permissions,
             guild_only=guild_only,
             nsfw=nsfw,
             parent=parent,

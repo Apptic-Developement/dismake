@@ -17,7 +17,7 @@ from .models import (
     ApplicationCommandData,
 )
 from .errors import CommandInvokeError
-from .enums import ChannelType, CommandType, OptionType
+from .enums import ChannelType, CommandType, OptionType, Locale
 
 if TYPE_CHECKING:
     from .types import AsyncFunction
@@ -86,6 +86,13 @@ def _get_options(func: AsyncFunction) -> list[Option]:
 
         options.append(option_object)
     return options
+
+
+def _populate_locales(locale: dict[Locale, str]) -> dict[str, str]:
+    locales = dict()
+    for lang, value in locale.items():
+        locales[lang.value] = value
+    return locales
 
 
 class Command:
@@ -584,7 +591,7 @@ class Choice:
     def __init__(
         self,
         name: str,
-        name_localizations: dict[str, Any] | None = None,
+        name_localizations: dict[Locale, str] | None = None,
         value: str | int | float | bool | None = None,
     ) -> None:
         self.name = name
@@ -592,7 +599,7 @@ class Choice:
         self.name_localizations = name_localizations
 
     def to_dict(self) -> dict[str, Any]:
-        base = {"name": self.name, "value": self.value}
+        base: dict[str, Any] = {"name": self.name, "value": self.value}
         if self.name_localizations is not None:
-            base["name_localizations"] = self.name_localizations
+            base["name_localizations"] = _populate_locales(self.name_localizations)
         return base
