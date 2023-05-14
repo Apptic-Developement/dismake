@@ -25,6 +25,7 @@ class InteractionHandler:
     client: (Bot)
         The bot object.
     """
+
     __slots__ = ("client", "verification_key")
 
     def __init__(self, client: Bot) -> None:

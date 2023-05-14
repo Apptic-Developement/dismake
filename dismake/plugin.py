@@ -4,7 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Optional
 from functools import wraps
 from .commands import Command, Group
-from .errors import PluginException, CommandException
+from .errors import PluginException
 
 if TYPE_CHECKING:
     from .commands import Command, Group
@@ -22,14 +22,24 @@ class Plugin:
     Plugins help you split your code into different files,
     similar to 'APIRouter' and discord.py's 'Cog'.
 
+    Parameters
+    ----------
+    name: :class:`str`
+        The name of the plugin.
+    default_member_permissions: :class:`Permissions`
+        This will override all the commands permissions with this permission.
+
     Attributes
     ----------
-    name: (str)
-        The name of the plugin.
-    default_member_permissions: (Permissions | None)
-        This will override all the commands permissions with this permission.
+    bot: :class:`Bot`
+        The bot instance.
     """
-    def __init__(self, name: str = __name__, default_member_permissions: Permissions | None = None) -> None:
+
+    def __init__(
+        self,
+        name: str = __name__,
+        default_member_permissions: Permissions | None = None,
+    ) -> None:
         self.name = name
         self.bot: Bot
         self._commands: dict[str, Command | Group] = {}
@@ -43,8 +53,9 @@ class Plugin:
         def wrapper(*_, **__):
             if not asyncio.iscoroutinefunction(coro):
                 raise PluginException(f"{coro.__name__!r} is not coroutine function.")
-            self._on_load = coro 
+            self._on_load = coro
             return coro
+
         return wrapper()
 
     def event(self, event_name: str | None = None):
@@ -69,7 +80,9 @@ class Plugin:
             @wraps(coro)
             def wrapper(*_, **__):
                 if not asyncio.iscoroutinefunction(coro):
-                    raise PluginException(f"{coro.__name__!r} is not coroutine function.")
+                    raise PluginException(
+                        f"{coro.__name__!r} is not coroutine function."
+                    )
                 name = event_name or coro.__name__
                 if self._events.get(name) is not None:
                     self._events[name].append(coro)
@@ -79,7 +92,7 @@ class Plugin:
             return wrapper()
 
         return decorator
-    
+
     def command(
         self,
         name: str,
@@ -117,12 +130,15 @@ class Plugin:
         plugin_permissions: bool
             If this set to false then the plugin won't override permissions for this command.
         """
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
                 if not asyncio.iscoroutinefunction(coro):
-                    raise PluginException(f"{coro.__name__!r} command callback must be a coroutine function.")
-                
+                    raise PluginException(
+                        f"{coro.__name__!r} command callback must be a coroutine function."
+                    )
+
                 if self.default_member_permissions is not None and plugin_permissions:
                     permissions = self.default_member_permissions
                 else:
@@ -157,7 +173,7 @@ class Plugin:
         guild_only: bool | None = None,
         nsfw: bool | None = None,
         parent: Group | None = None,
-        plugin_permissions: bool = True
+        plugin_permissions: bool = True,
     ):
         """
         The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
@@ -203,7 +219,7 @@ class Plugin:
         self._commands[command.name] = command
         return command
 
-    def load(self, bot: Bot):
+    async def load(self, bot: Bot):
         """
         Loads the plugin.
 

@@ -24,7 +24,7 @@ class Component:
         return self._view
 
     @view.setter
-    def view(self, v: view) -> View:
+    def view(self, v: View) -> View:
         self.view = v
         return self.view
 

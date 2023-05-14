@@ -52,20 +52,20 @@ def _options_to_dict(
         if option.type == OptionType.USER.value and resolved_data is not None:
             if resolved_data.users is not None:
                 namespace_dict[option.name.replace("-", "_")] = resolved_data.users.get(
-                    str(option.value)
+                    str(option.value) # type: ignore
                 )
         elif option.type == OptionType.ROLE.value and resolved_data is not None:
             if resolved_data.roles is not None:
                 namespace_dict[option.name.replace("-", "_")] = resolved_data.roles.get(
-                    str(option.value)
+                    str(option.value) # type: ignore
                 )
         elif option.type == OptionType.CHANNEL.value and resolved_data is not None:
             if resolved_data.channels is not None:
                 namespace_dict[
                     option.name.replace("-", "_")
-                ] = resolved_data.channels.get(str(option.value))
+                ] = resolved_data.channels.get(str(option.value)) # type: ignore
         else:
-            namespace_dict[option.name.replace("-", "_")] = option.value
+            namespace_dict[option.name.replace("-", "_")] = option.value # type: ignore
     return namespace_dict
 
 

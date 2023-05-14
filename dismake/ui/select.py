@@ -84,6 +84,7 @@ class SelectOption:
         self.value = value or label
         self.description = description
         self.default = default
+        self.emoji: PartialEmoji | None
         if emoji is not None:
             if isinstance(emoji, str):
                 self.emoji = PartialEmoji.from_str(emoji)

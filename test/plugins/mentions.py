@@ -2,7 +2,7 @@ import dismake
 from typing import Annotated
 
 
-plugin = dismake.Plugin()
+plugin = dismake.Plugin(__name__)
 
 mentions = plugin.create_group(
     name="mentions", description="This group holds only mentions dismake."
@@ -11,6 +11,11 @@ mentions = plugin.create_group(
 channels = plugin.create_group(
     name="channels", description="This group holds only channels dismake."
 )
+
+
+@plugin.on_load
+async def on_load():
+    plugin.bot.log.info(f"{plugin.name!r} loaded successfully.")
 
 
 @mentions.command(name="echo", description="Echo command.")

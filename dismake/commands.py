@@ -183,8 +183,8 @@ class Command:
         CommandInvokeError
             The command failed to invoke.
         """
-        args = tuple()
-        kwargs = dict()
+        args: tuple = tuple()
+        kwargs: dict = dict()
         options = interaction.namespace.__dict__
         params = inspect.signature(self.callback).parameters
         for k, v in params.items():
@@ -543,7 +543,7 @@ class Option:
         dict[str, Any]
             The dictionary representation of the option.
         """
-        base = {
+        base: dict[str, Any] = {
             "name": self.name,
             "description": self.description,
             "type": self.type.value,
@@ -594,5 +594,5 @@ class Choice:
     def to_dict(self) -> dict[str, Any]:
         base = {"name": self.name, "value": self.value}
         if self.name_localizations is not None:
-            base.update({"name_localizations": self.name_localizations})
+            base["name_localizations"] = self.name_localizations
         return base

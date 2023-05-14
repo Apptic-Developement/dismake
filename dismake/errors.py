@@ -14,12 +14,13 @@ __all__ = (
     "InteractionNotResponded",
     "ComponentException",
     "PluginException",
-    "CommandException"
+    "CommandException",
 )
 
 
 class DismakeException(Exception):
     """Base dismake exception."""
+
 
 class PluginException(Exception):
     """Base dismake exception."""
@@ -37,8 +38,11 @@ class CommandInvokeError(DismakeException):
         self.exception = exception
         super().__init__(f"Command {command.name!r} raised an exception: {exception}")
 
+
 class CommandException(DismakeException):
     """Raise when a command raised an exception."""
+
+
 class InteractionResponded(DismakeException):
     def __init__(self, interaction: Interaction) -> None:
         self.interaction = interaction

@@ -29,18 +29,23 @@ class Bot(FastAPI):
     This class is a subclass of `FastAPI`, which means you can create API routes
     and do whatever you can do with `FastAPI`with this class's instance.
 
+    Parameters
+    ----------
+    token: :class:`str`
+        The token for the Discord bot.
+    client_public_key: :class:`str`
+        The public key for the Discord client.
+    client_id: :class:`int`
+        The ID for the Discord client.
+    route: :class:`str`
+        The route to listen for Discord interactions on, by default "/interactions".
+    interaction_handler: :class:`.handler.InteractionHandler`
+        An interaction handler to process incoming Discord interactions, by default :class:`.handler.InteractionHandler`.
+
     Attributes
     ----------
-    token: str
-        The token for the Discord bot.
-    client_public_key: str
-        The public key for the Discord client.
-    client_id: int
-        The ID for the Discord client.
-    route: str
-        The route to listen for Discord interactions on, by default "/interactions".
-    interaction_handler: Optional[InteractionHandler]
-        An interaction handler to process incoming Discord interactions, by default `dismake.InteractionHandler`.
+    user: :class:`User`
+        The user within this bot.
     """
 
     def __init__(
@@ -80,7 +85,7 @@ class Bot(FastAPI):
 
         Returns
         -------
-        User
+        user: :class:`User`
             The `User` object representing the bot.
         """
         return self._http._user
@@ -96,7 +101,7 @@ class Bot(FastAPI):
 
         Returns
         -------
-        Optional[Union[Command, Group]]
+        command: Optional[Union[:class:`Command`, :class:`Group`]]
             The command object with the specified name, or None if no such object exists.
         """
         return self._commands.get(name)
@@ -125,7 +130,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        coro: AsyncFunction
+        coro:
             The coroutine function to call.
         """
         try:
@@ -139,7 +144,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        event_name: str
+        event_name: :class:`str`
             The name of the event to dispatch.
         *args: Any
             positional arguments to pass to the event listeners.
