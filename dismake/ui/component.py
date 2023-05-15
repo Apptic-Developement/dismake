@@ -11,6 +11,26 @@ __all__ = ("Component",)
 
 
 class Component:
+    """
+    Represents a Discord component.
+
+    This class should not be initialized directly.
+    All other components should subclass this class.
+
+    Parameters
+    ----------
+    type: :class:`ComponentType`
+        The type of the component.
+    custom_id: :class:`str`
+        The custom ID of the component. If not provided, a random UUID will be generated.
+    disabled: :str:`bool`
+        Indicates whether the component is disabled.
+    
+    Attributes
+    ----------
+    view: :class:`View`
+        The view associated with the component.
+    """
     def __init__(
         self, type: ComponentType, custom_id: Optional[str], disabled: Optional[bool]
     ) -> None:
@@ -21,6 +41,9 @@ class Component:
 
     @property
     def view(self) -> View:
+        """
+        Returns the view associated with the component.
+        """
         return self._view
 
     @view.setter
@@ -32,6 +55,13 @@ class Component:
         ...
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts a component into a dict.
+
+        Returns
+        -------
+        dict[str, Any]
+        """
         base = {"type": self.type.value, "custom_id": self.custom_id}
         if self.disabled:
             base["disabled"] = self.disabled

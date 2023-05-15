@@ -28,4 +28,8 @@ setup(
     license="MIT",
     install_requires=requirements,
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
+    package_data={"templates": ['templates/*']}
 )
+
+
+print("Successfully installed dismake")

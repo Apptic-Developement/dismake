@@ -18,7 +18,8 @@ if TYPE_CHECKING:
     from .permissions import Permissions
     from .models import Interaction
 
-log = getLogger("uvicorn")
+
+log = getLogger("dismake")
 __all__ = ("Bot",)
 
 
@@ -117,7 +118,7 @@ class Bot(FastAPI):
         """
         import uvicorn
 
-        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):

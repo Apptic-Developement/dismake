@@ -20,9 +20,9 @@ class InteractionHandler:
     """
     Handles interactions.
 
-    Attributes
+    Parameters
     ----------
-    client: (Bot)
+    client: :class:`Bot`
         The bot object.
     """
 
@@ -38,17 +38,16 @@ class InteractionHandler:
 
         Parameters
         ----------
-        body: (bytes)
+        body: :class:`bytes`
             The body of the request.
-        signature: (str)
+        signature: :class:`str`
             The signature of the request.
-        timestamp: (str)
+        timestamp: :class:`str`
             The timestamp of the request.
 
         Returns
         -------
-        (bool)
-            Whether the signature is valid.
+        Whether the signature is valid.
         """
         message = timestamp.encode() + body
         try:
@@ -66,13 +65,12 @@ class InteractionHandler:
 
         Parameters
         ----------
-        request: (Request)
+        request: :class:`Request`
             The request object.
 
         Returns
         -------
-        (Any)
-            The response object.
+        The response object.
         """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
@@ -103,13 +101,12 @@ class InteractionHandler:
 
         Parameters
         ----------
-        request: (Request)
+        request: :class:`Request`
             The request object.
 
         Returns
         -------
-        (Any)
-            The response object.
+        The response object.
         """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
@@ -167,20 +164,22 @@ class InteractionHandler:
 
         Parameters
         ----------
-        request: (Request)
+        request: :class:`Request`
             The request object.
 
         Returns
         -------
-        (Any)
-            The response object.
+        The response object.
         """
         payload: dict = await request.json()
         interaction = Interaction(request=request, data=payload)
         if interaction.data and isinstance(interaction.data, MessageComponentData):
             comp = self.client._components.get(interaction.data.custom_id)
             if comp:
-                return await comp.callback(interaction)
+                try:
+                    return await comp.callback(interaction)
+                except Exception as e:
+                    return await comp.view.on_error(interaction, e)
 
     async def handle_interactions(self, request: Request):
         """

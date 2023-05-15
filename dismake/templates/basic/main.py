@@ -21,7 +21,11 @@ async def on_ready():
 if __name__ == "__main__":
     app.run(app="main:app", reload=True)
 
-# Question: What is 'main:app' ?
-# Answer: the 'main' represents your main file name (The file you're providing python to run your bot).
-# Question: Why 'reload=True' is there?
-# Answer: It automatically reloads your bot when you make changes to your code.
+# Question: What does 'main:app' represent?
+# Answer: 'main:app' represents the name of the main module
+# and the variable or object within that module that will be used as the dismake.Bot.
+
+# Question: Why is 'reload=True' included?
+# Answer: The 'reload=True' parameter enables automatic reloading of the 
+# uvicorn when changes are made to the code.
+# This allows you to see the updates without manually restarting the server.

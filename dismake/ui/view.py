@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-
 from typing import Any, List, Optional, TYPE_CHECKING
 from functools import wraps
 
@@ -19,6 +17,9 @@ __all__ = ("View",)
 
 
 class Row:
+    """
+    Represents an Action Row.
+    """
     def __init__(self):
         self.components: List[Component] = list()
 
@@ -63,7 +64,7 @@ class View:
     def is_full(self) -> bool:
         return len(self.rows) == 5 and all(row.is_full for row in self.rows)
 
-    async def on_error(self, interaction: Interaction) -> Any:
+    async def on_error(self, interaction: Interaction, e: Exception) -> Any:
         pass
 
     def add_component(self, component: Component):
