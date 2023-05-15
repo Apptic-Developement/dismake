@@ -176,6 +176,7 @@ class Command:
         if (bot_error_handler := interaction.bot.error_handler) is not None:
             return await bot_error_handler(interaction, error)
         raise error
+
     async def invoke(self, interaction: Interaction):
         """
         Invokes the command.

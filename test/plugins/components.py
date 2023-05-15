@@ -18,14 +18,14 @@ async def button_command(interaction: dismake.Interaction):
 
 @components.command()
 async def modal(interaction: dismake.Interaction):
-    modal = ui.Modal(title="My Special Modal")\
-        .add_item(ui.TextInput(label="Your name"))\
-        .add_item(ui.TextInput(label="Your age"))\
-
+    modal = (
+        ui.Modal(title="My Special Modal")
+        .add_item(ui.TextInput(label="Your name"))
+        .add_item(ui.TextInput(label="Your age"))
+    )
 
     async def cb(i: dismake.Interaction):
-        print(i._data)
-        await i.send(f"{i.data.components}")
+        await i.send(f"{i.data.components[0].components[0].value}")
 
     modal.on_submit = cb
     await interaction.respond_with_modal(modal)

@@ -105,9 +105,14 @@ class MessageComponentData(BaseModel):
     values: Optional[List[str]]
 
 
+class ModalSubmitActionRowData(BaseModel):
+    components: list[TextInput]
+
+
 class ModalSubmitData(BaseModel):
     custom_id: str
-    components: list[TextInput]
+    components: list[ModalSubmitActionRowData]
+
 
 
 class Interaction:
