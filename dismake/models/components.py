@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import Any, Optional, Union
 
 from pydantic import BaseModel, validator
-from ..enums import ComponentType
+from ..enums import ComponentType, TextInputStyle
 from .emoji import PartialEmoji
 
-__all__ = ("SelectOption", "Component", "ActionRow")
+__all__ = ("SelectOption", "Component", "ActionRow", "TextInput")
 
 
 class Component(BaseModel):
@@ -48,3 +48,6 @@ class SelectOption(BaseModel):
     description: Optional[str]
     emoji: Optional[Union[PartialEmoji, dict, str]]
     default: Optional[bool]
+
+class TextInput(Component):
+    value: Optional[str]

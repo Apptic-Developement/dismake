@@ -13,7 +13,7 @@ from ..params import handle_send_params, handle_edit_params
 from fastapi import Request
 from ..types import SnowFlake
 from .channels import Channel
-
+from .components import TextInput
 if TYPE_CHECKING:
     from ..ui import View, Modal
     from ..client import Bot
@@ -25,6 +25,7 @@ __all__ = (
     "ApplicationCommandData",
     "ApplicationCommandOption",
     "MessageComponentData",
+    "ModalSubmitData"
 )
 
 
@@ -105,8 +106,7 @@ class MessageComponentData(BaseModel):
 
 class ModalSubmitData(BaseModel):
     custom_id: str
-    # components	array of message components	the values submitted by the user
-
+    components: list[TextInput]
 
 class Interaction:
     """
@@ -387,7 +387,9 @@ class Interaction:
         )
     
     async def respond_with_modal(self, modal: Modal):
-
+        if self.is_responded:
+            raise InteractionResponded(self)
+        self.bot.add_modal(modal)
         return await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",

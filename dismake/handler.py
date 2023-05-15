@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from .enums import InteractionType, InteractionResponseType
-from .models import Interaction, ApplicationCommandData, MessageComponentData
+from .models import Interaction, ApplicationCommandData, MessageComponentData, ModalSubmitData
 from .commands import Command, Group
 from logging import getLogger
 
@@ -195,7 +195,12 @@ class InteractionHandler:
         The response object.
         """
         payload: dict = await request.json()
-        print(payload)
+        interaction = Interaction(request=request, data=payload)
+        if interaction.data is not None and isinstance(interaction.data, ModalSubmitData):
+            modal = self.client._modals.get(interaction.data.custom_id)
+            if modal:
+                await modal.on_submit(interaction)
+                # TODO: Add Error
 
     async def handle_interactions(self, request: Request):
         """

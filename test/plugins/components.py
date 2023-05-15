@@ -20,5 +20,12 @@ async def button_command(interaction: dismake.Interaction):
 async def modal(interaction: dismake.Interaction):
     modal = ui.Modal(title="My Special Modal")
     modal.add_item(ui.TextInput(label="Your name"))
+    modal.add_item(ui.TextInput(label="Your name"))
+    from pprint import pprint
+    pprint(modal.to_dict())
+    async def cb(i: dismake.Interaction):
+        await i.respond(f"{i.data.components}")
+    modal.on_submit = cb
     res = await interaction.respond_with_modal(modal)
-    print(res)
+    print(res.json())
+

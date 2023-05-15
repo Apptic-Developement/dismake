@@ -13,7 +13,7 @@ from logging import getLogger
 from .utils import LOGGING_CONFIG
 
 if TYPE_CHECKING:
-    from .ui import View, Component
+    from .ui import View, Component, Modal
     from .types import AsyncFunction
     from .permissions import Permissions
     from .models import Interaction
@@ -74,6 +74,7 @@ class Bot(FastAPI):
         self.add_event_handler("startup", lambda: self.dispatch("ready"))
         self._components: Dict[str, Component] = {}
         self._commands: Dict[str, Union[Group, Command]] = {}
+        self._modals: Dict[str, Modal] = {}
         self.error_handler: Optional[AsyncFunction] = self.on_command_error
         self.log = log
 
@@ -277,7 +278,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        view: View
+        view: :class:`View`
             The view object to register for dispatching.
         """
         components = list()
@@ -292,6 +293,16 @@ class Bot(FastAPI):
                 continue
             self._components[custom_id] = component
 
+    def add_modal(self, modal: Modal) -> None:
+        """
+        Registers a :class:`dismake.ui.Modal` for presistent listening.
+
+        Parameters
+        ----------
+        modal: :class:`Modal`
+            The modal object to register for dispatching.
+        """
+        self._modals[modal.custom_id] = modal
     def add_command(self, command: Union[Command, Group]):
         """
         The add_command function is used to add a command or group of commands to the application.
