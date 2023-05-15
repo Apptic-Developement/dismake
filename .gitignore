@@ -136,6 +136,7 @@ bot/
 # Docs
 guide/.next
 guide/node_modules
+dosc/node_modules
 
 
 # Repl

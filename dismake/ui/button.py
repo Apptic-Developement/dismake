@@ -9,6 +9,24 @@ __all__ = ("Button",)
 
 
 class Button(Component):
+    """
+    Represents a discord button.
+
+    Parameters
+    ----------
+    label: :class:`str`
+        The text displayed on the button.
+    custom_id: :class:`str`
+        A unique identifier for the button.
+    style: :class:`ButtonStyles`
+        The style of the button
+    emoji: Union[:class:`Emoji`, :class:`str`]
+        The emoji displayed on the button.
+    url: :class:`str`
+        If set, this button will act as a link to the given URL.
+    disabled: :class:`bool`
+        If True, the button will be disabled and cannot be clicked.
+    """
     def __init__(
         self,
         label: Optional[str],
@@ -33,6 +51,13 @@ class Button(Component):
             self.emoji = None
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the button into dict.
+
+        Returns
+        -------
+        dict[str, Any]
+        """
         base = super().to_dict()
         if not self.url:
             base["label"] = self.label

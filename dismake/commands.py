@@ -99,7 +99,7 @@ class Command:
     """
     Represents a Discord command or a Discord sub-command.
 
-    Attributes
+    Parameters
     ----------
     name (str):
         The name of the command/sub-command.
