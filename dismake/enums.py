@@ -161,3 +161,4 @@ class ButtonStyles(Enum):
 class TextInputStyle(Enum):
     SHORT = short = 1
     PARAGRAPH = paragraph = 2
+

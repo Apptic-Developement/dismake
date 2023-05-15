@@ -8,9 +8,10 @@ from pathlib import Path
 
 
 def generate_app(path: Path, template_type: str):
-    template = Path(pkg_resources.resource_filename('dismake', "templates")) / "basic"
-    if not template.exists(): 
-        return print(f"""
+    template = Path(pkg_resources.resource_filename("dismake", "templates")) / "basic"
+    if not template.exists():
+        return print(
+            f"""
     Error
 =============
 The templates folder is missing.
@@ -18,7 +19,8 @@ You can fix this issue by reinstalling the package.
 
 Command:
 pip uninstall dismake -y && pip install dismake
-""")
+"""
+        )
     path.mkdir(parents=True, exist_ok=True)
     for item in template.iterdir():
         if item.is_file():
@@ -41,9 +43,11 @@ def init_command(args: argparse.Namespace):
     else:
         if path.is_file():
             print(f"A file already exists with this name.")
-        created = generate_app(path, 'basic')
+        created = generate_app(path, "basic")
         if created:
-            return print(f"Successfully created your project in {created.absolute().name!r}")
+            return print(
+                f"Successfully created your project in {created.absolute().name!r}"
+            )
 
 
 def vercel_command(args):
@@ -68,10 +72,7 @@ def add_subparsers(parser):
     )
     vercel.set_defaults(func=vercel_command)
 
-    init = subparsers.add_parser(
-        "init",
-        help="Creates a new dismake project for you."
-    )
+    init = subparsers.add_parser("init", help="Creates a new dismake project for you.")
     init.set_defaults(func=init_command)
     return subparsers
 

@@ -25,12 +25,13 @@ class Component:
         The custom ID of the component. If not provided, a random UUID will be generated.
     disabled: :str:`bool`
         Indicates whether the component is disabled.
-    
+
     Attributes
     ----------
     view: :class:`View`
         The view associated with the component.
     """
+
     def __init__(
         self, type: ComponentType, custom_id: Optional[str], disabled: Optional[bool]
     ) -> None:

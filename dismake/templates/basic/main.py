@@ -26,6 +26,6 @@ if __name__ == "__main__":
 # and the variable or object within that module that will be used as the dismake.Bot.
 
 # Question: Why is 'reload=True' included?
-# Answer: The 'reload=True' parameter enables automatic reloading of the 
+# Answer: The 'reload=True' parameter enables automatic reloading of the
 # uvicorn when changes are made to the code.
 # This allows you to see the updates without manually restarting the server.

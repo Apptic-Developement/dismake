@@ -72,7 +72,7 @@ class Plugin:
             import dismake
 
             plugin = dismake.Plugin()
-            
+
             @plugin.event()
             async def on_interaction():
                 print(f"A new interaction received.")

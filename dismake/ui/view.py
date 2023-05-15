@@ -20,6 +20,7 @@ class Row:
     """
     Represents an Action Row.
     """
+
     def __init__(self):
         self.components: List[Component] = list()
 

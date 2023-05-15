@@ -26,12 +26,13 @@ class Button(Component):
         If set, this button will act as a link to the given URL.
     disabled: :class:`bool`
         If True, the button will be disabled and cannot be clicked.
-    
+
     Attributes
     ----------
     view: :class:`View`
         The view associated with the component.
     """
+
     def __init__(
         self,
         label: Optional[str],
