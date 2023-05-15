@@ -49,5 +49,6 @@ class SelectOption(BaseModel):
     emoji: Optional[Union[PartialEmoji, dict, str]]
     default: Optional[bool]
 
+
 class TextInput(Component):
     value: Optional[str]

@@ -75,7 +75,7 @@ class Bot(FastAPI):
         self._components: Dict[str, Component] = {}
         self._commands: Dict[str, Union[Group, Command]] = {}
         self._modals: Dict[str, Modal] = {}
-        self.error_handler: Optional[AsyncFunction] = self.on_command_error
+        self.error_handler: Optional[AsyncFunction] = None
         self.log = log
 
     @property
@@ -303,6 +303,7 @@ class Bot(FastAPI):
             The modal object to register for dispatching.
         """
         self._modals[modal.custom_id] = modal
+
     def add_command(self, command: Union[Command, Group]):
         """
         The add_command function is used to add a command or group of commands to the application.

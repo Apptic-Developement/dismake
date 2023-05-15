@@ -14,6 +14,7 @@ from fastapi import Request
 from ..types import SnowFlake
 from .channels import Channel
 from .components import TextInput
+
 if TYPE_CHECKING:
     from ..ui import View, Modal
     from ..client import Bot
@@ -25,7 +26,7 @@ __all__ = (
     "ApplicationCommandData",
     "ApplicationCommandOption",
     "MessageComponentData",
-    "ModalSubmitData"
+    "ModalSubmitData",
 )
 
 
@@ -107,6 +108,7 @@ class MessageComponentData(BaseModel):
 class ModalSubmitData(BaseModel):
     custom_id: str
     components: list[TextInput]
+
 
 class Interaction:
     """
@@ -385,7 +387,7 @@ class Interaction:
                 "data": {"choices": [choice.to_dict() for choice in choices]},
             },
         )
-    
+
     async def respond_with_modal(self, modal: Modal):
         if self.is_responded:
             raise InteractionResponded(self)
@@ -393,10 +395,7 @@ class Interaction:
         return await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
-            json={
-                "type": InteractionResponseType.MODAL.value,
-                "data": modal.to_dict()
-            }
+            json={"type": InteractionResponseType.MODAL.value, "data": modal.to_dict()},
         )
 
 
@@ -411,4 +410,3 @@ class Namespace:
 
     def __getattr__(self, value) -> None:
         return None
-

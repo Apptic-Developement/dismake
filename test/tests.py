@@ -119,45 +119,58 @@
 #         super().__init__(timeout=120)
 #         self.add_item
 
-#     # @ui.button(label="Button 1")
-#     # async def b1cb(self, *_, **__):
-#     #     ...
+# @ui.button(label="Button 1")
+# async def b1cb(self, *_, **__):
+#     ...
 
-#     # @ui.button(label="Button 2")
-#     # async def b2cb(self, *_, **__):
-#     #     ...
+# @ui.button(label="Button 2")
+# async def b2cb(self, *_, **__):
+#     ...
 
-#     # @ui.button(label="Button 3")
-#     # async def b3cb(self, *_, **__):
-#     #     ...
+# @ui.button(label="Button 3")
+# async def b3cb(self, *_, **__):
+#     ...
 
-#     # @ui.button(label="Button 4")
-#     # async def b4cb(self, *_, **__):
-#     #     ...
+# @ui.button(label="Button 4")
+# async def b4cb(self, *_, **__):
+#     ...
 
-#     # @ui.button(label="Button 5")
-#     # async def b5cb(self, *_, **__):
-#     #     ...
+# @ui.button(label="Button 5")
+# async def b5cb(self, *_, **__):
+#     ...
 
-#     # @ui.select()
-#     # async def select1cb(self, *_, **__):
-#     #     ...
+# @ui.select()
+# async def select1cb(self, *_, **__):
+#     ...
 
-#     # @ui.select()
-#     # async def select2cb(self, *_, **__):
-#     #     ...
+# @ui.select()
+# async def select2cb(self, *_, **__):
+#     ...
 
-#         # @ui.select()
-#         # async def select3cb(self, *_, **__):
-#         #     ...
+# @ui.select()
+# async def select3cb(self, *_, **__):
+#     ...
 
-#         # @ui.select()
-#         # async def select4cb(self, *_, **__):
-#         #     ...
+# @ui.select()
+# async def select4cb(self, *_, **__):
+#     ...
 
-#         # @ui.select()
-#         # async def select5cb(self, *_, **__):
-#         ...
+# @ui.select()
+# async def select5cb(self, *_, **__):
+# ...
+
+
+# class Questionnaire(ui.Modal, title="Questionnaire Response"):
+#     name = ui.TextInput(label="Name")
+#     answer = ui.TextInput(label="Age")
+#     ok = ui.TextInput(label="Address")
+#     hmm = ui.TextInput(label="Area")
+#     hiee = ui.TextInput(label="Pincode")
+
+#     async def on_submit(self, interaction: discord.Interaction):
+#         await interaction.response.send_message(
+#             f"Thanks for your response, {self.name}!", ephemeral=True
+#         )
 
 
 # bot = commands.Bot(command_prefix="1", intents=discord.Intents.none())
@@ -165,7 +178,7 @@
 
 # @bot.event
 # async def on_ready():
-#     print(MyView().to_components())
+#     print(Questionnaire().to_dict())
 
 
 # bot.run(token)
@@ -196,4 +209,3 @@ async def b1(interaction: dismake.Interaction):
 @view.button(label="2")
 async def b2(interaction: dismake.Interaction):
     await interaction.send("Hmm What ?", ephemeral=True)
-
