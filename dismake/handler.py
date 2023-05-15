@@ -181,6 +181,22 @@ class InteractionHandler:
                 except Exception as e:
                     return await comp.view.on_error(interaction, e)
 
+    async def _handle_modal_submit(self, request: Request):
+        """
+        Handles a modal submit request.
+
+        Parameters
+        ----------
+        request: :class:`Request`
+            The request object.
+
+        Returns
+        -------
+        The response object.
+        """
+        payload: dict = await request.json()
+        print(payload)
+
     async def handle_interactions(self, request: Request):
         """
         The function is meant to handle interactions posted by
@@ -219,5 +235,6 @@ class InteractionHandler:
             await self._handle_autocomplete(request)
         elif payload["type"] == InteractionType.MESSAGE_COMPONENT.value:
             await self._handle_message_component(request)
-
+        elif payload["type"] == InteractionType.MODAL_SUBMIT.value:
+            await self._handle_modal_submit(request)
         return JSONResponse({"ack": InteractionResponseType.PONG.value})

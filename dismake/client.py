@@ -118,7 +118,7 @@ class Bot(FastAPI):
         """
         import uvicorn
 
-        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
+        kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
         uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):

@@ -3,7 +3,6 @@ from re import I
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from pydantic import BaseModel
-from .components import SelectOption
 from .user import Member, User
 from .guild import Guild
 from .role import Role
@@ -16,7 +15,7 @@ from ..types import SnowFlake
 from .channels import Channel
 
 if TYPE_CHECKING:
-    from ..ui import View
+    from ..ui import View, Modal
     from ..client import Bot
     from ..commands import Choice
 
@@ -386,6 +385,17 @@ class Interaction:
                 "data": {"choices": [choice.to_dict() for choice in choices]},
             },
         )
+    
+    async def respond_with_modal(self, modal: Modal):
+
+        return await self.bot._http.client.request(
+            method="POST",
+            url=f"/interactions/{self.id}/{self.token}/callback",
+            json={
+                "type": InteractionResponseType.MODAL.value,
+                "data": modal.to_dict()
+            }
+        )
 
 
 class Namespace:
@@ -399,3 +409,4 @@ class Namespace:
 
     def __getattr__(self, value) -> None:
         return None
+
