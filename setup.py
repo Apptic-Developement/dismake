@@ -3,14 +3,10 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as file:
     long_description = file.read()
 
-with open("requirements/requirements.txt", "r") as file:
-    requirements = list(
-        filter(lambda x: not x.startswith("#") and not x == "", file.read().split("\n"))
-    )
 
 setup(
     name="dismake",
-    version="0.0.1",
+    version="0.0.14",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",
@@ -26,9 +22,17 @@ setup(
     packages=find_packages(),
     python_requires=">=3.9",
     license="MIT",
-    install_requires=requirements,
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
     package_data={"templates": ["templates/*"]},
+    install_requires=[
+        "fastapi==0.95.1",
+        "httpx==0.24.0",
+        "pydantic==1.10.7",
+        "PyNaCl==1.5.0",
+        "rich==13.3.5",
+        "typing_extensions==4.5.0",
+        "uvicorn==0.22.0",
+    ],
 )
 
 

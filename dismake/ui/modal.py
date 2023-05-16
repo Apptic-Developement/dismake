@@ -10,7 +10,6 @@ from ..models import ModalSubmitData
 
 if TYPE_CHECKING:
     from ..models import Interaction
-    from ..types import AsyncFunction
 
 
 __all__ = ("Modal", "TextInput")
@@ -38,7 +37,7 @@ class Modal(View):
     def __repr__(self) -> str:
         return f"<Modal title={self.title!r}>"
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]: # type: ignore
         base = {
             "title": self.title,
             "custom_id": self.custom_id,

@@ -1,53 +1,51 @@
 from __future__ import annotations
 
 import argparse
-import shutil
 import json
-import pkg_resources
 from pathlib import Path
 
 
-def generate_app(path: Path, template_type: str):
-    template = Path(pkg_resources.resource_filename("dismake", "templates")) / "basic"
-    if not template.exists():
-        return print(
-            f"""
-    Error
-=============
-The templates folder is missing.
-You can fix this issue by reinstalling the package.
+# def generate_app(path: Path):
+#     template = Path(pkg_resources.resource_filename("dismake", "templates"))
+#     if not template.exists():
+#         return print(
+#             f"""
+#     Error
+# =============
+# The templates folder is missing.
+# You can fix this issue by reinstalling the package.
 
-Command:
-pip uninstall dismake -y && pip install dismake
-"""
-        )
-    path.mkdir(parents=True, exist_ok=True)
-    for item in template.iterdir():
-        if item.is_file():
-            shutil.copyfile(item, path / item.name)
-        else:
-            shutil.copytree(item, path / item.name)
-    return path
+# Command:
+# pip uninstall dismake -y && pip install dismake
+# """
+#         )
+#     path.mkdir(parents=True, exist_ok=True)
+#     for item in template.iterdir():
+#         if item.is_file():
+#             shutil.copyfile(item, path / item.name)
+#         else:
+#             shutil.copytree(item, path / item.name)
+#     return path
 
 
 def print_help(parser: argparse.ArgumentParser):
     parser.print_help()
 
 
-def init_command(args: argparse.Namespace):
-    project_name = input("Please enter a name for your project: ")
-    try:
-        path = Path(project_name)
-    except Exception as e:
-        return print(f"TODO")
-    else:
-        if path.is_file():
-            print(f"A file already exists with this name.")
-        created = generate_app(path, "basic")
-        if created:
-            return print(
-                f"Successfully created your project in {created.absolute().name!r}"
-            )
+# def init_command(args: argparse.Namespace):
+#     project_name = input("Please enter a name for your project: ")
+#     try:
+#         path = Path(project_name)
+#     except Exception as e:
+#         return print(f"TODO")
+#     else:
+#         if path.is_file():
+#             print(f"A file already exists with this name.")
+#         created = generate_app(path, "basic")
+#         if created:
+#             return print(
+#                 f"Successfully created your project in {created.absolute().name!r}"
+#             )
 
 
 def vercel_command(args):
@@ -72,8 +70,8 @@ def add_subparsers(parser):
     )
     vercel.set_defaults(func=vercel_command)
 
-    init = subparsers.add_parser("init", help="Creates a new dismake project for you.")
-    init.set_defaults(func=init_command)
+    # init = subparsers.add_parser("init", help="Creates a new dismake project for you.")
+    # init.set_defaults(func=init_command)
     return subparsers
 
 

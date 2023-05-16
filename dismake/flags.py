@@ -1,11 +1,20 @@
 from __future__ import annotations
 
-from enum import Flag
+from enum import IntFlag
+from typing import Any
 
-__all__ = ("UserFlags", "GuildMemberFlags")
+__all__ = ("UserFlags", "GuildMemberFlags", "BaseFlag")
 
 
-class UserFlags(Flag):
+class BaseFlag(IntFlag):
+    @classmethod
+    def _missing_(cls, value: object) -> Any:
+        if isinstance(value, str):
+            if value.isdigit():
+                return super()._missing_(int(value))
+
+
+class UserFlags(BaseFlag):
     STAFF = 1 << 0
     PARTNER = 1 << 1
     HYPESQUAD = 1 << 2
@@ -23,7 +32,7 @@ class UserFlags(Flag):
     ACTIVE_DEVELOPER = 1 << 22
 
 
-class GuildMemberFlags(Flag):
+class GuildMemberFlags(BaseFlag):
     DID_REJOIN = 1 << 0
     COMPLETED_ONBOARDING = 1 << 1
     BYPASSES_VERIFICATION = 1 << 2

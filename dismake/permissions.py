@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from enum import IntFlag
-from typing import Any
+from .flags import BaseFlag
 
 __all__ = ("Permissions",)
 
 
-class Permissions(IntFlag):
+class Permissions(BaseFlag):
     CREATE_INSTANT_INVITE = 1 << 0  # Allows creation of instant invites (T, V, S)
     KICK_MEMBERS = 1 << 1  # Allows kicking members
     BAN_MEMBERS = 1 << 2  # Allows banning members
@@ -51,9 +50,3 @@ class Permissions(IntFlag):
     )  # Allows for using voice-activity-detection in a voice channel (V)
     CHANGE_NICKNAME = 1 << 26  # Allows for modification of own nickname
     MANAGE_NICKNAMES = 1 << 27  # Allows for modification of other users' nicknames
-
-    @classmethod
-    def _missing_(cls, value: object) -> Any:
-        if isinstance(value, str):
-            if value.isdigit():
-                return super()._missing_(int(value))

@@ -27,7 +27,7 @@ __all__ = (
     "ApplicationCommandOption",
     "MessageComponentData",
     "ModalSubmitData",
-    "ModalSubmitActionRowData"
+    "ModalSubmitActionRowData",
 )
 
 
@@ -113,7 +113,6 @@ class ModalSubmitActionRowData(BaseModel):
 class ModalSubmitData(BaseModel):
     custom_id: str
     components: list[ModalSubmitActionRowData]
-
 
 
 class Interaction:
