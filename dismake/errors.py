@@ -15,6 +15,7 @@ __all__ = (
     "ComponentException",
     "PluginException",
     "CommandException",
+    "ModalException"
 )
 
 
@@ -23,7 +24,10 @@ class DismakeException(Exception):
 
 
 class PluginException(Exception):
-    """Base dismake exception."""
+    """Base plugin exception."""
+
+class ModalException(Exception):
+    """Base modal exception."""
 
 
 class NotImplemented(DismakeException):
