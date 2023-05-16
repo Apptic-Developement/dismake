@@ -185,6 +185,7 @@
 
 from dismake import ui
 import dismake
+from dismake.models.interaction import Interaction
 
 view = ui.View()
 
@@ -218,3 +219,7 @@ modal = (
 )
 
 
+async def cb(i: Interaction):
+    await i.send(f"o1: {modal.values[0]}\no2: {modal.values[1]}")
+
+modal.on_submit = cb

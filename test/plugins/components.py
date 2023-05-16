@@ -1,7 +1,6 @@
 from dismake import ui, Plugin
 import dismake
 from tests import view, modal as sendable_modal
-print(sendable_modal.to_dict())
 plugin = Plugin()
 
 

@@ -6,6 +6,7 @@ from typing import Any, TYPE_CHECKING
 from ..enums import ComponentType, TextInputStyle
 from .component import Component
 from .view import View
+from ..models import ModalSubmitData
 
 if TYPE_CHECKING:
     from ..models import Interaction
@@ -15,18 +16,25 @@ if TYPE_CHECKING:
 __all__ = ("Modal", "TextInput")
 
 
-
-
 class Modal(View):
     def __init__(self, title: str, custom_id: str | None = None) -> None:
         super().__init__()
         self.title = title
         self.custom_id = custom_id or str(uuid.uuid4())
         self.values: list[str] = list()
-        self.callback: AsyncFunction = self.on_submit
+
+    async def _invoke(self, interaction: Interaction):
+        assert isinstance(
+            interaction.data, ModalSubmitData
+        ), "Invalid interaction recived."
+        inputs = [t for r in interaction.data.components for t in r.components]
+        for input in inputs:
+            self.values.append(input.value or "")
+        return await self.on_submit(interaction)
 
     async def on_submit(self, interaction: Interaction):
         ...
+
     def __repr__(self) -> str:
         return f"<Modal title={self.title!r}>"
 
@@ -34,7 +42,7 @@ class Modal(View):
         base = {
             "title": self.title,
             "custom_id": self.custom_id,
-            "components": super().to_dict()
+            "components": super().to_dict(),
         }
         return base
 
@@ -42,7 +50,7 @@ class Modal(View):
 class TextInput(Component):
     def __init__(
         self,
-        label: str | None = None,
+        label: str,
         style: TextInputStyle = TextInputStyle.short,
         placeholder: str | None = None,
         custom_id: str | None = None,
@@ -62,9 +70,7 @@ class TextInput(Component):
         self.placeholder = placeholder
 
     def __repr__(self) -> str:
-        return (
-            f"<TextInput label={self.label!r}>"
-        )
+        return f"<TextInput label={self.label!r}>"
 
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
