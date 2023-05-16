@@ -185,6 +185,7 @@
 
 from dismake import ui
 import dismake
+from dismake.models import Interaction
 from dismake.models.interaction import Interaction
 
 view = ui.View()
@@ -212,15 +213,12 @@ async def b2(interaction: dismake.Interaction):
 
 
 # Modal
-modal = (
-    ui.Modal(title="Okiee?")
-    .add_component(ui.TextInput(label="o1"))
-    .add_component(ui.TextInput(label="o2"))
-)
 
-
-async def cb(i: Interaction):
-    await i.send(f"o1: {modal.values[0]}\no2: {modal.values[1]}")
-
-
-modal.on_submit = cb
+class MyModal(ui.Modal):
+    def __init__(self) -> None:
+        super().__init__("My modal")
+        self.add_item(ui.TextInput("Name"))
+        self.add_item(ui.TextInput("Age"))
+    
+    async def on_submit(self, interaction: Interaction):
+        return await interaction.send(f"Name: {self.children[0].value}\nAge: {self.children[1].value}")

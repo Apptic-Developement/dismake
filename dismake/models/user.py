@@ -58,7 +58,7 @@ class Member(BaseModel):
     premium_since: Optional[Any]
     deaf: bool
     mute: bool
-    flags: GuildMemberFlags
+    flags: Optional[GuildMemberFlags]
     pending: Optional[bool]
     permissions: Optional[Permissions]
     communication_disabled_until: Optional[Any]

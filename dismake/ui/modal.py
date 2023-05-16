@@ -5,22 +5,46 @@ import uuid
 from typing import Any, TYPE_CHECKING
 from ..enums import ComponentType, TextInputStyle
 from .component import Component
-from .view import View
 from ..models import ModalSubmitData
 
 if TYPE_CHECKING:
     from ..models import Interaction
+    from typing_extensions import Self
 
 
 __all__ = ("Modal", "TextInput")
 
 
-class Modal(View):
+
+
+class Modal:
+    """
+    Represents a UI Modal dialog.
+    """
+
     def __init__(self, title: str, custom_id: str | None = None) -> None:
-        super().__init__()
-        self.title = title
-        self.custom_id = custom_id or str(uuid.uuid4())
-        self.values: list[str] = list()
+        self._title = title
+        self._custom_id = custom_id or str(uuid.uuid4())
+        self._children: list[TextInput] = list()
+
+    def add_item(self, item: TextInput) -> Self:
+        self._children.append(item)
+        return self
+
+    @property
+    def title(self) -> str:
+        return self._title
+
+    @property
+    def custom_id(self) -> str:
+        return self._custom_id
+
+    @property
+    def children(self) -> list[TextInput]:
+        return self._children
+
+    async def on_error(self, interaction: Interaction, exception: Exception):
+        ...
 
     async def _invoke(self, interaction: Interaction):
         assert isinstance(
@@ -28,7 +52,17 @@ class Modal(View):
         ), "Invalid interaction recived."
         inputs = [t for r in interaction.data.components for t in r.components]
         for input in inputs:
-            self.values.append(input.value or "")
+            item = list(
+                filter(lambda x: x.custom_id == input.custom_id, self.children)
+            )[0]
+            if not item:
+                return await self.on_error(
+                    interaction,
+                    Exception(
+                        f"Modal interaction referencing unknown item custom_id {input.custom_id!r}. Discarding"
+                    ),
+                )
+            item.value = input.value
         return await self.on_submit(interaction)
 
     async def on_submit(self, interaction: Interaction):
@@ -37,11 +71,14 @@ class Modal(View):
     def __repr__(self) -> str:
         return f"<Modal title={self.title!r}>"
 
-    def to_dict(self) -> dict[str, Any]: # type: ignore
+    def to_dict(self) -> dict[str, Any]:  # type: ignore
         base = {
             "title": self.title,
             "custom_id": self.custom_id,
-            "components": super().to_dict(),
+            "components": [
+                {"type": ComponentType.ACTION_ROW.value, "components": [t.to_dict()]}
+                for t in self.children[:5]
+            ],
         }
         return base
 

@@ -1,8 +1,9 @@
 from dismake import ui, Plugin
 import dismake
-from tests import view, modal as sendable_modal
+from tests import view, MyModal
 
 plugin = Plugin()
+
 
 
 components = plugin.create_group(
@@ -18,4 +19,4 @@ async def button_command(interaction: dismake.Interaction):
 
 @components.command()
 async def modal(interaction: dismake.Interaction):
-    await interaction.respond_with_modal(sendable_modal)
+    await interaction.respond_with_modal(MyModal())

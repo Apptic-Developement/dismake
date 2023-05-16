@@ -14,7 +14,7 @@ class BaseFlag(IntFlag):
                 return super()._missing_(int(value))
 
 
-class UserFlags(BaseFlag):
+class UserFlags(IntFlag):
     STAFF = 1 << 0
     PARTNER = 1 << 1
     HYPESQUAD = 1 << 2
@@ -32,7 +32,7 @@ class UserFlags(BaseFlag):
     ACTIVE_DEVELOPER = 1 << 22
 
 
-class GuildMemberFlags(BaseFlag):
+class GuildMemberFlags(IntFlag):
     DID_REJOIN = 1 << 0
     COMPLETED_ONBOARDING = 1 << 1
     BYPASSES_VERIFICATION = 1 << 2
