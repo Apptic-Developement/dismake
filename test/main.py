@@ -1,7 +1,7 @@
 import dismake, config
 from plugins import mentions, components, autocomplete
 
-# mypy --show-error-codes --pretty dismake
+# mypy --show-error-codes --pretty --check-untyped-defs dismake
 
 app = dismake.Bot(
     token=config.token,

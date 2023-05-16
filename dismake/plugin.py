@@ -132,26 +132,25 @@ class Plugin:
         plugin_permissions: :class:`bool`
             If this set to false then the plugin won't override permissions for this command.
         """
-
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):
+                nonlocal default_member_permissions
                 if not asyncio.iscoroutinefunction(coro):
                     raise PluginException(
                         f"{coro.__name__!r} command callback must be a coroutine function."
                     )
 
                 if self.default_member_permissions is not None and plugin_permissions:
-                    permissions = self.default_member_permissions
-                else:
-                    permissions = default_member_permissions
+                    default_member_permissions = self.default_member_permissions
+
                 command = Command(
                     name=name,
                     description=description,
                     guild_id=guild_id,
                     callback=coro,
                     nsfw=nsfw,
-                    default_member_permissions=permissions,
+                    default_member_permissions=default_member_permissions,
                     guild_only=guild_only,
                     name_localizations=name_localizations,
                     description_localizations=description_localizations,

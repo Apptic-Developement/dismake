@@ -101,7 +101,7 @@ class View:
                     disabled=disabled,
                     emoji=emoji,
                 )
-                button.callback = coro
+                button._callback = coro
                 self.add_component(button)
                 return button
 
@@ -129,7 +129,7 @@ class View:
                     max_values=max_values,
                     disabled=disabled,
                 )
-                select.callback = coro
+                select._callback = coro
                 self.add_component(select)
                 return select
 

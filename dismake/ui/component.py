@@ -1,6 +1,8 @@
 from __future__ import annotations
 import uuid
 from typing import Any, Dict, Optional, TYPE_CHECKING
+
+from dismake.types import AsyncFunction
 from ..enums import ComponentType
 
 if TYPE_CHECKING:
@@ -39,6 +41,7 @@ class Component:
         self.custom_id = custom_id or str(uuid.uuid4())
         self.disabled = disabled
         self._view: View
+        self._callback: AsyncFunction | None = None
 
     @property
     def view(self) -> View:
@@ -52,8 +55,6 @@ class Component:
         self.view = v
         return self.view
 
-    async def callback(self, interaction: Interaction) -> Any:
-        ...
 
     def to_dict(self) -> Dict[str, Any]:
         """

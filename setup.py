@@ -6,7 +6,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="dismake",
-    version="0.0.14",
+    version="0.0.15",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",

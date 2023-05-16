@@ -58,8 +58,6 @@ class BaseSelect(Component):
         self.min_values = min_values
         self.max_values = max_values
 
-    async def callback(self, interaction: Interaction):
-        ...
 
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
