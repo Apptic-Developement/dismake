@@ -13,6 +13,7 @@ from .select import StringSelectMenu
 if TYPE_CHECKING:
     from ..models import Interaction
     from .select import SelectOption
+    from typing_extensions import Self
 __all__ = ("View",)
 
 
@@ -68,7 +69,7 @@ class View:
     async def on_error(self, interaction: Interaction, e: Exception) -> Any:
         pass
 
-    def add_component(self, component: Component):
+    def add_component(self, component: Component) -> Self:
         if self.is_full:
             raise ValueError("can't able to find free space to add the component.")
 
@@ -76,8 +77,9 @@ class View:
             if not self.rows or self.rows[-1].is_full:
                 self.rows.append(Row())
             self.rows[-1].add_component(component)
-        elif isinstance(component, (StringSelectMenu)):
+        else:
             self.rows.append(Row().add_component(component))
+        return self
 
     def button(
         self,

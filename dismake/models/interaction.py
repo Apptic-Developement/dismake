@@ -27,6 +27,7 @@ __all__ = (
     "ApplicationCommandOption",
     "MessageComponentData",
     "ModalSubmitData",
+    "ModalSubmitActionRowData"
 )
 
 

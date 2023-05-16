@@ -184,7 +184,6 @@
 # bot.run(token)
 
 from dismake import ui
-from pprint import pprint
 import dismake
 
 view = ui.View()
@@ -209,3 +208,13 @@ async def b1(interaction: dismake.Interaction):
 @view.button(label="2")
 async def b2(interaction: dismake.Interaction):
     await interaction.send("Hmm What ?", ephemeral=True)
+
+
+# Modal
+modal = (
+    ui.Modal(title="Okiee?")
+    .add_component(ui.TextInput(label="o1"))
+    .add_component(ui.TextInput(label="o2"))
+)
+
+

@@ -1,7 +1,7 @@
 from dismake import ui, Plugin
 import dismake
-from tests import view
-
+from tests import view, modal as sendable_modal
+print(sendable_modal.to_dict())
 plugin = Plugin()
 
 
@@ -18,14 +18,4 @@ async def button_command(interaction: dismake.Interaction):
 
 @components.command()
 async def modal(interaction: dismake.Interaction):
-    modal = (
-        ui.Modal(title="My Special Modal")
-        .add_item(ui.TextInput(label="Your name"))
-        .add_item(ui.TextInput(label="Your age"))
-    )
-
-    async def cb(i: dismake.Interaction):
-        await i.send(f"{i.data.components[0].components[0].value}")
-
-    modal.on_submit = cb
-    await interaction.respond_with_modal(modal)
+    await interaction.respond_with_modal(sendable_modal)

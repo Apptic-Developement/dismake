@@ -206,8 +206,7 @@ class InteractionHandler:
         ):
             modal = self.client._modals.get(interaction.data.custom_id)
             if modal:
-                await modal.on_submit(interaction)
-                # TODO: Add Error
+                await modal.callback(interaction)
 
     async def handle_interactions(self, request: Request):
         """
