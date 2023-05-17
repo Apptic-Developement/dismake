@@ -7,7 +7,6 @@ from ..enums import ComponentType
 
 if TYPE_CHECKING:
     from .view import View
-    from ..models import Interaction
 
 __all__ = ("Component",)
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
-
 import asyncio
-from typing import TYPE_CHECKING, Optional
 from functools import wraps
+from typing import Optional, TYPE_CHECKING
+
 from .commands import Command, Group
 from .errors import PluginException
 

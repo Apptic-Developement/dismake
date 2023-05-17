@@ -7,7 +7,6 @@ from ..models import PartialEmoji
 from .component import Component
 
 if TYPE_CHECKING:
-    from ..models import Interaction
     from typing_extensions import Self
 
 __all__ = (

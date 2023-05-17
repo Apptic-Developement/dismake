@@ -1,19 +1,20 @@
 from __future__ import annotations
-
+from logging import getLogger
 from typing import Any, TYPE_CHECKING
+
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
-from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-from .enums import InteractionType, InteractionResponseType
+from nacl.signing import VerifyKey
+
+from .commands import Command, Group
+from .enums import InteractionResponseType, InteractionType
 from .models import (
-    Interaction,
     ApplicationCommandData,
+    Interaction,
     MessageComponentData,
     ModalSubmitData,
 )
-from .commands import Command, Group
-from logging import getLogger
 
 if TYPE_CHECKING:
     from .client import Bot
@@ -58,7 +59,7 @@ class InteractionHandler:
         try:
             self.verification_key.verify(message, bytes.fromhex(signature))
             return True
-        except BadSignatureError as e:
+        except BadSignatureError:
             log.error("Bad signature request.")
         except Exception as e:
             log.exception(e)
@@ -127,7 +128,7 @@ class InteractionHandler:
 
         if isinstance(command, Command) and interaction.data.options is not None:
             options = interaction.data.options
-            focused = list(filter(lambda x: x.focused == True, options))
+            focused = list(filter(lambda x: x.focused is True, options))
             if not focused:
                 raise ValueError("No focus items! Probably this is a discord bug.")
             return await command.invoke_autocomplete(interaction, name=focused[0].name)
@@ -139,7 +140,7 @@ class InteractionHandler:
                 and interaction.data.options[0].options is not None
             ):
                 options = interaction.data.options[0].options
-                focused = list(filter(lambda x: x.focused == True, options))
+                focused = list(filter(lambda x: x.focused is True, options))
                 if not focused:
                     raise ValueError("No focus items! Probably this is a discord bug.")
                 return await child_2.invoke_autocomplete(
@@ -154,7 +155,7 @@ class InteractionHandler:
                     and interaction.data.options[0].options[0].options is not None
                 ):
                     options = interaction.data.options[0].options[0].options
-                    focused = list(filter(lambda x: x.focused == True, options))
+                    focused = list(filter(lambda x: x.focused is True, options))
                     if not focused:
                         raise ValueError(
                             "No focus items! Probably this is a discord bug."

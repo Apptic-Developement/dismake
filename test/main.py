@@ -1,7 +1,6 @@
-from typing import Union
-import dismake, config
-from plugins import autocomplete, mentions, components
-
+import config
+import dismake
+from plugins import autocomplete, components, mentions
 
 # mypy --show-error-codes --pretty --check-untyped-defs dismake
 
@@ -27,4 +26,4 @@ async def on_ready():
 
 
 if __name__ == "__main__":
-    app.run(app=f"main:app", reload=True)
+    app.run(app="main:app", reload=True)

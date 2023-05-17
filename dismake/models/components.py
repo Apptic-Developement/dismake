@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from pydantic import BaseModel, validator
-from ..enums import ComponentType, TextInputStyle
+from ..enums import ComponentType
 from .emoji import PartialEmoji
 
 __all__ = ("SelectOption", "Component", "ActionRow", "TextInput")

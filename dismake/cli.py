@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 import argparse
 import json
 from pathlib import Path
-
 
 # def generate_app(path: Path):
 #     template = Path(pkg_resources.resource_filename("dismake", "templates"))
@@ -58,7 +56,7 @@ def vercel_command(args):
     with open(path, "w") as f:
         f.write(json.dumps(config))
     print(
-        f"""Successfully created a 'vercel.json' file.
+        """Successfully created a 'vercel.json' file.
 Replace the '<your-main-file>' with your main file name example 'main.py'."""
     )
 
@@ -70,7 +68,9 @@ def add_subparsers(parser):
     )
     vercel.set_defaults(func=vercel_command)
 
-    # init = subparsers.add_parser("init", help="Creates a new dismake project for you.")
+    # init = subparsers.add_parser(
+    # "init", help="Creates a new dismake project for you."
+    # )
     # init.set_defaults(func=init_command)
     return subparsers
 

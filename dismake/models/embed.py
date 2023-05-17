@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import List, Literal, Optional
 from datetime import datetime
 from pydantic import BaseModel
-from contextlib import suppress
 
 
 class EmbedField(BaseModel):

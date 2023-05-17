@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, List, Any, Dict
 from datetime import datetime
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from .user import Member, User
 from ..types import SnowFlake
 from enum import Enum

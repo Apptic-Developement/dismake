@@ -1,5 +1,4 @@
 from __future__ import annotations
-from re import I
 
 from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
 from pydantic import BaseModel
