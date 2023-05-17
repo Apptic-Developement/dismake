@@ -1,7 +1,7 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from typing import Any, List, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, List, Dict, Optional, TYPE_CHECKING, Union
 from fastapi import FastAPI
 from .models import Guild
 from .handler import InteractionHandler
@@ -326,7 +326,7 @@ class Bot(FastAPI):
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-    ):
+    ) -> Callable:
         """
         The `command` function is a decorator that registers a function as an application command.
 
@@ -350,9 +350,9 @@ class Bot(FastAPI):
             Localization dictionary for description field. Values follow the same restrictions as description
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> Command:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_, **__) -> Command:
                 command = Command(
                     name=name if name else coro.__name__,
                     description=description,
@@ -365,6 +365,7 @@ class Bot(FastAPI):
                     description_localizations=description_localizations,
                 )
                 self._commands[command.name] = command
+                return command
 
             return wrapper()
 

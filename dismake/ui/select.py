@@ -58,7 +58,6 @@ class BaseSelect(Component):
         self.min_values = min_values
         self.max_values = max_values
 
-
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
         if self.placeholder is not None:

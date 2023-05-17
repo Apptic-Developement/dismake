@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as file:
     long_description = file.read()
@@ -6,7 +6,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="dismake",
-    version="0.0.15",
+    version="0.0.23",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
     description="None",
@@ -15,11 +15,27 @@ setup(
     url="https://github.com/Apptic-Development/dismake",
     project_urls={"Homepage": "https://github.com/Apptic-Development/dismake"},
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: MIT License",
+        "Intended Audience :: Developers",
+        "Natural Language :: English",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Topic :: Internet",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Utilities",
+        "Typing :: Typed",
     ],
-    packages=find_packages(),
+    packages=[
+        "dismake",
+        "dismake.models",
+        "dismake.ui",
+        "dismake.types",
+    ],
     python_requires=">=3.9",
     license="MIT",
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},

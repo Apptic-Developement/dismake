@@ -182,7 +182,8 @@ class InteractionHandler:
             comp = self.client._components.get(interaction.data.custom_id)
             if comp:
                 callback = comp._callback
-                if callback is None: return
+                if callback is None:
+                    return
                 try:
                     return await callback(interaction)
                 except Exception as e:

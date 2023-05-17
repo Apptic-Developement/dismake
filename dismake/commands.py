@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, TYPE_CHECKING, Annotated, Optional, get_origin
+from typing import Any, TYPE_CHECKING, Optional, get_type_hints, get_args
 from functools import wraps
 
-from .permissions import Permissions
-from .types import AsyncFunction
+
 from .models import (
     User,
     Member,
@@ -15,6 +14,7 @@ from .models import (
     CategoryChannel,
     AnnouncementChannel,
     ApplicationCommandData,
+    Interaction
 )
 from .errors import CommandInvokeError
 from .enums import ChannelType, CommandType, OptionType, Locale
@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from .types import AsyncFunction
     from .permissions import Permissions
     from .plugin import Plugin
-    from .models import Interaction
 
 
 __all__ = ("Command", "Option", "Choice", "Group")
@@ -45,47 +44,78 @@ _option_types = {
 }
 
 
-def _get_options(func: AsyncFunction) -> list[Option]:
+def _get_options(func: AsyncFunction) -> tuple[Option]:
     """
     Extracts options from the given command callback.
 
     Parameters
     ----------
-    func : AsyncFunction
+    func: AsyncFunction
         The function to get the options from.
 
     Returns
     -------
-    list[Option]
-        The options of the command.
+    tuple[Option]
     """
-    params = inspect.signature(func).parameters
-    options: list[Option] = list()
+    ret: tuple[Option] = tuple()
+    params = get_type_hints(func, include_extras=True)
+    signature = inspect.signature(func)
     for k, v in params.items():
-        # k: The name of the function
-        #     - name
-        # v: The annotation of the function
-        #     - typing.Annotated[str, <Option name="foo">]
-        annotation = v.annotation
-        if get_origin(annotation) != Annotated:
+        if v is Interaction:
             continue
-        option_type: type = annotation.__args__[0]
-        option_object: Option = annotation.__metadata__[0]
+        option_type, option_object = get_args(v)
         option_object.type = _option_types[option_type]
-        if option_object.description is None:
-            option_object.description = "..."
 
         if option_object.name is None:
             option_object.name = k
 
         if option_object.required is None:
-            if v.default != inspect._empty:
-                option_object.required = False
-            else:
-                option_object.required = True
+            option_object.required = signature.parameters[k].default == inspect._empty
+        ret += (option_object,)
+    return ret
 
-        options.append(option_object)
-    return options
+
+# def _get_options(func: AsyncFunction) -> list[Option]:
+#     """
+#     Extracts options from the given command callback.
+
+#     Parameters
+#     ----------
+#     func : AsyncFunction
+#         The function to get the options from.
+
+#     Returns
+#     -------
+#     list[Option]
+#         The options of the command.
+#     """
+#     params = inspect.signature(func).parameters
+#     options: list[Option] = list()
+#     for k, v in params.items():
+#         # k: The name of the function
+#         #     - name
+#         # v: The annotation of the function
+#         #     - typing.Annotated[str, <Option name="foo">]
+#         annotation = v.annotation
+#         if get_origin(annotation) != Annotated:
+#             continue
+#         option_type: type = annotation.__args__[0]
+#         option_object: Option = annotation.__metadata__[0]
+#         option_object.type = _option_types[option_type]
+#         if option_object.description is None:
+#             option_object.description = "..."
+
+#         if option_object.name is None:
+#             option_object.name = k
+
+#         if option_object.required is None:
+#             if v.default != inspect._empty:
+#                 option_object.required = False
+#             else:
+#                 option_object.required = True
+
+#         options.append(option_object)
+#     return options
 
 
 def _populate_locales(locale: dict[Locale, str]) -> dict[str, str]:

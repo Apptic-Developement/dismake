@@ -1,5 +1,7 @@
+from typing import Union
 import dismake, config
-from plugins import mentions, components, autocomplete
+from plugins import autocomplete, mentions, components
+
 
 # mypy --show-error-codes --pretty --check-untyped-defs dismake
 
@@ -14,11 +16,14 @@ app = dismake.Bot(
 @app.event()
 async def on_ready():
     app.log.info("Logged in as %s" % app.user)
+    await autocomplete.plugin.load(app)
     await mentions.plugin.load(app)
     await components.plugin.load(app)
-    await autocomplete.plugin.load(app)
+
     # sync = await app.sync_commands()
     # print(sync.text)
+
+
 
 
 if __name__ == "__main__":

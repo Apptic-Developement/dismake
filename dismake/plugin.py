@@ -98,7 +98,7 @@ class Plugin:
     def command(
         self,
         name: str,
-        description: str,
+        description: str = "No description provided,",
         *,
         guild_id: int | None = None,
         default_member_permissions: Permissions | None = None,
@@ -132,6 +132,7 @@ class Plugin:
         plugin_permissions: :class:`bool`
             If this set to false then the plugin won't override permissions for this command.
         """
+
         def decorator(coro: AsyncFunction):
             @wraps(coro)
             def wrapper(*_, **__):

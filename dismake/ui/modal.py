@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 __all__ = ("Modal", "TextInput")
 
 
-
 class Modal:
     """
     Represents a UI Modal dialog.
@@ -145,6 +144,7 @@ class TextInput(Component):
         Pre-fills the input text field with this value.
         Must be 4000 characters or fewer.
     """
+
     def __init__(
         self,
         label: str,
@@ -169,18 +169,17 @@ class TextInput(Component):
             raise ValueError("Label must be 45 characters or fewer.")
         if self.value is not None and len(self.value) > 4000:
             raise ValueError("Value must be 4000 characters or fewer.")
-        
+
         if self.min_length is not None and self.max_length is not None:
             if self.min_length > self.max_length:
                 raise ValueError("Min length must be less than max length.")
-        
+
         if self.min_length is not None:
             if self.min_length < 1:
                 raise ValueError("Min length must be greater than 0.")
         if self.max_length is not None:
             if self.max_length < 1:
                 raise ValueError("Max length must be greater than 0.")
-        
 
     def __repr__(self) -> str:
         return f"<TextInput label={self.label!r}>"

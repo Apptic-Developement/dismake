@@ -55,7 +55,6 @@ class Component:
         self.view = v
         return self.view
 
-
     def to_dict(self) -> Dict[str, Any]:
         """
         Converts a component into a dict.
