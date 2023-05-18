@@ -25,10 +25,22 @@ LOGGING_CONFIG = {
         "uvicorn": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
+        },
+        "dismake": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
+    
 }
+    
 
 
 def chunk(max_size: int, iterator: Iterable):

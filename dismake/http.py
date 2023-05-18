@@ -1,11 +1,13 @@
 from __future__ import annotations
 from typing import List, Optional, Union
-
+from logging import getLogger
 from httpx import AsyncClient, Response
 
 from .commands import Command, Group
 from .models import User
 from .models import AppCommand
+
+log = getLogger(__name__)
 
 __all__ = ("HttpClient",)
 
@@ -23,6 +25,8 @@ class HttpClient:
         self.app_command_endpoint = f"/applications/{client_id}/commands"
         self.client = AsyncClient(base_url=self.base_url, headers=self.headers)
         self._user: User
+        
+
 
     @property
     def base_url(self) -> str:
@@ -32,45 +36,36 @@ class HttpClient:
     def headers(self) -> dict:
         return {"Authorization": "Bot %s" % self.token}
 
-    # async def register_command(self, command: SlashCommand):
-    #     return await self.client.request(
-    #         method="POST",
-    #         url="/applications/%s/commands" % self.client_id,
-    #         json=command.to_dict(),
-    #         headers=self.headers,
-    #     )
 
-    async def get_global_commands(self) -> list[AppCommand] | None:
+
+    async def get_global_commands(self) -> list[AppCommand]:
         res = await self.client.request(
             method="GET",
             url=f"/applications/{self.client_id}/commands",
-            headers=self.headers,
         )
         res.raise_for_status()
-        _json = res.json()
-        if not _json:
-            return list()
-
-        return [AppCommand(**command) for command in _json]
+        return [AppCommand(**command) for command in res.json()]
 
     async def bulk_override_commands(
         self, commands: List[Union[Command, Group]], guild_id: Optional[int] = None
     ) -> Response:
-        return await self.client.request(
+        res = await self.client.request(
             method="PUT",
             url=f"/applications/{self.client_id}/commands",
             json=[command.to_dict() for command in commands],
             headers=self.headers,
         )
+        res.raise_for_status()
+        return res
 
     async def remove_all_commands(self):
-        return await self.client.request(
+        res =  await self.client.request(
             method="PUT",
             url=f"/applications/{self.client_id}/commands",
-            headers=self.headers,
             json=[],
         )
-
+        res.raise_for_status()
+        return res
     async def fetch_me(self):
         res = await self.client.request(
             method="GET", url="/users/@me", headers=self.headers
