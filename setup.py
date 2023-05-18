@@ -1,9 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as file:
     long_description = file.read()
 
-
+with open("requirements/requirements.txt", "r") as f:
+    requirements = f.read().splitlines()
 setup(
     name="dismake",
     version="0.0.23",
@@ -30,25 +31,12 @@ setup(
         "Topic :: Utilities",
         "Typing :: Typed",
     ],
-    packages=[
-        "dismake",
-        "dismake.models",
-        "dismake.ui",
-        "dismake.types",
-    ],
+    packages=find_packages(),
     python_requires=">=3.9",
     license="MIT",
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
     package_data={"templates": ["templates/*"]},
-    install_requires=[
-        "fastapi==0.95.1",
-        "httpx==0.24.0",
-        "pydantic==1.10.7",
-        "PyNaCl==1.5.0",
-        "rich==13.3.5",
-        "typing_extensions==4.5.0",
-        "uvicorn==0.22.0",
-    ],
+    install_requires=requirements,
 )
 
 

@@ -1,50 +1,52 @@
 from __future__ import annotations
 import argparse
 import json
+import subprocess
 from pathlib import Path
+from rich.console import Console
+from rich.prompt import Prompt
+from .internal import Config
 
-# def generate_app(path: Path):
-#     template = Path(pkg_resources.resource_filename("dismake", "templates"))
-#     if not template.exists():
-#         return print(
-#             f"""
-#     Error
-# =============
-# The templates folder is missing.
-# You can fix this issue by reinstalling the package.
-
-# Command:
-# pip uninstall dismake -y && pip install dismake
-# """
-#         )
-#     path.mkdir(parents=True, exist_ok=True)
-#     for item in template.iterdir():
-#         if item.is_file():
-#             shutil.copyfile(item, path / item.name)
-#         else:
-#             shutil.copytree(item, path / item.name)
-#     return path
+console = Console()
+config_file = "dismake.config.toml"
 
 
 def print_help(parser: argparse.ArgumentParser):
     parser.print_help()
 
 
-# def init_command(args: argparse.Namespace):
-#     project_name = input("Please enter a name for your project: ")
-#     try:
-#         path = Path(project_name)
-#     except Exception as e:
-#         return print(f"TODO")
-#     else:
-#         if path.is_file():
-#             print(f"A file already exists with this name.")
-#         created = generate_app(path, "basic")
-#         if created:
-#             return print(
-#                 f"Successfully created your project in {created.absolute().name!r}"
-#             )
+def init_command(args: argparse.Namespace):
+    path = Path(".") / config_file
+    try:
+        Config.get_config(path)
+    except:
+        var: str = Prompt.ask("[bold][cyan]?[/cyan][/bold] [bold]What is the name of your bot variable[/bold]", default="app")
+        console.clear()
+        Config.create_config(path, var=var)
+    else:
+        return console.print(
+            f"A {config_file!r} file already exists.", style="bold"
+        )
 
+    return console.print(f"Successfully created a{config_file!r} file.", style="bold")
+
+def run_command(args: argparse.Namespace):
+    path = Path(".") / config_file
+    if not path.exists():
+        console.print(f"Creating {config_file!r}", style="bold red")
+        init_command(args)
+    if not Config.can_load(path):
+        console.print(f"Found syntax error in {config_file!r}", style="bold red")
+        init_command(args)
+    try:
+        config = Config.get_config(path)
+    except:
+        return console.print(f"Cannot load {config_file!r}", style="bold red")
+    else:
+        exc_command = ["uvicorn", f"{config.dismake.main_file_name}:{config.dismake.bot.var}"]
+        if config.dismake.auto_reload:
+            exc_command.append("--reload")
+        subprocess.run(exc_command)
 
 def vercel_command(args):
     path = Path(".") / "vercel.json"
@@ -55,7 +57,7 @@ def vercel_command(args):
     path.touch()
     with open(path, "w") as f:
         f.write(json.dumps(config))
-    print(
+    console.print(
         """Successfully created a 'vercel.json' file.
 Replace the '<your-main-file>' with your main file name example 'main.py'."""
     )
@@ -68,10 +70,15 @@ def add_subparsers(parser):
     )
     vercel.set_defaults(func=vercel_command)
 
-    # init = subparsers.add_parser(
-    # "init", help="Creates a new dismake project for you."
-    # )
-    # init.set_defaults(func=init_command)
+    init = subparsers.add_parser(
+    "init", help="Initialize a new config.toml file."
+    )
+    init.set_defaults(func=init_command)
+
+    run = subparsers.add_parser(
+        "run", help="Run your bot."
+    )
+    run .set_defaults(func=run_command)
     return subparsers
 
 
