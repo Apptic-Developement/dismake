@@ -1,11 +1,15 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 __all__ = ("Asset",)
 
 
 class AssetMixin:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
@@ -23,13 +27,13 @@ class Asset(AssetMixin):
         return self._url
 
     @classmethod
-    def from_default_avatar(cls, index: int) -> Asset:
+    def from_default_avatar(cls, index: int) -> Self:
         return cls(
             url=f"{cls.BASE}/embed/avatars/{index}.png", key=str(index), animated=False
         )
 
     @classmethod
-    def from_avatar(cls, avatar_hash: str, user_id: int):
+    def from_avatar(cls, avatar_hash: str, user_id: int) -> Self:
         animated = avatar_hash.startswith("a_")
         format = "gif" if animated else "png"
         return cls(
@@ -39,7 +43,7 @@ class Asset(AssetMixin):
         )
 
     @classmethod
-    def from_guild_banner(cls, banner_hash: str, guild_id: int):
+    def from_guild_banner(cls, banner_hash: str, guild_id: int) -> Self:
         animated = banner_hash.startswith("a_")
         format = "gif" if animated else "png"
         return cls(
@@ -49,7 +53,7 @@ class Asset(AssetMixin):
         )
 
     @classmethod
-    def from_guild_icon(cls, icon_hash: str, guild_id: int):
+    def from_guild_icon(cls, icon_hash: str, guild_id: int) -> Self:
         animated = icon_hash.startswith("a_")
         format = "gif" if animated else "png"
         return cls(

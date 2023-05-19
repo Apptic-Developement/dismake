@@ -20,7 +20,7 @@ __all__ = (
 
 class StrEnum(str, Enum):
     def __str__(self) -> str:
-        return self.value
+        return str(self.value)
 
 
 class DefaultAvatar(Enum):

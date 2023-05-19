@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import re
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from pydantic import BaseModel
 from ..types import SnowFlake
 from .user import User
 
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = ("Emoji", "PartialEmoji")
 
@@ -16,7 +18,7 @@ class PartialEmoji(BaseModel):
     animated: Optional[bool]
 
     @classmethod
-    def from_str(cls, value: str):
+    def from_str(cls, value: str) -> Self:
         CUSTOM_EMOJI_RE = re.compile(
             r"<?(?P<animated>a)?:?(?P<name>[A-Za-z0-9\_]+):(?P<id>[0-9]{13,20})>?"
         )

@@ -21,4 +21,3 @@ async def on_ready():
 
     # sync = await app.sync_commands()
     # print(sync.text)
-

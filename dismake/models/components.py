@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel, validator
 from ..enums import ComponentType
@@ -21,7 +21,7 @@ class ActionRow(Component):
     def _validate_components(cls, value: list[Component]) -> list[Component]:
         if len(value) > 5:
             raise ValueError("An action row can only have 5 components.")
-        if ComponentType.ACTION_ROW is [t.type for t in value]:
+        if ComponentType.ACTION_ROW in [t.type for t in value]:
             raise ValueError("A action row can not have another action row.")
 
         if (
@@ -46,7 +46,7 @@ class SelectOption(BaseModel):
     label: str
     value: str
     description: Optional[str]
-    emoji: Optional[Union[PartialEmoji, dict, str]]
+    emoji: Optional[Union[PartialEmoji, dict[str, Any], str]]
     default: Optional[bool]
 
 

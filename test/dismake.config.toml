@@ -1,0 +1,10 @@
+[dismake]
+auto_reload = true
+main_file_name = "main"
+
+[dismake.bot]
+var = "app"
+token_name = "TOKEN"
+public_key_name = "PUBLIC_KEY"
+client_id_name = "CLIENT_ID"
+load_env = true

@@ -5,7 +5,6 @@ from tests import view, MyModal
 plugin = Plugin()
 
 
-
 components = plugin.create_group(
     name="components",
     description="This group holds all the components related commands.",

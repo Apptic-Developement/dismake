@@ -64,10 +64,10 @@ class Modal:
     def children(self) -> list[TextInput]:
         return self._children
 
-    async def on_error(self, interaction: Interaction, exception: Exception):
-        ...
+    async def on_error(self, interaction: Interaction, exception: Exception) -> Any:
+        pass
 
-    async def _invoke(self, interaction: Interaction):
+    async def _invoke(self, interaction: Interaction) -> Any:
         assert isinstance(
             interaction.data, ModalSubmitData
         ), "Invalid interaction recived."
@@ -89,8 +89,8 @@ class Modal:
         except Exception as e:
             await self.on_error(interaction, e)
 
-    async def on_submit(self, interaction: Interaction):
-        ...
+    async def on_submit(self, interaction: Interaction) -> Any:
+        pass
 
     def __repr__(self) -> str:
         return f"<Modal title={self.title!r}>"

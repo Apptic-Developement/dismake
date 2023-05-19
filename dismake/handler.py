@@ -38,7 +38,7 @@ class InteractionHandler:
         self.client = client
         self.verification_key = VerifyKey(bytes.fromhex(client._client_public_key))
 
-    def verify_key(self, body: bytes, signature: str, timestamp: str):
+    def verify_key(self, body: bytes, signature: str, timestamp: str) -> bool | None:
         """
         Verifies the signature of the request.
 
@@ -61,11 +61,12 @@ class InteractionHandler:
             return True
         except BadSignatureError:
             log.error("Bad signature request.")
+            return None
         except Exception as e:
             log.exception(e)
             return False
 
-    async def _handle_command(self, request: Request) -> Any:
+    async def _handle_command(self, request: Request) -> None:
         """
         Handles a command request.
 
@@ -78,7 +79,7 @@ class InteractionHandler:
         -------
         The response object.
         """
-        payload: dict = await request.json()
+        payload: dict[str, Any] = await request.json()
         interaction = Interaction(request=request, data=payload)
         assert isinstance(interaction.data, ApplicationCommandData)
         if (data := interaction.data) is not None:
@@ -109,12 +110,8 @@ class InteractionHandler:
         ----------
         request: :class:`Request`
             The request object.
-
-        Returns
-        -------
-        The response object.
         """
-        payload: dict = await request.json()
+        payload: dict[str, Any] = await request.json()
         interaction = Interaction(request=request, data=payload)
 
         if not (
@@ -177,7 +174,7 @@ class InteractionHandler:
         -------
         The response object.
         """
-        payload: dict = await request.json()
+        payload: dict[str, Any] = await request.json()
         interaction = Interaction(request=request, data=payload)
         if interaction.data and isinstance(interaction.data, MessageComponentData):
             comp = self.client._components.get(interaction.data.custom_id)
@@ -190,7 +187,7 @@ class InteractionHandler:
                 except Exception as e:
                     return await comp.view.on_error(interaction, e)
 
-    async def _handle_modal_submit(self, request: Request):
+    async def _handle_modal_submit(self, request: Request) -> None:
         """
         Handles a modal submit request.
 
@@ -198,12 +195,8 @@ class InteractionHandler:
         ----------
         request: :class:`Request`
             The request object.
-
-        Returns
-        -------
-        The response object.
         """
-        payload: dict = await request.json()
+        payload: dict[str, Any] = await request.json()
         interaction = Interaction(request=request, data=payload)
         if interaction.data is not None and isinstance(
             interaction.data, ModalSubmitData
@@ -212,7 +205,7 @@ class InteractionHandler:
             if modal:
                 await modal._invoke(interaction)
 
-    async def handle_interactions(self, request: Request):
+    async def handle_interactions(self, request: Request) -> Response:
         """
         The function is meant to handle interactions posted by
         Discord in the "/interactions" route specified in the bot instance.
@@ -235,7 +228,7 @@ class InteractionHandler:
         ):
             return Response(content="Bad Signature", status_code=401)
 
-        payload: dict = await request.json()
+        payload: dict[str, Any] = await request.json()
         interaction = Interaction(request=request, data=payload)
         self.client.dispatch(
             "interaction_create",

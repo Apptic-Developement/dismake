@@ -1,11 +1,14 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 
 from ..enums import DefaultAvatar
 from ..asset import Asset
 from ..flags import UserFlags, GuildMemberFlags
 from ..permissions import Permissions
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = ("User", "Member")
 
@@ -29,11 +32,11 @@ class User(BaseModel):
     premium_type: Optional[int]
     public_flags: Optional[int]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.username}#{self.discriminator}"
 
     @classmethod
-    def from_resolved_data(cls, **kwargs):
+    def from_resolved_data(cls, kwargs: dict[str, Any]) -> Self:
         return cls(**kwargs)
 
     @property

@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 from fastapi import FastAPI
 
+
 from .commands import Command, Group
 from .errors import CommandInvokeError
 from .handler import InteractionHandler
@@ -18,9 +19,7 @@ if TYPE_CHECKING:
     from .ui import View, Component, Modal
     from .types import AsyncFunction
     from .permissions import Permissions
-    from .models import Interaction
-
-
+    from .models import Interaction, AppCommand
 
 
 log = getLogger("dismake")
@@ -62,7 +61,7 @@ class Bot(FastAPI):
         client_id: int,
         route: str = "/interactions",
         interaction_handler: Optional[InteractionHandler] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._client_id = client_id
@@ -83,6 +82,7 @@ class Bot(FastAPI):
         self._modals: Dict[str, Modal] = {}
         self.error_handler: Optional[AsyncFunction] = None
         config.dictConfig(LOGGING_CONFIG)
+
     @property
     def user(self) -> User:
         """
@@ -113,7 +113,7 @@ class Bot(FastAPI):
         """
         return self._commands.get(name)
 
-    async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
+    async def _dispatch_callback(self, coro: AsyncFunction, *args: Any, **kwargs: Any) -> None:
         """
         Dispatches an event to a single event listener.
 
@@ -131,7 +131,7 @@ class Bot(FastAPI):
         except Exception as e:
             log.error("An error occured in %s" % coro.__name__, exc_info=e)
 
-    def dispatch(self, event_name: str, *args, **kwargs):
+    def dispatch(self, event_name: str, *args: Any, **kwargs: Any) -> None:
         """
         Dispatches an event to all registered event listeners.
 
@@ -152,7 +152,7 @@ class Bot(FastAPI):
         for coro in event:
             asyncio.ensure_future(self._dispatch_callback(coro, *args, **kwargs))
 
-    def event(self, event_name: str | None = None):
+    def event(self, event_name: str | None = None) -> Callable[[AsyncFunction], AsyncFunction]:
         """
         A decorator that registers an event to listen to.
 
@@ -170,20 +170,21 @@ class Bot(FastAPI):
             ...     print(f"Logged in as {app.user}.")
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> AsyncFunction:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> AsyncFunction:
                 name = event_name or coro.__name__
                 if self._events.get(name) is not None:
                     self._events[name].append(coro)
                 else:
                     self._events[name] = [coro]
+                return coro
 
             return wrapper()
 
         return decorator
 
-    async def sync_commands(self, guild_ids: Optional[int] = None):
+    async def sync_commands(self, guild_ids: Optional[int] = None) -> list[AppCommand]:
         """
         Synchronizes all application commands to Discord.
 
@@ -211,7 +212,7 @@ class Bot(FastAPI):
             [command for command in self._commands.values()]
         )
 
-    def on_error(self, coro: AsyncFunction):
+    def on_error(self, coro: AsyncFunction) -> AsyncFunction:
         """
         A decorator which overrides the `:meth: _default_error_handler`.
 
@@ -226,7 +227,7 @@ class Bot(FastAPI):
         """
 
         @wraps(coro)
-        def wrapper(*_, **__):
+        def wrapper(*_: Any, **__: Any) -> AsyncFunction:
             self.error_handler = coro
             return coro
 
@@ -295,16 +296,22 @@ class Bot(FastAPI):
         """
         self._modals[modal.custom_id] = modal
 
-    def add_command(self, command: Union[Command, Group]):
+    def add_command(self, command: Union[Command, Group]) -> Union[Command, Group]:
         """
         The add_command function is used to add a command or group of commands to the application.
 
         Parameters
         ----------
         command: Union[Command, Group]
-            The command you want to add to dismake.Bot
+            The command you want to add to :class:`dismake.Bot`
+        
+        Returns
+        -------
+        command: Union[:class:`Command`, :class:`Group`]
+            The command you added to :class:`dismake.Bot`.
         """
         self._commands[command.name] = command
+        return command
 
     def command(
         self,
@@ -317,7 +324,7 @@ class Bot(FastAPI):
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-    ) -> Callable:
+    ) -> Callable[[AsyncFunction], Command]:
         """
         The `command` function is a decorator that registers a function as an application command.
 
@@ -343,7 +350,7 @@ class Bot(FastAPI):
 
         def decorator(coro: AsyncFunction) -> Command:
             @wraps(coro)
-            def wrapper(*_, **__) -> Command:
+            def wrapper(*_: Any, **__: Any) -> Command:
                 command = Command(
                     name=name if name else coro.__name__,
                     description=description,
@@ -372,7 +379,7 @@ class Bot(FastAPI):
         default_member_permissions: Permissions | None = None,
         guild_only: bool | None = None,
         nsfw: bool | None = None,
-    ):
+    ) -> Group:
         """
         The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
 

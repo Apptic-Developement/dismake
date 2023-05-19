@@ -1,23 +1,25 @@
 from __future__ import annotations
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, TYPE_CHECKING, Union
 
-from typing import Any, List, Optional, TYPE_CHECKING, Union, Dict, TYPE_CHECKING
-from pydantic import BaseModel
-from .user import Member, User
-from .guild import Guild
-from .role import Role
-from .message import Message
-from ..enums import InteractionType, InteractionResponseType, MessageFlags, OptionType
-from ..errors import InteractionNotResponded, InteractionResponded
-from ..params import handle_send_params, handle_edit_params
 from fastapi import Request
+from pydantic import BaseModel
+
+from ..enums import InteractionResponseType, InteractionType, MessageFlags, OptionType
+from ..errors import InteractionNotResponded, InteractionResponded
+from ..params import handle_edit_params, handle_send_params
 from ..types import SnowFlake
 from .channels import Channel
 from .components import TextInput
+from .guild import Guild
+from .message import Message
+from .role import Role
+from .user import Member, User
 
 if TYPE_CHECKING:
     from ..ui import View, Modal
     from ..client import Bot
     from ..commands import Choice
+    from httpx import Response as HttpxResponse
 
 
 __all__ = (
@@ -32,7 +34,7 @@ __all__ = (
 
 def _extract_options(
     option: ApplicationCommandOption,
-) -> List[ApplicationCommandOption]:
+) -> list[ApplicationCommandOption]:
     """Recursively extract options from commands"""
     if option.type == OptionType.SUB_COMMAND.value and option.options is not None:
         return [o for sub_opt in option.options for o in _extract_options(sub_opt)]
@@ -46,19 +48,19 @@ def _extract_options(
 
 def _options_to_dict(
     options: List[ApplicationCommandOption], resolved_data: Optional[ResolvedData]
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Convert options to a dictionary"""
-    namespace_dict = {}
+    namespace_dict: dict[str, Any] = {}
     for option in options:
         if option.type == OptionType.USER.value and resolved_data is not None:
             if resolved_data.users is not None:
                 namespace_dict[option.name.replace("-", "_")] = resolved_data.users.get(
-                    str(option.value)  # type: ignore
+                    str(option.value)
                 )
         elif option.type == OptionType.ROLE.value and resolved_data is not None:
             if resolved_data.roles is not None:
                 namespace_dict[option.name.replace("-", "_")] = resolved_data.roles.get(
-                    str(option.value)  # type: ignore
+                    str(option.value)
                 )
         elif option.type == OptionType.CHANNEL.value and resolved_data is not None:
             if resolved_data.channels is not None:
@@ -66,9 +68,9 @@ def _options_to_dict(
                     option.name.replace("-", "_")
                 ] = resolved_data.channels.get(
                     str(option.value)
-                )  # type: ignore
+                )
         else:
-            namespace_dict[option.name.replace("-", "_")] = option.value  # type: ignore
+            namespace_dict[option.name.replace("-", "_")] = option.value
     return namespace_dict
 
 
@@ -164,7 +166,7 @@ class Interaction:
         self.locale: Optional[str] = data.get("locale")
         self.guild_locale: Optional[str] = data.get("guild_locale")
         self.user: Union[User, Member]
-        self._data: Optional[dict] = data.get("data")
+        self._data: Optional[dict[str, Any]] = data.get("data")
         self.data: Optional[
             Union[ApplicationCommandData, ModalSubmitData, MessageComponentData]
         ]
@@ -184,7 +186,7 @@ class Interaction:
         else:
             self.user = User(**data["user"])
         self.channel: Optional[Any] = data.get("channel")
-        self.__message: Optional[dict] = data.get("message")
+        self.__message: Optional[dict[str, Any]] = data.get("message")
         self.message: Optional[Message]
         if self.__message is not None:
             self.message = Message(_request=self._request, **self.__message)
@@ -194,7 +196,7 @@ class Interaction:
         """
         :class:`Bot`: The bot that is handling this interaction.
         """
-        return self._request.app
+        return self._request.app # type: ignore
 
     @property
     def is_application_command(self) -> bool:
@@ -273,13 +275,13 @@ class Interaction:
         tts: bool = False,
         ephemeral: bool = False,
         view: Optional[View] = None,
-    ):
+    ) -> HttpxResponse:
         if self.is_responded:
             raise InteractionResponded(self)
 
         if view:
             self.bot.add_view(view)
-        await self.bot._http.client.request(
+        res = await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
@@ -291,11 +293,12 @@ class Interaction:
             headers=self.bot._http.headers,
         )
         self._is_response_done = True
+        return res
 
-    async def defer(self, thinking: bool = True):
+    async def defer(self, thinking: bool = True) -> HttpxResponse:
         if self.is_responded:
             raise InteractionResponded(self)
-        await self.bot._http.client.request(
+        return await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
             json={
@@ -313,7 +316,7 @@ class Interaction:
         tts: bool = False,
         view: Optional[View] = None,
         ephemeral: bool = False,
-    ):
+    ) -> HttpxResponse:
         if not self.is_responded:
             raise InteractionNotResponded(self)
 
@@ -329,7 +332,7 @@ class Interaction:
 
     async def edit_original_response(
         self, content: str, *, tts: bool = False, view: Optional[View] = None
-    ):
+    ) -> HttpxResponse:
         if view:
             self.bot.add_view(view)
         return await self.bot._http.client.request(
@@ -353,7 +356,7 @@ class Interaction:
         tts: bool = False,
         view: Optional[View] = None,
         ephemeral: bool = False,
-    ):
+    ) -> HttpxResponse | None:
         if self.is_responded:
             return await self.send_followup(
                 content, tts=tts, view=view, ephemeral=ephemeral
@@ -362,14 +365,14 @@ class Interaction:
 
     async def edit_message(
         self, content: str, *, tts: bool = False, view: Optional[View] = None
-    ):
+    ) -> HttpxResponse | None:
         if not self.is_message_component:
-            return
+            return None
         if self.is_responded:
             raise InteractionResponded(self)
         if view:
             self.bot.add_view(view)
-        payload = handle_edit_params(content=content, tts=tts, view=view)
+        payload: dict[str, Any] = handle_edit_params(content=content, tts=tts, view=view)
         return await self.bot._http.client.request(
             method="POST",
             url=f"/interactions/{self.id}/{self.token}/callback",
@@ -379,9 +382,9 @@ class Interaction:
             },
         )
 
-    async def autocomplete(self, choices: List[Choice]):
+    async def autocomplete(self, choices: List[Choice]) -> HttpxResponse | None:
         if not self.is_autocomplete:
-            return
+            return None
 
         return await self.bot._http.client.request(
             method="POST",
@@ -392,7 +395,7 @@ class Interaction:
             },
         )
 
-    async def respond_with_modal(self, modal: Modal):
+    async def respond_with_modal(self, modal: Modal) -> HttpxResponse:
         if self.is_responded:
             raise InteractionResponded(self)
         self.bot.add_modal(modal)
@@ -408,9 +411,9 @@ class Namespace:
     Inspired from discord.py
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
         for k, v in kwargs.items():
             self.__dict__[k] = v
 
-    def __getattr__(self, value) -> None:
+    def __getattr__(self, value: Any) -> None:
         return None

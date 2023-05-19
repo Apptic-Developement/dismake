@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, TYPE_CHECKING
+from typing import Any, Callable, List, Optional, TYPE_CHECKING
 from functools import wraps
 
 from ..enums import ButtonStyles, ComponentType
@@ -22,7 +22,7 @@ class Row:
     Represents an Action Row.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.components: List[Component] = list()
 
     @property
@@ -33,7 +33,7 @@ class Row:
             return len(self.components) == 1
         return len(self.components) == 5
 
-    def add_component(self, component: Component):
+    def add_component(self, component: Component) -> Self:
         if self.is_full:
             raise ValueError("can't able to find free space to add the component.")
         self.components.append(component)
@@ -89,10 +89,10 @@ class View:
         style: Optional[ButtonStyles] = None,
         url: Optional[str] = None,
         disabled: Optional[bool] = None,
-    ):
-        def decorator(coro: AsyncFunction):
+    ) -> Callable[[AsyncFunction], Button]:
+        def decorator(coro: AsyncFunction) -> Button:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> Button:
                 button = Button(
                     label=label,
                     custom_id=custom_id,
@@ -117,10 +117,10 @@ class View:
         min_values: int = 1,
         max_values: int = 1,
         disabled: bool = False,
-    ):
-        def decorator(coro: AsyncFunction):
+    ) -> Callable[[AsyncFunction], StringSelectMenu]:
+        def decorator(coro: AsyncFunction) -> StringSelectMenu:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> StringSelectMenu:
                 select = StringSelectMenu(
                     placeholder=placeholder,
                     options=options,
@@ -139,7 +139,7 @@ class View:
 
     def add_url_button(
         self, label: str, url: str, emoji: str, disabled: Optional[bool]
-    ):
+    ) -> Button:
         button = Button(
             label=label,
             url=url,
@@ -151,9 +151,9 @@ class View:
         self.add_component(button)
         return button
 
-    def error(self, coro: AsyncFunction):
+    def error(self, coro: AsyncFunction) -> AsyncFunction:
         @wraps(coro)
-        def wrapper(*_, **__):
+        def wrapper(*_: Any, **__: Any) -> AsyncFunction:
             self._error_handler = coro
             return coro
 

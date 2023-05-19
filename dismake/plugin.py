@@ -1,7 +1,7 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from typing import Optional, TYPE_CHECKING
+from typing import Any, Callable, Optional, TYPE_CHECKING
 
 from .commands import Command, Group
 from .errors import PluginException
@@ -48,9 +48,9 @@ class Plugin:
         self._events: dict[str, list[AsyncFunction]] = {}
         self.default_member_permissions = default_member_permissions
 
-    def on_load(self, coro: AsyncFunction):
+    def on_load(self, coro: AsyncFunction) -> AsyncFunction:
         @wraps(coro)
-        def wrapper(*_, **__):
+        def wrapper(*_: Any, **__: Any) -> AsyncFunction:
             if not asyncio.iscoroutinefunction(coro):
                 raise PluginException(f"{coro.__name__!r} is not coroutine function.")
             self._on_load = coro
@@ -58,7 +58,7 @@ class Plugin:
 
         return wrapper()
 
-    def event(self, event_name: str | None = None):
+    def event(self, event_name: str | None = None) -> Callable[[AsyncFunction], AsyncFunction]:
         """
         A decorator that registers an event to listen to.
 
@@ -78,9 +78,9 @@ class Plugin:
                 print(f"A new interaction received.")
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> AsyncFunction:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> AsyncFunction:
                 if not asyncio.iscoroutinefunction(coro):
                     raise PluginException(
                         f"{coro.__name__!r} is not coroutine function."
@@ -90,6 +90,7 @@ class Plugin:
                     self._events[name].append(coro)
                 else:
                     self._events[name] = [coro]
+                return coro
 
             return wrapper()
 
@@ -107,7 +108,7 @@ class Plugin:
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
         plugin_permissions: bool = True,
-    ):
+    ) -> Callable[[AsyncFunction], Command]:
         """
         The `command` function is a decorator that registers a function as an application command.
 
@@ -133,9 +134,9 @@ class Plugin:
             If this set to false then the plugin won't override permissions for this command.
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> Command:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> Command:
                 nonlocal default_member_permissions
                 if not asyncio.iscoroutinefunction(coro):
                     raise PluginException(
@@ -176,7 +177,7 @@ class Plugin:
         nsfw: bool | None = None,
         parent: Group | None = None,
         plugin_permissions: bool = True,
-    ):
+    ) -> Group:
         """
         The create_group function is a helper function that creates a new Group object and adds it to the list of commands.
 
@@ -219,7 +220,7 @@ class Plugin:
         self._commands[command.name] = command
         return command
 
-    async def load(self, bot: Bot):
+    async def load(self, bot: Bot) -> None:
         """
         Loads the plugin.
 

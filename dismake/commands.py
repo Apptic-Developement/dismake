@@ -1,7 +1,7 @@
 from __future__ import annotations
 from functools import wraps
 import inspect
-from typing import Any, Optional, TYPE_CHECKING, get_args, get_type_hints
+from typing import Any, Optional, TYPE_CHECKING, get_args, get_type_hints, Callable
 
 from .enums import ChannelType, CommandType, Locale, OptionType
 from .errors import CommandInvokeError
@@ -42,7 +42,7 @@ _option_types = {
 }
 
 
-def _get_options(func: AsyncFunction) -> tuple[Option]:
+def _get_options(func: AsyncFunction) -> tuple[Option, ...]:
     """
     Extracts options from the given command callback.
 
@@ -55,13 +55,14 @@ def _get_options(func: AsyncFunction) -> tuple[Option]:
     -------
     tuple[Option]
     """
-    ret: tuple[Option] = tuple()
+    ret: tuple[Option, ...] = tuple()
     params = get_type_hints(func, include_extras=True)
     signature = inspect.signature(func)
     for k, v in params.items():
         if v is Interaction:
             continue
-        option_type, option_object = get_args(v)
+        option_type = get_args(v)[0]
+        option_object: Option = get_args(v)[1]
         option_object.type = _option_types[option_type]
 
         if option_object.name is None:
@@ -71,49 +72,6 @@ def _get_options(func: AsyncFunction) -> tuple[Option]:
             option_object.required = signature.parameters[k].default == inspect._empty
         ret += (option_object,)
     return ret
-
-
-# def _get_options(func: AsyncFunction) -> list[Option]:
-#     """
-#     Extracts options from the given command callback.
-
-#     Parameters
-#     ----------
-#     func : AsyncFunction
-#         The function to get the options from.
-
-#     Returns
-#     -------
-#     list[Option]
-#         The options of the command.
-#     """
-#     params = inspect.signature(func).parameters
-#     options: list[Option] = list()
-#     for k, v in params.items():
-#         # k: The name of the function
-#         #     - name
-#         # v: The annotation of the function
-#         #     - typing.Annotated[str, <Option name="foo">]
-#         annotation = v.annotation
-#         if get_origin(annotation) != Annotated:
-#             continue
-#         option_type: type = annotation.__args__[0]
-#         option_object: Option = annotation.__metadata__[0]
-#         option_object.type = _option_types[option_type]
-#         if option_object.description is None:
-#             option_object.description = "..."
-
-#         if option_object.name is None:
-#             option_object.name = k
-
-#         if option_object.required is None:
-#             if v.default != inspect._empty:
-#                 option_object.required = False
-#             else:
-#                 option_object.required = True
-
-#         options.append(option_object)
-#     return options
 
 
 def _populate_locales(locale: dict[Locale, str]) -> dict[str, str]:
@@ -129,25 +87,25 @@ class Command:
 
     Parameters
     ----------
-    name (str):
+    name: :class:`str`
         The name of the command/sub-command.
-    description (str):
+    description: :class:`str`
         A brief description of what the command/sub-command does.(Max length 100)
-    callback (AsyncFunction):
+    callback: AsyncFunction:
         The function to be executed when the command is called.
-    guild_id (int|None):
+    guild_id: :class:`int`
         The ID of the guild this command is registered in, or None if it's a global command.
-    name_localizations (dict[str, str]|None):
+    name_localizations: :class:`dict`
         A dictionary of localized names for the command, keyed by language code.
-    description_localizations (dict[str, str]|None):
+    description_localizations: :class:`dict`
         A dictionary of localized descriptions for the command, keyed by language code.
-    default_member_permissions (Permissions|None):
+    default_member_permissions: :class:`Permissions`
         The default permissions required for members to execute the command.
-    guild_only (bool|None):
+    guild_only: :class:`bool`
         Whether the command can only be executed in a guild or not.
-    dm_permission (bool):
+    dm_permission: :class:`bool`
         Whether the command can be executed in DMs or not.
-    nsfw (bool|None):
+    nsfw: :class:`bool`
         Whether the command can only be executed in channels marked as NSFW or not.
     """
 
@@ -186,7 +144,7 @@ class Command:
 
     async def _invoke_error_handlers(
         self, interaction: Interaction, error: CommandInvokeError
-    ):
+    ) -> Any:
         """
         Invokes the error handlers for the command.
 
@@ -205,7 +163,7 @@ class Command:
             return await bot_error_handler(interaction, error)
         raise error
 
-    async def invoke(self, interaction: Interaction):
+    async def invoke(self, interaction: Interaction) -> Any:
         """
         Invokes the command.
 
@@ -219,8 +177,8 @@ class Command:
         CommandInvokeError
             The command failed to invoke.
         """
-        args: tuple = tuple()
-        kwargs: dict = dict()
+        args: tuple[Any, ...] = tuple()
+        kwargs: dict[str, Any] = dict()
         options = interaction.namespace.__dict__
         params = inspect.signature(self.callback).parameters
         for k, v in params.items():
@@ -239,7 +197,7 @@ class Command:
             exception = CommandInvokeError(self, e)
             return await self._invoke_error_handlers(interaction, exception)
 
-    async def invoke_autocomplete(self, interaction: Interaction, name: str):
+    async def invoke_autocomplete(self, interaction: Interaction, name: str) -> Any:
         """
         Invokes the autocomplete for the command.
 
@@ -257,7 +215,7 @@ class Command:
         """
         autocomplete = self.autocompletes.get(name)
         if not autocomplete:
-            return
+            return None
 
         choices: list[Choice] | None = await autocomplete(
             interaction, name=interaction.namespace.__dict__[name]
@@ -265,7 +223,7 @@ class Command:
         if choices is not None:
             return await interaction.autocomplete(choices)
 
-    def autocomplete(self, option: str):
+    def autocomplete(self, option: str) -> Callable[[AsyncFunction], AsyncFunction]:
         """
         Decorator that registers an autocomplete for the command.
 
@@ -280,9 +238,9 @@ class Command:
             The decorator.
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> AsyncFunction:
             @wraps(coro)
-            def wrapper(*_, **__):
+            def wrapper(*_: Any, **__: Any) -> AsyncFunction:
                 self.autocompletes[option] = coro
                 return coro
 
@@ -331,25 +289,25 @@ class Group:
 
     Attributes
     ----------
-    name (str):
+    name: :class:`int`
         The name of the group.
-    description (str):
+    description: :class:`int`
         A brief description of what the group does.(Max length 100)
-    guild_id (int|None):
+    guild_id: :class:`int`
         The ID of the guild this command is registered in, or None if it's a global command.
-    name_localizations (dict[str, str]|None):
+    name_localizations: :class:`dict`
         A dictionary of localized names for the group, keyed by language code.
-    description_localizations (dict[str, str]|None):
+    description_localizations: :class:`dict`
         A dictionary of localized descriptions for the group, keyed by language code.
-    default_member_permissions (Permissions|None):
+    default_member_permissions: :class:`Permissions`
         The default permissions required for members to execute the group.
-    guild_only (bool|None):
+    guild_only: :class:`bool`
         Whether the group can only be executed in a guild or not.
-    dm_permission (bool):
+    dm_permission: :class:`bool`
         Whether the group can be executed in DMs or not.
-    nsfw (bool|None):
+    nsfw: :class:`bool`
         Whether the group can only be executed in channels marked as NSFW or not.
-    parent (Group|None):
+    parent: :class:`Group`
         The parent group, if any.
     """
 
@@ -390,7 +348,7 @@ class Group:
     def __str__(self) -> str:
         return self.name
 
-    def add_command(self, command: Group | Command):
+    def add_command(self, command: Group | Command) -> Command | Group:
         """
         Adds a command to the group.
 
@@ -426,7 +384,7 @@ class Group:
         nsfw: bool | None = None,
         name_localizations: dict[str, str] | None = None,
         description_localizations: dict[str, str] | None = None,
-    ):
+    ) -> Callable[[AsyncFunction], Command]:
         """
         Decorator that creates a sub command.
 
@@ -450,7 +408,7 @@ class Group:
             A dictionary of localized descriptions for the command, keyed by
         """
 
-        def decorator(coro: AsyncFunction):
+        def decorator(coro: AsyncFunction) -> Command:
             command = Command(
                 name=name or coro.__name__,
                 description=description,
@@ -467,7 +425,7 @@ class Group:
 
         return decorator
 
-    def create_sub_group(self, name: str, description: str):
+    def create_sub_group(self, name: str, description: str) -> Group:
         """
         Decorator that creates a sub group.
 

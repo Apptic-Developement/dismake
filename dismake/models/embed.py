@@ -1,7 +1,10 @@
 from __future__ import annotations
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, TYPE_CHECKING
 from datetime import datetime
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class EmbedField(BaseModel):
@@ -50,7 +53,7 @@ class Embed(BaseModel):
     provider: Optional[EmbedProvider] = None
     author: Optional[EmbedAuthor] = None
 
-    def add_field(self, name: str, value: str, inline: bool = True):
+    def add_field(self, name: str, value: str, inline: bool = True) -> Self:
         self.fields.append(EmbedField(name=name, value=value, inline=inline))
         return self
 
@@ -64,7 +67,7 @@ class Embed(BaseModel):
 
     def set_footer(
         self, text: str, icon_url: Optional[str], proxy_icon_url: Optional[str]
-    ):
+    ) -> Self:
         footer = {"text": text}
         if icon_url:
             footer["icon_url"] = icon_url
@@ -79,13 +82,13 @@ class Embed(BaseModel):
         proxy_url: Optional[str],
         width: Optional[int],
         height: Optional[int],
-    ):
+    ) -> Self:
         self.image = EmbedAsset(
             url=url, proxy_url=proxy_url, width=width, height=height
         )
         return self
 
-    def set_provider(self, name: str, url: str):
+    def set_provider(self, name: str, url: str) -> Self:
         self.provider = EmbedProvider(name=name, url=url)
         return self
 
@@ -95,7 +98,7 @@ class Embed(BaseModel):
         url: Optional[str],
         icon_url: Optional[str],
         proxy_icon_url: Optional[str],
-    ):
+    ) -> Self:
         self.author = EmbedAuthor(
             name=name, url=url, icon_url=icon_url, proxy_icon_url=proxy_icon_url
         )
