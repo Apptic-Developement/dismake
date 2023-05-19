@@ -1,11 +1,10 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from logging import getLogger, config
+from logging import config, getLogger
 from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 from fastapi import FastAPI
-
 
 from .commands import Command, Group
 from .errors import CommandInvokeError
@@ -158,7 +157,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        event_name: str
+        event_name: :class:`str`
             The event name you want to listen.
 
         Example usage
@@ -190,12 +189,13 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        guild_ids: Optional[int]
+        guild_ids: Optional[:class:`int`]
             An optional list of guild IDs to sync commands for. If not specified, commands will be synced globally.
 
         Returns
         -------
-        A list of the updated application commands on success.
+        command: list[:class:`AppCommand`]
+            A list of the updated application commands on success.
 
         Example usage
         -------------
@@ -216,6 +216,10 @@ class Bot(FastAPI):
         """
         A decorator which overrides the `:meth: _default_error_handler`.
 
+        Returns
+        -------
+        coro: AsyncFunction
+            The error handler.
         Example usage
         -------------
             >>> import dismake
@@ -249,12 +253,13 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        guild_id: int
+        guild_id: :class:`int`
             The ID of the guild to fetch.
 
         Returns
         -------
-        A Guild object representing the requested guild.
+        guild: :class:`Guild`
+            A Guild object representing the requested guild.
 
         Raises
         ------
@@ -266,7 +271,7 @@ class Bot(FastAPI):
 
     def add_view(self, view: View) -> None:
         """
-        Registers a :class:`~dismake.ui.View` for persistent listening.
+        Registers a :class:`View` for persistent listening.
 
         Parameters
         ----------
@@ -287,7 +292,7 @@ class Bot(FastAPI):
 
     def add_modal(self, modal: Modal) -> None:
         """
-        Registers a :class:`dismake.ui.Modal` for presistent listening.
+        Registers a :class:`Modal` for presistent listening.
 
         Parameters
         ----------
@@ -302,7 +307,7 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        command: Union[Command, Group]
+        command: Union[:class:`Command`, :class:`Group`]
             The command you want to add to :class:`dismake.Bot`
         
         Returns
@@ -330,21 +335,21 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        name : str
+        name: :class:`str`
             The name of the command.
-        description : str
+        description: :class:`str`
             The description of the command.
-        guild_id : int | None
+        guild_id: :class:`int` | None
             The guild ID, if you want this command to only be visible on a specific guild.
-        default_member_permissions : Permissions | None
+        default_member_permissions: :class:`Permissions` | None
             The permissions a user needs to invoke this command.
-        guild_only : bool | None
+        guild_only: :class:`bool` | None
             If set to True, this command will only be visible to guilds, not in user DM channels.
-        nsfw : bool | None
+        nsfw: :class:`bool` | None
             If set to True, this command will only be visible in NSFW channels.
-        name_localizations : dict[str, str] | None
+        name_localizations: dict[:class:`str`, :class:`str`] | None
             Localization dictionary for name field. Values follow the same restrictions as name
-        description_localizations : dict[str, str] | None
+        description_localizations: dict[:class:`str`, :class:`str`] | None
             Localization dictionary for description field. Values follow the same restrictions as description
         """
 
@@ -385,21 +390,21 @@ class Bot(FastAPI):
 
         Parameters
         ----------
-        name: str
+        name: :class:`str`
             The name of the command.
-        description: str
+        description: :class:`str`
             The description of the command.
-        guild_id : int | None
+        guild_id: :class:`int` | None
             The guild ID, if you want this command to only be visible on a specific guild.
-        default_member_permissions : Permissions | None
+        default_member_permissions: :class:`Permissions` | None
             The permissions a user needs to invoke this command.
-        guild_only : bool | None
+        guild_only: :class:`bool` | None
             If set to True, this command will only be visible to guilds, not in user DM channels.
-        nsfw : bool | None
+        nsfw: :class:`bool` | None
             If set to True, this command will only be visible in NSFW channels.
-        name_localizations : dict[str, str] | None
+        name_localizations: dict[:class:`str`, :class:`str`] | None
             Localization dictionary for name field. Values follow the same restrictions as name
-        description_localizations : dict[str, str] | None
+        description_localizations: dict[:class:`str`, :class:`str`] | None
             Localization dictionary for description field. Values follow the same restrictions as description
         """
         command = Group(

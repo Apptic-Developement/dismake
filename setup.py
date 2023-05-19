@@ -7,10 +7,10 @@ with open("requirements/requirements.txt", "r") as f:
     requirements = f.read().splitlines()
 setup(
     name="dismake",
-    version="0.0.23",
+    version="1.0.0a1",
     author="Pranoy Majumdar",
     author_email="officialpranoy2@gmail.com",
-    description="None",
+    description="🚀 Dismake is a framework for building stateless Discord bots with Slash Commands, built on top of FastAPI.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Apptic-Development/dismake",
@@ -35,7 +35,6 @@ setup(
     python_requires=">=3.9",
     license="MIT",
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
-    package_data={"templates": ["templates/*"]},
     install_requires=requirements,
 )
 

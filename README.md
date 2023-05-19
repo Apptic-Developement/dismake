@@ -26,54 +26,61 @@ pip install dismake
 Let's create a basic bot that echoes user text back to them.
 
 Create a new Python file named `main.py`, and copy and paste the following code:
-
 ```py
 import dismake
-from dismake import commands
 import typing
 
 app = dismake.Bot(...)
 
-@app.event('ready')
-async def ready_event():
-    print(f"Logged in as {app.user}.")
+@app.event()
+async def on_ready():
+    print(f"Logged in as {app.user!r}.")
 
 @app.command(
     name="echo",
     description="A simple echo command."
 )
 async def echo_command(
-    ctx: dismake.Context, 
+    ctx: dismake.Context,
     text: typing.Annotated[
-        str,
-        commands.Option(name="text", description="Type something"), type=str
+        str, dismake.Option(name="text", description="Type something")
     ]
 ):
     await ctx.respond(f"{text}")
 
-if __name__ == "__main__":
-    app.run(app="main:app", reload=True)
- ```
-
-The code above demonstrates how to use Dismake to create a basic Discord bot that responds to slash commands.
-
-Here's a brief explanation of what each part of the code does:
-
-- The first line imports the Dismake library. Make sure you've installed Dismake before you run the code.
-- Next, we create a new instance of the `Dismake.Bot` class, which serves as our connection to Discord.
-- We register an event using the `Dismake.Bot.event()` decorator. This library provides numerous events, and we use this callback to perform asynchronous operations once the bot is logged in.
-- We register a slash command using the `Dismake.Bot.command()` decorator. This decorator requires the command's name and description as arguments.
-- In the function that handles the command, we use the Dismake.Context object to interact with Discord. We take the user's input text and echo it back to them.
-- Finally, we use the `app.run()` method to start the bot. We've named our bot app in this example. The second argument, `reload=True`, instructs Uvicorn to reload the app automatically when changes are made to the code.
-
-To run the bot, open the terminal, navigate to the directory containing `main.py`, and enter the following command:
-
-```bash
-python main.py
 ```
+Explanation:
+1. Import the `dismake` library to access its functionality.
+2. Create a new instance of the `dismake.Bot` class, `app`, which will represent the connection to Discord. Replace ... with the necessary parameters, such as your bot token.
+3. Use the `@app.event()` decorator to register an `on_ready` event. This event will be triggered when the bot successfully logs in to Discord. In this example, the event handler simply prints a message indicating that the bot has logged in.
+4. Use the `@app.command()` decorator to register a slash command. In this case, the command is named "echo" and has a description of "A simple echo command."
+5. Define the function `echo_command` to handle the "echo" command. The function takes two parameters: `ctx` (the dismake.Context object) and text (annotated with `typing.Annotated[str, dismake.Option(name="text", description="Type something")]`). The annotation provides additional information for the command option, specifying its name and description.
+7. Inside the `echo_command` function, use the `ctx.respond` method to send a response back to the user. In this case, the response is the echoed text.
 
-> You can now experiment with your basic bot.
+## 👨‍💻 Initialize and run.
 
+To initialize a new dismake configuration file, follow these steps:
+
+1. Open your console or terminal.
+2. Run the command `dismake init`.
+```bash
+dismake init
+```
+3. You will be prompted with a question asking for the name of your bot variable.
+```bash
+? What is the name of your bot variable (app): app
+```
+4. Once you provide the bot variable name, dismake will generate a new file called `dismake.config.toml` for your project.
+```bash
+Successfully created a 'dismake.config.toml' file.
+```
+By following these steps, you will have successfully initialized a new dismake config file. 
+
+
+To run the bot you need to run the following command in your console or terminal:
+```
+dismake run
+```
 ## ✨ Features
 
 - Easy-to-use and intuitive framework for building Discord bots with Slash Commands
