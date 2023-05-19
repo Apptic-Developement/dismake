@@ -51,7 +51,7 @@ async def echo_command(
 ```
 Explanation:
 1. Import the `dismake` library to access its functionality.
-2. Create a new instance of the `dismake.Bot` class, `app`, which will represent the connection to Discord. Replace ... with the necessary parameters, such as your bot token.
+2. Create a new instance of the `dismake.Bot` class, `app`, which will represent the connection to Discord. Replace `...` with the necessary parameters, such as your bot token.
 3. Use the `@app.event()` decorator to register an `on_ready` event. This event will be triggered when the bot successfully logs in to Discord. In this example, the event handler simply prints a message indicating that the bot has logged in.
 4. Use the `@app.command()` decorator to register a slash command. In this case, the command is named "echo" and has a description of "A simple echo command."
 5. Define the function `echo_command` to handle the "echo" command. The function takes two parameters: `ctx` (the dismake.Context object) and text (annotated with `typing.Annotated[str, dismake.Option(name="text", description="Type something")]`). The annotation provides additional information for the command option, specifying its name and description.
