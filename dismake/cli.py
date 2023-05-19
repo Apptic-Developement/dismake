@@ -3,9 +3,13 @@ import argparse
 import json
 import subprocess
 from pathlib import Path
+from pydantic import ValidationError
 from rich.console import Console
 from rich.prompt import Prompt
 from .internal import Config
+
+
+
 
 console = Console()
 config_file = "dismake.config.toml"
@@ -28,10 +32,11 @@ def init_command(args: argparse.Namespace):
             f"A {config_file!r} file already exists.", style="bold"
         )
 
-    return console.print(f"Successfully created a{config_file!r} file.", style="bold")
+    return console.print(f"Successfully created a {config_file!r} file.", style="bold")
 
 def run_command(args: argparse.Namespace):
     path = Path(".") / config_file
+
     if not path.exists():
         console.print(f"Creating {config_file!r}", style="bold red")
         init_command(args)
@@ -40,13 +45,21 @@ def run_command(args: argparse.Namespace):
         init_command(args)
     try:
         config = Config.get_config(path)
-    except:
-        return console.print(f"Cannot load {config_file!r}", style="bold red")
+    except ValidationError as ve:
+        error_messages = ()
+        for error in ve.errors():
+            field = error['loc'][0]
+            message = error['msg']
+            error_messages += (f"Field {field!r} has error: {message}", )
+        return console.print("\n".join(error_messages), style="bold red")
+    except ValueError as e:
+        return console.print(f"{e.args[0]}", style="bold red")
     else:
         exc_command = ["uvicorn", f"{config.dismake.main_file_name}:{config.dismake.bot.var}"]
         if config.dismake.auto_reload:
             exc_command.append("--reload")
         subprocess.run(exc_command)
+
 
 def vercel_command(args):
     path = Path(".") / "vercel.json"

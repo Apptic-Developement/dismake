@@ -1,7 +1,7 @@
 from __future__ import annotations
 import asyncio
 from functools import wraps
-from logging import getLogger
+from logging import getLogger, config
 from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 from fastapi import FastAPI
@@ -19,6 +19,9 @@ if TYPE_CHECKING:
     from .types import AsyncFunction
     from .permissions import Permissions
     from .models import Interaction
+
+
+
 
 log = getLogger("dismake")
 
@@ -79,7 +82,7 @@ class Bot(FastAPI):
         self._commands: Dict[str, Union[Group, Command]] = {}
         self._modals: Dict[str, Modal] = {}
         self.error_handler: Optional[AsyncFunction] = None
-        self.log = log
+        config.dictConfig(LOGGING_CONFIG)
     @property
     def user(self) -> User:
         """
@@ -109,20 +112,6 @@ class Bot(FastAPI):
             The command object with the specified name, or None if no such object exists.
         """
         return self._commands.get(name)
-
-    def run(self, **kwargs):
-        """
-        Starts the web server to handle HTTP interactions with Discord.
-
-        This method starts a web server using `uvicorn`, which handles HTTP interactions with Discord.
-        Any additional keyword arguments are passed directly to `uvicorn.run()`.
-        By default, this method uses the `LOGGING_CONFIG` configuration for logging,
-        but you can provide your own configuration using the `log_config` keyword argument.
-        """
-        import uvicorn
-
-        # kwargs["log_config"] = kwargs.get("log_config", LOGGING_CONFIG)
-        return uvicorn.run(**kwargs)
 
     async def _dispatch_callback(self, coro: AsyncFunction, *args, **kwargs):
         """

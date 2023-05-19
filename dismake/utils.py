@@ -1,48 +1,46 @@
 from __future__ import annotations
-from typing import Iterable
+from typing import Any, Iterable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = ("chunk",)
 
 format = "%(asctime)s %(name)-15s | %(message)s"
-
 LOGGING_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "handlers": {
-        "console": {
-            "class": "rich.logging.RichHandler",
-            "formatter": "default",
-            "show_time": False,
-            "rich_tracebacks": True,
+        "version": 1,
+        "disable_existing_loggers": True,
+        "handlers": {
+            "console": {
+                "class": "rich.logging.RichHandler",
+                "formatter": "default",
+                "show_time": False,
+                "rich_tracebacks": True,
+            },
         },
-    },
-    "formatters": {
-        "default": {
-            "format": format,
+        "formatters": {
+            "default": {
+                "format": format,
+            },
         },
-    },
-    "loggers": {
-        "uvicorn": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
+        "loggers": {
+            "uvicorn": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "dismake": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
         },
-        "dismake": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
-    
-}
-    
-
-
+    }
 def chunk(max_size: int, iterator: Iterable):
     if max_size <= 0:
         raise ValueError("Chunk sizes must be greater than 0.")

@@ -14,7 +14,7 @@ app = dismake.Bot(
 
 @app.event()
 async def on_ready():
-    app.log.info("Logged in as %s" % app.user)
+    print("Logged in as %s" % app.user)
     await autocomplete.plugin.load(app)
     await mentions.plugin.load(app)
     await components.plugin.load(app)
@@ -22,8 +22,3 @@ async def on_ready():
     # sync = await app.sync_commands()
     # print(sync.text)
 
-
-
-
-if __name__ == "__main__":
-    app.run(app="main:app", reload=True)
