@@ -1,14 +1,14 @@
-name: Build Documention Site 
+name: Build Dismake Guide Site 
 
 on:
   push:
     paths:
-      - "guide/**"
+      - "docs/**"
     branches:
       - main
   pull_request:
     paths:
-      - "guide/**"
+      - "docs/**"
     branches:
       - main 
       
@@ -20,9 +20,9 @@ jobs:
     - name: "Checkout Code"
       uses: actions/checkout@v3
       
-    - name: "Build Site"
+    - name: "Build Nextra"
       run: |
-           cd guide
+           cd docs
            npm i
            npx next build
  
