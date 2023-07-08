@@ -3,10 +3,9 @@ tasks:
     command: |
         pyenv install 3.9.0 &&
         pyenv global 3.9.0 &&
-        npm i nodemon --global &&
         pip install -r requirements.txt
 vscode:
   extensions:
     - ms-python.black-formatter
-    - ms-pyright.pyright
     - unifiedjs.vscode-mdx
+    - charliermarsh.ruff
