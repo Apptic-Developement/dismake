@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from httpx import AsyncClient
 
-__all__ = (
-    "HttpClient",
-)
+if TYPE_CHECKING:
+    from .commands import Command, Group
+
+
+__all__ = ("HttpClient",)
+
 
 class HttpClient:
     """
@@ -19,12 +24,8 @@ class HttpClient:
     public_key: str
         The public key of the bot.
     """
-    def __init__(
-        self,
-        token: str,
-        public_key: str,
-        application_id: int | str
-    ):
+
+    def __init__(self, token: str, public_key: str, application_id: int | str):
         self._token = token
         self._public_key = public_key
         self._application_id = application_id
@@ -34,6 +35,5 @@ class HttpClient:
     def request(self) -> AsyncClient:
         return AsyncClient()
 
-    
-    async def sync_commands(self, commands):
-        pass
+    async def sync_commands(self, commands: list[Command | Group]):
+        raise NotImplemented
