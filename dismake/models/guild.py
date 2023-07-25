@@ -8,6 +8,6 @@ __all__ = (
 )
 
 class Guild:
-    def __init__(self, request: Request, data: dict[Any, Any]):
+    def __init__(self, request: Request, payload: dict[Any, Any]):
         self._request = request
-        self._data = data
+        # make Final vars

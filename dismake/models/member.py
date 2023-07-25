@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 from fastapi import Request
 
 if TYPE_CHECKING:
-    ...
+    from ..types import Member as MemberPayload
 
 __all__ = (
     "Member",
 )
 
 class Member:
-    def __init__(self, request: Request, data):
+    def __init__(self, request: Request, payload: MemberPayload):
         self._request = request
-        self._data = data
+        # make Final vars

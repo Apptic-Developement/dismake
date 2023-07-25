@@ -1,12 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    ...
+from typing import Union
 
 
 __all__ = (
     "Snowflake",
 )
-class Snowflake:
-    def __init__(self) -> None:
-        pass
+
+Snowflake = Union[str, int]
