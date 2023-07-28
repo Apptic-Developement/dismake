@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from fastapi import Request
 from ..utils import get_as_snowflake
 from ..types import Undefined
+from ..flags import Permissions
 
 
 if TYPE_CHECKING:
@@ -36,7 +37,6 @@ class Role:
         self.icon: Optional[str] = payload.get('icon')
         self.unicode_emoji: Optional[str] = payload.get('unicode_emoji')
         self.position: int = payload["position"]
-        # self.permissions: 
         self.managed: int = payload["position"]
         self.mentionable: bool = payload["mentionable"]
         # self.flags: 
@@ -45,5 +45,17 @@ class Role:
     def tags(self) -> RoleTag | None:
         if  (payload := self._payload.get('tags')):
             return RoleTag(payload)
+        else:
+            return None
+    
+    @property
+    def permissions(self) -> Permissions | None:
+        if ( perms :=self._payload.get('permissions')):
+            try:
+                value = int(perms)
+            except ValueError:
+                return None
+            else:
+                return Permissions(value)
         else:
             return None
