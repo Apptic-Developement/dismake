@@ -35,5 +35,5 @@ class HttpClient:
     def request(self) -> AsyncClient:
         return AsyncClient()
 
-    async def sync_commands(self, commands: list[Command | Group]):
-        raise NotImplemented
+    async def sync_commands(self, commands: list[Command | Group]) -> list[Command | Group]:
+        raise NotImplementedError

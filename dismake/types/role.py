@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from .snowflake import Snowflake
 
 __all__ = (
-    "Role",
+    "Role","RoleTag"
 )
 
 class RoleTag(TypedDict):
@@ -17,15 +17,15 @@ class RoleTag(TypedDict):
     guild_connections: Optional[None] 
 
 class Role(TypedDict):
-    id: Snowflake	#snowflake	role id
-    name: str	#string	role name
-    color: int	#integer	integer representation of hexadecimal color code
-    hoist: bool	#boolean	if this role is pinned in the user listing
-    icon: Optional[str] #	?string	role icon hash
-    unicode_emoji: Optional[str]#	?string	role unicode emoji
-    position: int	#integer	position of this role
-    permissions: Optional[str]	#string	permission bit set
-    managed: bool	#boolean	whether this role is managed by an integration
-    mentionable: bool	#boolean	whether this role is mentionable
-    tags: RoleTag #	role tags object	the tags this role has
-    flags: int	#integer	role flags combined as a bitfield
+    id: Snowflake
+    name: str	
+    color: int	
+    hoist: bool	
+    icon: Optional[str] 
+    unicode_emoji: Optional[str]
+    position: int	
+    permissions: Optional[str]	
+    managed: bool	
+    mentionable: bool	
+    tags: Optional[RoleTag] 
+    flags: int	

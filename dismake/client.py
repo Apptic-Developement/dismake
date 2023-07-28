@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 
@@ -9,7 +9,7 @@ from .http import HttpClient
 from .commands import Command, Group
 
 if TYPE_CHECKING:
-    ...
+    from typing import Any
 
 __all__ = ("Client",)
 
@@ -28,7 +28,7 @@ class Client(FastAPI):
         The public key of the bot.
     route: str
         The route to listen for interactions on.
-    **kwargs
+    **kwargs: Any
         Keyword arguments to pass to the FastAPI instance.
     """
 
@@ -38,7 +38,7 @@ class Client(FastAPI):
         public_key: str,
         application_id: int | str,
         interaction_route: str = "/interaction",
-        **kwargs: dict[Any, Any],
+        **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self._token = token
