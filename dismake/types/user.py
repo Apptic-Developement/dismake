@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, TypedDict
+
 if TYPE_CHECKING:
     from .snowflake import Snowflake
-    
 
-__all__ = (
-    "User",
-)
+
+__all__ = ("User",)
 
 
 class User(TypedDict):

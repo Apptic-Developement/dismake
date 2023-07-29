@@ -1,1 +1,3 @@
-from .permissions import Permissions
+from .permissions import *
+from .role import *
+from .user import *

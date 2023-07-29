@@ -3,9 +3,8 @@ from typing import Any
 
 from fastapi import Request
 
-__all__ = (
-    "Guild",
-)
+__all__ = ("Guild",)
+
 
 class Guild:
     def __init__(self, request: Request, payload: dict[Any, Any]):

@@ -7,9 +7,8 @@ from fastapi import Request
 if TYPE_CHECKING:
     from ..types import Member as MemberPayload
 
-__all__ = (
-    "Member",
-)
+__all__ = ("Member",)
+
 
 class Member:
     def __init__(self, request: Request, payload: MemberPayload):

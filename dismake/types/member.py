@@ -7,9 +7,7 @@ if TYPE_CHECKING:
     from datetime import datetime
     from .role import Role
 
-__all__ = (
-    "Member",
-)
+__all__ = ("Member",)
 
 
 class Member(TypedDict):
