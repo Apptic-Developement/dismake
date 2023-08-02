@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fastapi import Request
-
-from dismake.color import Color
+from enum import IntFlag
 from ..utils import get_as_snowflake
 from ..types import Undefined
-from ..flags import Permissions, RoleFlags
+from .permissions import Permissions
 
 
 if TYPE_CHECKING:
@@ -16,6 +15,10 @@ if TYPE_CHECKING:
 
 
 __all__ = ("Role",)
+
+
+class RoleFlags(IntFlag):
+    IN_PROMPT = 1 << 0
 
 
 class RoleTag:
@@ -43,7 +46,7 @@ class Role:
         self._payload = payload
         self.id: int = int(payload["id"])
         self.name: str = payload["name"]
-        self.color: Color = Color(payload["color"])
+        self.color = Undefined # TODO
         self.hoist: bool = payload["hoist"]
         self.icon: Optional[str] = payload.get("icon")
         self.unicode_emoji: Optional[str] = payload.get("unicode_emoji")

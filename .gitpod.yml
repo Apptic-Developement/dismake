@@ -8,3 +8,5 @@ vscode:
   extensions:
     - ms-python.black-formatter
     - unifiedjs.vscode-mdx
+    - whizkydee.material-palenight-theme
+    - LaurentTreguier.vscode-simple-icons
