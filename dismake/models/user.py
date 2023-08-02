@@ -48,17 +48,17 @@ class PartialUser:
     A partial user object contains only essential information about a user,
     typically used when the full user data is not required, such as in some API responses.
 
-    Parameters:
+    Parameters
     -----------
-    request : Request
+    request: Request
         The FastAPI request object used for handling the Discord API request.
 
-    id : int
+    id: int
         The unique identifier (ID) of the user.
 
-    Attributes:
+    Attributes
     -----------
-    id : int
+    id: int
         The unique identifier (ID) of the user.
 
     """
@@ -75,9 +75,9 @@ class User(PartialUser):
     """
     Represents a Discord user.
 
-    This class extends the `PartialUser` class to represent a complete Discord user.
+    This class inherits the `PartialUser` class to represent a complete Discord user.
 
-    Parameters:
+    Parameters
     -----------
     request : Request
         The FastAPI request object used for handling the Discord API request.
@@ -85,7 +85,7 @@ class User(PartialUser):
     payload : UserPayload
         The payload data received from Discord representing the user.
 
-    Attributes:
+    Attributes
     -----------
     username : str
         The username of the user.
@@ -152,7 +152,7 @@ class User(PartialUser):
     )
     def __init__(self, request: Request, payload: UserPayload):
         super().__init__(request=request, id=int(payload["id"]))
-        # self.username: str = payload["username"]
+        self.username: str = payload["username"]
         self.discriminator: str = payload["discriminator"]
         self.global_name: Optional[str] = payload.get("global_name")
         self.avatar: Optional[str] = payload.get("avatar")
