@@ -7,9 +7,9 @@
     [X] User
     [X] Role
     [X] Member
-    [X] Color
-    [] Channel(s)
+    [] Color
     [] Guild
+    [] Channel(s)
 
    - ### Types
     [X] User
@@ -17,7 +17,7 @@
     [X] Member
     [X] Undefined
     [X] Snowflake
-    [] Guild
+    [X] Guild
     [] Channel(s)
 
    - ### Flags

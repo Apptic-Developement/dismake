@@ -113,6 +113,6 @@ class Member(User):
 
     @property
     def permissions(self) -> Permissions | None:
-        if perms_data := self._data.get("permissions"):
-            return Permissions(perms_data)
+        if (perms_data := self._data.get("permissions")) and perms_data.isdigit():
+            return Permissions(int(perms_data))
         return None
