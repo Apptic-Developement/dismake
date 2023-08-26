@@ -1,22 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Sequence
-from aiohttp import ClientSession
+import typing
+import aiohttp
 
-if TYPE_CHECKING:
-    from aiohttp.typedefs import StrOrURL
+from yarl import URL
 
-__all__: Sequence[str] = ("HttpClient",)
+__all__: typing.Sequence[str] = ("HttpClient",)
 
 
 class HttpClient:
-    def __init__(self, token: str, application_id: int, public_key: str) -> None:
+    def __init__(self, token: str, application_id: int) -> None:
         self.token = token
         self.application_id = application_id
-        self.public_key = public_key
-        self.session: ClientSession = ClientSession()
+        self.session: aiohttp.ClientSession = aiohttp.ClientSession(
+            base_url=URL("https://discord.com/api/v/10"),
+            headers={"Authorization": f"Bot {token}"},
+        )
 
-    async def request(
-        self, method: Literal["GET", "PUT", "PATCH", "POST", "DELETE"], route: StrOrURL
-    ):
-        return await self.session.request(method=method, url=route)

@@ -58,3 +58,5 @@ class Guild:
 
     def __eq__(self, obj: Self) -> bool:
         return self.id == obj.id
+
+    
