@@ -1,4 +1,4 @@
 sphinx
 pytz
-sphinx-autobuild
+sphinx - autobuild
 furo

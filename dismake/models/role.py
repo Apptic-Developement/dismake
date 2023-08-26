@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from fastapi import Request
+
 from enum import IntFlag
 from ..utils import get_as_snowflake
-from ..types import Undefined
 from .permissions import Permissions
 
 
 if TYPE_CHECKING:
-    from ..types import Role as RolePayload, RoleTag as RoleTagPayload, UndefinedType
+    from dismake.types import Role as RolePayload, RoleTag as RoleTagPayload
     from typing import Optional
 
 
@@ -28,25 +27,25 @@ class RoleTag:
         self.subscription_listing_id: Optional[int] = get_as_snowflake(
             payload, "subscription_listing_id"
         )
-        self.premium_subscriber: bool = (
-            payload.get("premium_subscriber", UndefinedType) is None
-        )
+        self.premium_subscriber: bool = payload.get("premium_subscriber", False) is None
         self.available_for_purchase: bool = (
-            payload.get("available_for_purchase", Undefined) is None
+            payload.get("available_for_purchase", False) is None
         )
-        self.guild_connections: bool = (
-            payload.get("guild_connections", Undefined) is None
-        )
-        ...
+        self.guild_connections: bool = payload.get("guild_connections", False) is None
 
 
-class Role:
-    def __init__(self, request: Request, payload: RolePayload):
-        self._request = request
+class PartialRole:
+    def __init__(self, app: Any, id: int):
+        self._app = app
+        self.id: int = id
+
+
+class Role(PartialRole):
+    def __init__(self, app: Any, payload: RolePayload):
+        super().__init__(app=app, id=int(payload["id"]))
         self._payload = payload
-        self.id: int = int(payload["id"])
         self.name: str = payload["name"]
-        self.color = Undefined # TODO
+        self.color = None  # TODO
         self.hoist: bool = payload["hoist"]
         self.icon: Optional[str] = payload.get("icon")
         self.unicode_emoji: Optional[str] = payload.get("unicode_emoji")

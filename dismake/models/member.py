@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any
 
-from fastapi import Request
 from datetime import datetime
 
 from .permissions import Permissions
@@ -10,7 +9,7 @@ from .user import User
 from .role import Role
 
 if TYPE_CHECKING:
-    from ..types import Member as MemberPayload
+    from dismake.types import Member as MemberPayload
 
 __all__ = ("Member",)
 
@@ -21,18 +20,18 @@ class Member(User):
 
     Parameters:
     -----------
-    request : Request
-        The FastAPI request object used for handling the Discord API request.
+    app : Any
+        Client application that models may use for procedures.
 
     payload : MemberPayload
         The payload data received from Discord representing the guild member.
 
     Attributes:
     -----------
-    nick : Optional[str]
+    nick : str | None
         The nickname of the guild member, if set.
 
-    avatar : Optional[str]
+    avatar : str | None
         The avatar hash of the guild member, if set.
 
     joined_at : datetime
@@ -71,7 +70,7 @@ class Member(User):
 
     __slots__: tuple[str, ...] = (
         "_request",
-        "_data",
+        "_payload",
         "nick",
         "avatar",
         "joined_at",
@@ -83,11 +82,11 @@ class Member(User):
         "communication_disabled_until",
     )
 
-    def __init__(self, request: Request, payload: MemberPayload):
-        self._request = request
-        self._data = payload
-        self.nick: Optional[str] = payload.get("nick")
-        self.avatar: Optional[str] = payload.get("avatar")
+    def __init__(self, app: Any, payload: MemberPayload):
+        self._app = app
+        self._payload = payload
+        self.nick: str | None = payload.get("nick")
+        self.avatar: str | None = payload.get("avatar")
         self.joined_at: datetime = payload["joined_at"]
         self.premium_since: datetime = payload["premium_since"]
         self.deaf: bool = payload["deaf"]
@@ -100,19 +99,19 @@ class Member(User):
 
     @property
     def user(self) -> User | None:
-        if user_data := self._data.get("user"):
+        if user_data := self._payload.get("user"):
             return User(self._request, user_data)
         return None
 
     @property
     def roles(self) -> list[Role] | None:
-        if roles_data := self._data.get("roles"):
+        if roles_data := self._payload.get("roles"):
             return [Role(self._request, i) for i in roles_data]
 
         return None
 
     @property
     def permissions(self) -> Permissions | None:
-        if (perms_data := self._data.get("permissions")) and perms_data.isdigit():
+        if (perms_data := self._payload.get("permissions")) and perms_data.isdigit():
             return Permissions(int(perms_data))
         return None

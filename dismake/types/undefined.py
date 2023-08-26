@@ -14,7 +14,7 @@ class UndefinedType:
     -------
         >>> from dismake import UndefinedType, Undefined
         >>> value: UndefinedType = Undefined  # Assign the value to be undefined
-        ...     
+        ...
         >>> if value is Undefined:
         ...     print("The value is undefined.")
         >>> else:

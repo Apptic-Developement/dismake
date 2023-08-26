@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from fastapi import Request
 from enum import IntEnum, IntFlag
 
+
 if TYPE_CHECKING:
-    from ..types import User as UserPayload
+    from dismake.types import User as UserPayload
     from typing import Optional
+    from typing_extensions import Self
 
 
 __all__ = ("User", "PartialUser")
@@ -41,6 +42,7 @@ class UserFlags(IntFlag):
     BOT_HTTP_INTERACTIONS = 1 << 19
     ACTIVE_DEVELOPER = 1 << 22
 
+
 class PartialUser:
     """
     Represents a partial Discord user.
@@ -50,8 +52,8 @@ class PartialUser:
 
     Parameters
     -----------
-    request: Request
-        The FastAPI request object used for handling the Discord API request.
+    app: Any
+        Client application that models may use for procedures.
 
     id: int
         The unique identifier (ID) of the user.
@@ -62,12 +64,11 @@ class PartialUser:
         The unique identifier (ID) of the user.
 
     """
-    __slots__:  tuple[str, ...] = (
-        "_request",
-        "id"
-    )
-    def __init__(self, request: Request, id: int) -> None:
-        self._request = request
+
+    __slots__: tuple[str, ...] = ("_app", "id")
+
+    def __init__(self, app: Any, id: int) -> None:
+        self._app = app
         self.id: int = id
 
 
@@ -79,8 +80,8 @@ class User(PartialUser):
 
     Parameters
     -----------
-    request : Request
-        The FastAPI request object used for handling the Discord API request.
+    app : Any
+        Client application that models may use for procedures.
 
     payload : UserPayload
         The payload data received from Discord representing the user.
@@ -134,7 +135,7 @@ class User(PartialUser):
     """
 
     __slots__: tuple[str, ...] = (
-        "username",
+        "_payload" "username",
         "discriminator",
         "global_name",
         "avatar",
@@ -150,8 +151,10 @@ class User(PartialUser):
         "public_flags",
         "avatar_decoration",
     )
-    def __init__(self, request: Request, payload: UserPayload):
-        super().__init__(request=request, id=int(payload["id"]))
+
+    def __init__(self, app: Any, payload: UserPayload):
+        super().__init__(app=app, id=int(payload["id"]))
+        self._payload = payload
         self.username: str = payload["username"]
         self.discriminator: str = payload["discriminator"]
         self.global_name: Optional[str] = payload.get("global_name")
@@ -169,3 +172,6 @@ class User(PartialUser):
             payload.get("public_flags") or 0
         )
         self.avatar_decoration: Optional[str] = payload.get("avatar_decoration")
+
+    def __eq__(self, obj: Self) -> bool:
+        return self.id == obj.id
