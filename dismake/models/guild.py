@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
     from dismake import Client
     from dismake.types import Guild as GuildPayload
 
@@ -59,5 +57,5 @@ class Guild:
         # self.premium_progress_bar_enabled: bool
         # self.safety_alerts_channel_id: NotRequired[Snowflake]
 
-    def __eq__(self, obj: Self) -> bool:
-        return self.id == obj.id
+    def __eq__(self, obj: Any) -> bool:
+        return bool(self.id == obj.id)

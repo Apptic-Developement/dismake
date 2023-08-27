@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from enum import IntEnum, IntFlag
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Optional, Tuple
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
     from dismake import Client
     from dismake.types import User as UserPayload
 
@@ -173,5 +171,5 @@ class User(PartialUser):
         )
         self.avatar_decoration: Optional[str] = payload.get("avatar_decoration")
 
-    def __eq__(self, obj: Self) -> bool:
-        return self.id == obj.id
+    def __eq__(self, obj: Any) -> bool:
+        return bool(self.id == obj.id)

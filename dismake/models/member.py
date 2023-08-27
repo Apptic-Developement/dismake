@@ -106,12 +106,12 @@ class Member(User):
     @property
     def roles(self) -> Optional[List[Role]]:
         if roles_data := self._payload.get("roles"):
-            return [Role(self._client, i) for i in roles_data]
+            return list(Role(self._client, i) for i in roles_data)
 
         return None
 
     @property
     def permissions(self) -> Optional[Permissions]:
-        if (perms_data := self._payload.get("permissions")) and perms_data.isdigit():
+        if (perms_data := self._payload.get("permissions")) is not None:
             return Permissions(int(perms_data))
         return None

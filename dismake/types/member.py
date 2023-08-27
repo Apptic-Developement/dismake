@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, List
 
 if TYPE_CHECKING:
     from .user import User
@@ -15,7 +15,7 @@ class Member(TypedDict):
     user: NotRequired[User]
     nick: NotRequired[str]
     avatar: NotRequired[str]
-    roles: NotRequired[list[Role]]
+    roles: NotRequired[List[Role]]
     joined_at: datetime
     premium_since: datetime
     deaf: bool

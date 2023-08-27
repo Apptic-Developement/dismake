@@ -4,6 +4,10 @@ from typing import Optional, Sequence, Any
 from dismake.http import HttpClient
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+from logging import getLogger
+
+log = getLogger(__name__)
+
 
 __all__: Sequence[str] = ("Client",)
 
