@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
 from enum import IntEnum, IntFlag
-
+from typing import TYPE_CHECKING, Optional, Tuple
 
 if TYPE_CHECKING:
-    from dismake.types import User as UserPayload
-    from typing import Optional
     from typing_extensions import Self
+
+    from dismake import Client
+    from dismake.types import User as UserPayload
 
 
 __all__ = ("User", "PartialUser")
@@ -52,7 +51,7 @@ class PartialUser:
 
     Parameters
     -----------
-    app: Any
+    client: Client
         Client application that models may use for procedures.
 
     id: int
@@ -65,10 +64,10 @@ class PartialUser:
 
     """
 
-    __slots__: tuple[str, ...] = ("_app", "id")
+    __slots__: Tuple[str, ...] = ("_client", "id")
 
-    def __init__(self, app: Any, id: int) -> None:
-        self._app = app
+    def __init__(self, client: Client, id: int) -> None:
+        self._client = client
         self.id: int = id
 
 
@@ -80,7 +79,7 @@ class User(PartialUser):
 
     Parameters
     -----------
-    app : Any
+    client : Client
         Client application that models may use for procedures.
 
     payload : UserPayload
@@ -134,8 +133,9 @@ class User(PartialUser):
         The user's avatar decoration hash if set.
     """
 
-    __slots__: tuple[str, ...] = (
-        "_payload" "username",
+    __slots__: Tuple[str, ...] = (
+        "_payload",
+        "username",
         "discriminator",
         "global_name",
         "avatar",
@@ -152,8 +152,8 @@ class User(PartialUser):
         "avatar_decoration",
     )
 
-    def __init__(self, app: Any, payload: UserPayload):
-        super().__init__(app=app, id=int(payload["id"]))
+    def __init__(self, client: Client, payload: UserPayload):
+        super().__init__(client=client, id=int(payload["id"]))
         self._payload = payload
         self.username: str = payload["username"]
         self.discriminator: str = payload["discriminator"]

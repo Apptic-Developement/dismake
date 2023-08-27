@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
-
 from enum import IntFlag
+from typing import TYPE_CHECKING, Sequence, Optional, Tuple
+
 from ..utils import get_as_snowflake
 from .permissions import Permissions
 
-
 if TYPE_CHECKING:
-    from dismake.types import Role as RolePayload, RoleTag as RoleTagPayload
-    from typing import Optional
+    from dismake import Client
+    from dismake.types import Role as RolePayload
+    from dismake.types import RoleTag as RoleTagPayload
 
 
-__all__ = ("Role",)
+__all__: Sequence[str] = ("Role",)
 
 
 class RoleFlags(IntFlag):
@@ -21,28 +20,60 @@ class RoleFlags(IntFlag):
 
 
 class RoleTag:
+    __slots__: Tuple[str] = ("_payload",)
+
     def __init__(self, payload: RoleTagPayload) -> None:
-        self.bot_id: Optional[int] = get_as_snowflake(payload, "bot_id")
-        self.integration_id: Optional[int] = get_as_snowflake(payload, "integration_id")
-        self.subscription_listing_id: Optional[int] = get_as_snowflake(
-            payload, "subscription_listing_id"
-        )
-        self.premium_subscriber: bool = payload.get("premium_subscriber", False) is None
-        self.available_for_purchase: bool = (
-            payload.get("available_for_purchase", False) is None
-        )
-        self.guild_connections: bool = payload.get("guild_connections", False) is None
+        self._payload = payload
+
+    @property
+    def bot_id(self) -> Optional[int]:
+        return get_as_snowflake(self._payload, "bot_id")
+
+    @property
+    def integration_id(self) -> Optional[int]:
+        return get_as_snowflake(self._payload, "integration_id")
+
+    @property
+    def subscription_listing_id(self) -> Optional[int]:
+        return get_as_snowflake(self._payload, "subscription_listing_id")
+
+    @property
+    def premium_subscriber(self) -> bool:
+        return self._payload.get("premium_subscriber", False) is None
+
+    @property
+    def available_for_purchase(self) -> bool:
+        return self._payload.get("available_for_purchase", False) is None
+
+    @property
+    def guild_connections(self) -> bool:
+        return self._payload.get("guild_connections", False) is None
 
 
 class PartialRole:
-    def __init__(self, app: Any, id: int):
-        self._app = app
+    __slots__: Tuple[str, ...] = ("_client", "id")
+
+    def __init__(self, client: Client, id: int):
+        self._client = client
         self.id: int = id
 
 
 class Role(PartialRole):
-    def __init__(self, app: Any, payload: RolePayload):
-        super().__init__(app=app, id=int(payload["id"]))
+    __slots__: Tuple[str, ...] = (
+        "_payload",
+        "name",
+        "color",
+        "hoist",
+        "icon",
+        "unicode_emoji",
+        "position",
+        "managed",
+        "mentionable",
+        "flags",
+    )
+
+    def __init__(self, client: Client, payload: RolePayload):
+        super().__init__(client=client, id=int(payload["id"]))
         self._payload = payload
         self.name: str = payload["name"]
         self.color = None  # TODO
@@ -55,14 +86,14 @@ class Role(PartialRole):
         self.flags: RoleFlags = RoleFlags(payload["flags"])
 
     @property
-    def tags(self) -> RoleTag | None:
+    def tags(self) -> Optional[RoleTag]:
         if payload := self._payload.get("tags"):
             return RoleTag(payload)
         else:
             return None
 
     @property
-    def permissions(self) -> Permissions | None:
+    def permissions(self) -> Optional[Permissions]:
         if perms := self._payload.get("permissions"):
             try:
                 value = int(perms)

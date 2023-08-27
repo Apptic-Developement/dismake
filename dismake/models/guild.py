@@ -1,17 +1,20 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dismake.types import Guild as GuildPayload
     from typing_extensions import Self
+
+    from dismake import Client
+    from dismake.types import Guild as GuildPayload
 
 
 __all__ = ("Guild",)
 
 
 class Guild:
-    def __init__(self, app: Any, payload: GuildPayload):
-        self._app = app
+    def __init__(self, client: Client, payload: GuildPayload):
+        self._client = client
         self._payload = payload
         self.id: int = int(payload["id"])
         self.name: str = payload["name"]
@@ -58,5 +61,3 @@ class Guild:
 
     def __eq__(self, obj: Self) -> bool:
         return self.id == obj.id
-
-    
