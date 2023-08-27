@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-from logging import getLogger
-from typing import Any, Sequence, Tuple
-from aiohttp import web
+import logging
+import typing
 
+from aiohttp import web
 from dismake.client import Client
 from dismake.enums import InteractionResponseType, InteractionType
 
+log = logging.getLogger(__name__)
+
+__all__: typing.Sequence[str] = ("Bot",)
 
 
-log = getLogger(__name__)
-
-__all__: Sequence[str] = ("Bot",)
-
-
-class Bot(Client, web.Application):
-    __slots__: Tuple[str, ...] = (
+class Bot(Client):
+    __slots__: typing.Tuple[str, ...] = (
         "app",
         "_startup_callbacks",
     )
@@ -32,10 +30,8 @@ class Bot(Client, web.Application):
         self.app.add_routes([web.post(path=route, handler=self.handle_interactions)])
         self.route = route
 
-
-    async def on_ready(self) -> Any:
+    async def on_ready(self) -> typing.Any:
         pass
-
 
     async def handle_interactions(self, request: web.Request) -> web.Response:
         timestamp = request.headers.get("X-Signature-Timestamp")
@@ -58,37 +54,14 @@ class Bot(Client, web.Application):
         await self.parse_interactions(await request.json())
         return web.json_response({"ack": InteractionResponseType.PONG.value})
 
-    def run(self, *args: Any, **kwargs: Any) -> Any:
+    def run(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         if kwargs.get("print") is None:
 
             def _start_callback(x: str) -> None:
                 url: str = x[19:-32]
-                print(
-                    "\033[94m"
-                    + """
-@@@@@@@   @@@   @@@@@@   @@@@@@@@@@    @@@@@@   @@@  @@@  @@@@@@@@  
-@@@@@@@@  @@@  @@@@@@@   @@@@@@@@@@@  @@@@@@@@  @@@  @@@  @@@@@@@@  
-@@!  @@@  @@!  !@@       @@! @@! @@!  @@!  @@@  @@!  !@@  @@!       
-!@!  @!@  !@!  !@!       !@! !@! !@!  !@!  @!@  !@!  @!!  !@!       
-@!@  !@!  !!@  !!@@!!    @!! !!@ @!@  @!@!@!@!  @!@@!@!   @!!!:!    
-!@!  !!!  !!!   !!@!!!   !@!   ! !@!  !!!@!!!!  !!@!!!    !!!!!:    
-!!:  !!!  !!:       !:!  !!:     !!:  !!:  !!!  !!: :!!   !!:       
-:!:  !:!  :!:      !:!   :!:     :!:  :!:  !:!  :!:  !:!  :!:       
- :::: ::   ::  :::: ::   :::     ::   ::   :::   ::  :::   :: ::::  
-:: :  :   :    :: : :     :      :     :   : :   :   :::  : :: ::    
-"""
-                    + "\033[0m"
-                )
-                #                 print("\033[94m" + """
-                # '########:'####:'######:'##::::'##:::'###:::'##:::'##'########:
-                #  ##.... ##. ##:'##... ##:###::'###::'## ##:::##::'##::##.....::
-                #  ##:::: ##: ##::##:::..::####'####:'##:. ##::##:'##:::##:::::::
-                #  ##:::: ##: ##:. ######::## ### ##'##:::. ##:#####::::######:::
-                #  ##:::: ##: ##::..... ##:##. #: ##:#########:##. ##:::##...::::
-                #  ##:::: ##: ##:'##::: ##:##:.:: ##:##.... ##:##:. ##::##:::::::
-                #  ########:'####. ######::##:::: ##:##:::: ##:##::. ##:########:
-                # ........::....::......::..:::::..:..:::::..:..::::..:........::
-                # """ + "\033[0m")
+                with open("dismake/banner.txt", "r") as file:
+                    banner = file.read()
+                print(f"\n\033[94m{banner}\033[0m\n")
                 details = {
                     "author": "Pranoy",
                     "email": "officialpranoy2@gmail.com",
@@ -107,4 +80,4 @@ class Bot(Client, web.Application):
                 log.info(f"Interaction url: {url}{self.route}")
 
             kwargs["print"] = _start_callback
-        web.run_app(self.app)
+        web.run_app(self.app, *args, **kwargs)  # mypy: ignore # type:ignore
