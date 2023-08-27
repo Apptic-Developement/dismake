@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -18,7 +18,7 @@ class Guild:
         self._payload = payload
         self.id: int = int(payload["id"])
         self.name: str = payload["name"]
-        self._icon: str | None = payload.get("icon")
+        self._icon: Optional[str] = payload.get("icon")
         # self.icon_hash: NotRequired[str]
         # self.splash: NotRequired[str]
         # self.discovery_splash: NotRequired[str]

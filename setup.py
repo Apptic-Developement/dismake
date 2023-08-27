@@ -32,7 +32,7 @@ setup(
         "Typing :: Typed",
     ],
     packages=find_packages(),
-    python_requires=">=3.9",
+    python_requires=">=3.8",
     license="MIT",
     entry_points={"console_scripts": ["dismake=dismake.cli:main"]},
     install_requires=requirements,
