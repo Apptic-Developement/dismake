@@ -142,3 +142,4 @@ docs/node_modules
 .replit
 replit.nix
 main.py
+test.py

@@ -8,8 +8,7 @@ from .permissions import Permissions
 if typing.TYPE_CHECKING:
     from dismake import Client
     from typing_extensions import Self
-    from dismake.types import Snowflake
-    from discord_typings import RoleData
+    from dismake.types import Snowflake, RoleData
 
 __all__: typing.Sequence[str] = ("PartialRole", "Role")
 
@@ -113,7 +112,7 @@ class Role(PartialRole):
         return super().mention
 
     @classmethod
-    def from_revived_data(
+    def deserialize_role(
         cls, client: Client, guild_id: Snowflake, data: RoleData
     ) -> Self:
         tags = data.get("tags", {})
