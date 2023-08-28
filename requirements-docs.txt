@@ -1,4 +1,0 @@
-sphinx
-pytz
-sphinx - autobuild
-furo

@@ -13,10 +13,10 @@ __all__ = ("MemberData",)
 
 
 class MemberData(typing.TypedDict):
-    user: typing.Optional[UserData]
+    user: UserData
     nick: typing.Optional[str]
     avatar: typing.Optional[str]
-    roles: typing.List[Snowflake]
+    roles: typing.Optional[typing.List[Snowflake]]
     joined_at: datetime
     premium_since: datetime
     deaf: bool
