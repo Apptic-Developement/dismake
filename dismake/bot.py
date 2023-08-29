@@ -6,6 +6,7 @@ import typing
 from aiohttp import web
 from dismake.client import Client
 from dismake.enums import InteractionResponseType, InteractionType
+from dismake.utils import setup_logging
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ class Bot(Client):
         return web.json_response({"ack": InteractionResponseType.PONG.value})
 
     def run(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        setup_logging()
         if kwargs.get("print") is None:
 
             def _start_callback(x: str) -> None:

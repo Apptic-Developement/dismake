@@ -10,7 +10,7 @@ __all__: typing.Sequence[str] = (
     "Interaction",
 )
 
-ClientT = typing.TypeVar(name="ClientT", bound="Client")
+ClientT = typing.TypeVar("ClientT", bound="Client")
 
 class Interaction(typing.Generic[ClientT]):
     def __init__(self) -> None:

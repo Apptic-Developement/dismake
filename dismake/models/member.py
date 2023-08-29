@@ -62,9 +62,6 @@ class Member(User):
     role_ids: typing.Sequence[Snowflake] = attrs.field(repr=False)
     """A sequence of the IDs of the member's current roles."""
 
-    user: User = attrs.field(repr=True)
-    """This member's corresponding user object."""
-
     guild_avatar_hash: typing.Optional[str] = attrs.field(
         eq=False, hash=False, repr=False
     )
@@ -77,13 +74,11 @@ class Member(User):
     @property
     def communication_disabled_until(self) -> datetime:
         raise NotImplementedError
-    
 
     @classmethod
     def deserialize_member(
         cls, client: Client, guild_id: Snowflake, data: MemberData
     ) -> Self:
-
         user = data["user"]
         return cls(
             client=client,
@@ -102,7 +97,6 @@ class Member(User):
             flags=UserFlag(int(user.get("flags", 0))),
             premium_type=PremiumType(int(user.get("premium_type", 0))),
             avatar_decoration=user.get("avatar_decoration"),
-            user=super().deserialize_user(client=client, data=user),
             guild_id=guild_id,
             nickname=data.get("nick"),
             guild_avatar_hash=data.get("avatar"),
