@@ -1,0 +1,45 @@
+site_name: My Docs
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css
+
+
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          separate_signature: true
+          show_signature_annotations: true
+          signature_crossrefs: false
+          show_if_no_docstring: false
+nav:
+  - "Home": index.md
+  - "Api Reference":
+    - "Member": api/member.md
+    - "User": api/user.md
+    - "Role": api/role.md
+    - "Interaction": api/interaction.md

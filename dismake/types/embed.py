@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+from typing_extensions import NotRequired
 
 
 __all__: typing.Sequence[str] = (
@@ -43,9 +44,9 @@ class EmbedProviderData(typing.TypedDict):
 
 class EmbedAuthorData(typing.TypedDict):
     name: str
-    url: typing.Optional[str]
-    icon_url: typing.Optional[str]
-    proxy_icon_url: typing.Optional[str]
+    url: NotRequired[typing.Optional[str]]
+    icon_url: NotRequired[typing.Optional[str]]
+    proxy_icon_url: NotRequired[typing.Optional[str]]
 
 class EmbedFieldData(typing.TypedDict):
     name: str
@@ -53,16 +54,16 @@ class EmbedFieldData(typing.TypedDict):
     inline: typing.Optional[bool]
 
 class EmbedData(typing.TypedDict):
-    title: typing.Optional[str]
-    type: typing.Optional[str]
-    description: typing.Optional[str]
-    url: typing.Optional[str]
-    timestamp: typing.Optional[str]
-    color: typing.Optional[int]
-    footer: typing.Optional[EmbedFooterData]
-    image: typing.Optional[EmbedImageData]
-    thumbnail: typing.Optional[EmbedThumbnailData]
-    video: typing.Optional[EmbedVideoData]
-    provider: typing.Optional[EmbedProviderData]
-    author: typing.Optional[EmbedAuthorData]
-    fields: typing.Optional[typing.List[EmbedFieldData]]
+    title: NotRequired[typing.Optional[str]]
+    type: str
+    description: NotRequired[typing.Optional[str]]
+    url: NotRequired[typing.Optional[str]]
+    timestamp: NotRequired[typing.Optional[str]]
+    color: NotRequired[typing.Optional[int]]
+    footer: NotRequired[typing.Optional[EmbedFooterData]]
+    image: NotRequired[typing.Optional[EmbedImageData]]
+    thumbnail: NotRequired[typing.Optional[EmbedThumbnailData]]
+    video: NotRequired[typing.Optional[EmbedVideoData]]
+    provider: NotRequired[typing.Optional[EmbedProviderData]]
+    author: NotRequired[typing.Optional[EmbedAuthorData]]
+    fields: NotRequired[typing.Optional[typing.List[EmbedFieldData]]]

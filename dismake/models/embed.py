@@ -1,139 +1,264 @@
 from __future__ import annotations
 
 import typing
-from contextlib import suppress
+import attrs
 
 if typing.TYPE_CHECKING:
-    from datetime import datetime
-    from typing_extensions import Self
+    from typing_extensions import TypeAlias, Self
     from dismake.types import EmbedData
-
-    class _EmbedFooterProxy(typing.Protocol):
-        text: typing.Optional[str]
-        icon_url: typing.Optional[str]
-
-    class _EmbedFieldProxy(typing.Protocol):
-        name: typing.Optional[str]
-        value: typing.Optional[str]
-        inline: bool
-
-    class _EmbedMediaProxy(typing.Protocol):
-        url: typing.Optional[str]
-        proxy_url: typing.Optional[str]
-        height: typing.Optional[int]
-        width: typing.Optional[int]
-
-    class _EmbedVideoProxy(typing.Protocol):
-        url: typing.Optional[str]
-        height: typing.Optional[int]
-        width: typing.Optional[int]
-
-    class _EmbedProviderProxy(typing.Protocol):
-        name: typing.Optional[str]
-        url: typing.Optional[str]
-
-    class _EmbedAuthorProxy(typing.Protocol):
-        name: typing.Optional[str]
-        url: typing.Optional[str]
-        icon_url: typing.Optional[str]
-        proxy_icon_url: typing.Optional[str]
-
+    from datetime import datetime
 
 __all__: typing.Sequence[str] = ("Embed",)
 
 
-EmbedType = typing.Literal["rich", "image", "video", "gifv", "article", "link"]
+EmbedType: TypeAlias = typing.Literal[
+    "rich", "image", "video", "gifv", "article", "link"
+]
 
 
-class EmbedProxy:
-    def __init__(self, layer: typing.Dict[str, typing.Any]):
-        self.__dict__.update(layer)
+@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+class EmbedFooter:
+    """Represents an embed footer."""
 
-    def __len__(self) -> int:
-        return len(self.__dict__)
+    # Discord says this is never None. We know that is invalid because Discord.py
+    # sets it to None. Seems like undocumented behaviour again.
+    text: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The footer text, or `None` if not present."""
 
-    def __repr__(self) -> str:
-        inner = ", ".join(
-            (f"{k}={v!r}" for k, v in self.__dict__.items() if not k.startswith("_"))
-        )
-        return f"EmbedProxy({inner})"
+    icon_url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The URL of the footer icon, or `None` if not present."""
 
-    def __getattr__(self, attr: str) -> None:
-        return None
 
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, EmbedProxy) and self.__dict__ == other.__dict__
+@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+class EmbedAttachment:
+    """Represents an embed attachment."""
+
+    url: typing.Optional[str] = attrs.field(default=None, repr=False)
+    """The url of the attachment, if present and known, otherwise `None`."""
+
+    height: typing.Optional[int] = attrs.field(default=None, repr=False)
+    """The height of the attachment, if present and known, otherwise `None`.
+
+    .. note::
+        This field cannot be set by bots or webhooks while sending an embed and
+        will be ignored during serialization. Expect this to be populated on
+        any received embed attached to a message event.
+    """
+
+    width: typing.Optional[int] = attrs.field(default=None, repr=False)
+    """The width of the attachment, if present and known, otherwise `None`.
+
+    .. note::
+        This field cannot be set by bots or webhooks while sending an embed and
+        will be ignored during serialization. Expect this to be populated on
+        any received embed attached to a message event.
+    """
+
+
+@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+class EmbedProvider:
+    """Represents an embed provider.
+
+    .. note::
+        This object cannot be set by bots or webhooks while sending an embed and
+        will be ignored during serialization. Expect this to be populated on
+        any received embed attached to a message event provided by an external
+        source.
+
+        **Therefore, you should never need to initialize an instance of this
+        class yourself.**
+    """
+
+    name: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The name of the provider."""
+
+    url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The URL of the provider."""
+
+
+@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+class EmbedAuthor:
+    """Represents an author of an embed."""
+
+    name: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The name of the author, or `None` if not specified."""
+
+    url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    """The URL that the author's name should act as a hyperlink to.
+
+    This may be `None` if no hyperlink on the author's name is specified.
+    """
+
+    icon_url: typing.Optional[str] = attrs.field(default=None, repr=False)
+    """The author's icon, or `None` if not present."""
+
+    @property
+    def is_none(self) -> bool:
+        # TODO
+        return self.name is None and self.url is None and self.icon_url is None
+
+
+@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+class EmbedField:
+    """Represents a field in a embed."""
+
+    name: str = attrs.field(repr=True)
+    """The name of the field."""
+
+    value: str = attrs.field(repr=True)
+    """The value of the field."""
+
+    _inline: bool = attrs.field(alias="inline", default=False, repr=True)
+
+    # Use a property since we then keep the consistency of not using `is_`
+    # in the constructor for `_inline`.
+    @property
+    def is_inline(self) -> bool:
+        """Return `True` if the field should display inline.
+
+        Defaults to `False`.
+        """
+        return self._inline
+
+    @is_inline.setter
+    def is_inline(self, value: bool) -> None:
+        self._inline = value
 
 
 class Embed:
-    """Represents a Discord embed.
-
-    Attributes
-    -----------
-    title: Optional[str]
-        The title of the embed.
-        This can be set during initialisation.
-        Can only be up to 256 characters.
-    type: str
-        The type of embed. Usually "rich".
-        This can be set during initialisation.
-        Possible strings for embed types can be found on discord's
-    description: Optional[str]
-        The description of the embed.
-        This can be set during initialisation.
-        Can only be up to 4096 characters.
-    url: Optional[str]
-        The URL of the embed.
-        This can be set during initialisation.
-    timestamp: Optional[datetime]
-        The timestamp of the embed content. This is an aware datetime.
-        If a naive datetime is passed, it is converted to an aware
-        datetime with the local timezone.
-    color: Optional[Union[str, int]]
-        The colour code of the embed.
-        This can be set during initialisation.
-    """
+    """Represents an discord embed."""
 
     def __init__(
         self,
-        title: typing.Optional[str],
-        description: typing.Optional[str],
-        url: typing.Optional[str],
-        timestamp: typing.Optional[datetime],
-        color: typing.Optional[typing.Union[str, int]],
+        *,
+        title: typing.Any = None,
+        description: typing.Any = None,
+        color: typing.Optional[int] = None, # TODO real color
         type: EmbedType = "rich",
+        url: typing.Optional[str] = None,
+        timestamp: typing.Optional[datetime] = None,
     ) -> None:
         self.title = title
-        self.type = type
         self.description = description
+        self.color = color
+        self.type = type
         self.url = url
         self.timestamp = timestamp
-        self.color = color
+
+        self._author: EmbedAuthor = EmbedAuthor()
+        self._footer: EmbedFooter = EmbedFooter()
+        self._image: EmbedAttachment = EmbedAttachment()
+        self._thumbnail: EmbedAttachment = EmbedAttachment()
+        self._video: EmbedAttachment = EmbedAttachment()
+        self._fields: typing.MutableSequence[EmbedField] = list()
 
     @classmethod
-    def from_dict(cls, data: EmbedData) -> Embed:
-        raise NotImplementedError
-
-    def to_dict(self) -> EmbedData:
+    def from_dict(cls, data: EmbedData) -> Self:
         raise NotImplementedError
 
     @property
-    def footer(self) -> _EmbedFooterProxy:
-        return EmbedProxy[_EmbedFooterProxy](getattr(self, "_footer", {}))  # type: ignore
+    def author(self) -> EmbedAuthor:
+        return self._author
+
+    @property
+    def footer(self) -> EmbedFooter:
+        return self._footer
+
+    @property
+    def image(self) -> EmbedAttachment:
+        return self._image
+
+    @property
+    def thumbnail(self) -> EmbedAttachment:
+        return self._thumbnail
+
+    @property
+    def video(self) -> EmbedAttachment:
+        return self._video
+
+    @property
+    def fields(self) -> typing.MutableSequence[EmbedField]:
+        return self._fields
+
+    def set_author(
+        self,
+        name: typing.Optional[str] = None,
+        *,
+        icon_url: typing.Optional[str] = None,
+        url: typing.Optional[str] = None,
+    ) -> Self:
+        self._author = EmbedAuthor(name=name, icon_url=icon_url, url=url)
+        return self
 
     def set_footer(
-        self, text: typing.Optional[str], *, icon_url: typing.Optional[str]
+        self, text: typing.Optional[str] = None, icon_url: typing.Optional[str] = None
     ) -> Self:
-        self._footer: typing.Dict[str, str] = {}
-        if text is not None:
-            self._footer["text"] = str(text)
-
-        if icon_url is not None:
-            self._footer["icon_url"] = str(icon_url)
-
+        self._footer = EmbedFooter(text=text, icon_url=icon_url)
         return self
 
-    def remove_footer(self) -> Self:
-        with suppress(AttributeError):
-            del self._footer
+    def set_image(
+        self,
+        url: typing.Optional[str] = None,
+        height: typing.Optional[int] = None,
+        width: typing.Optional[int] = None,
+    ) -> Self:
+        self._image = EmbedAttachment(url=url, height=height, width=width)
         return self
+
+    def set_thumbnail(
+        self,
+        url: typing.Optional[str] = None,
+        height: typing.Optional[int] = None,
+        width: typing.Optional[int] = None,
+    ) -> Self:
+        self._thumbnail = EmbedAttachment(url=url, height=height, width=width)
+        return self
+
+    def set_video(
+        self,
+        url: typing.Optional[str] = None,
+        height: typing.Optional[int] = None,
+        width: typing.Optional[int] = None,
+    ) -> Self:
+        self._video = EmbedAttachment(url=url, height=height, width=width)
+        return self
+
+    def add_field(self, name: str, value: str, inline: bool = False) -> Self:
+        self._fields.append(EmbedField(name=name, value=value, inline=inline))
+        return self
+
+    def remove_field(self, index: int) -> Self:
+        try:
+            del self._fields[index]
+        except IndexError:
+            pass
+        return self
+
+    def insert_field_at(
+        self, index: int, name: str, value: str, inline: bool = False
+    ) -> Self:
+        self._fields.insert(index, EmbedField(name=name, value=value, inline=inline))
+        return self
+
+    def to_dict(self) -> EmbedData:
+        base: EmbedData = {"type": self.type}
+        if self.title:
+            base['title'] = str(self.title)
+        
+        if self.description is not None:
+            base['description'] = str(self.description)
+        
+        if self.color is not None:
+            base['color'] = int(self.color)
+        
+        if self.url is not None:
+            base['url'] = self.url
+        
+        if self.timestamp is not None:
+            base['timestamp'] = str(self.timestamp)
+        
+        # if not self.author.is_none:
+        #     base['author'] = {'name': self.author.name}
+        #     if self.author.icon_url is not None:
+        #         base['author']['icon_url'] = self.author.icon_url
+        return base

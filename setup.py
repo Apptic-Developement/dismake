@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as file:
     long_description = file.read()
 
-with open("requirements/requirements.txt", "r") as f:
+with open("requirements.txt", "r") as f:
     requirements = f.read().splitlines()
 setup(
     name="dismake",
