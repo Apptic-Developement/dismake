@@ -1,39 +1,35 @@
 from __future__ import annotations
 
-import typing
-import attrs
+from typing import TYPE_CHECKING, Any, MutableSequence, Optional, Sequence, Union
+from dataclasses import dataclass, field
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from typing_extensions import Self
     from dismake.types import EmbedData, EmbedType
     from datetime import datetime
 
-__all__: typing.Sequence[str] = ("Embed",)
+__all__: Sequence[str] = ("Embed",)
 
 
-
-
-@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+@dataclass()
 class EmbedFooter:
     """Represents an embed footer."""
 
-    # Discord says this is never None. We know that is invalid because Discord.py
-    # sets it to None. Seems like undocumented behaviour again.
-    text: typing.Optional[str] = attrs.field(default=None, repr=True)
+    text: Optional[str] = field(default=None, repr=True)
     """The footer text, or `None` if not present."""
 
-    icon_url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    icon_url: Optional[str] = field(default=None, repr=True)
     """The URL of the footer icon, or `None` if not present."""
 
 
-@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+@dataclass()
 class EmbedAttachment:
     """Represents an embed attachment."""
 
-    url: typing.Optional[str] = attrs.field(default=None, repr=False)
+    url: Optional[str] = field(default=None, repr=False)
     """The url of the attachment, if present and known, otherwise `None`."""
 
-    height: typing.Optional[int] = attrs.field(default=None, repr=False)
+    height: Optional[int] = field(default=None, repr=False)
     """The height of the attachment, if present and known, otherwise `None`.
 
     .. note::
@@ -42,7 +38,7 @@ class EmbedAttachment:
         any received embed attached to a message event.
     """
 
-    width: typing.Optional[int] = attrs.field(default=None, repr=False)
+    width: Optional[int] = field(default=None, repr=False)
     """The width of the attachment, if present and known, otherwise `None`.
 
     .. note::
@@ -52,7 +48,7 @@ class EmbedAttachment:
     """
 
 
-@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+@dataclass()
 class EmbedProvider:
     """Represents an embed provider.
 
@@ -66,27 +62,27 @@ class EmbedProvider:
         class yourself.**
     """
 
-    name: typing.Optional[str] = attrs.field(default=None, repr=True)
+    name: Optional[str] = field(default=None, repr=True)
     """The name of the provider."""
 
-    url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    url: Optional[str] = field(default=None, repr=True)
     """The URL of the provider."""
 
 
-@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+@dataclass()
 class EmbedAuthor:
     """Represents an author of an embed."""
 
-    name: typing.Optional[str] = attrs.field(default=None, repr=True)
+    name: Optional[str] = field(default=None, repr=True)
     """The name of the author, or `None` if not specified."""
 
-    url: typing.Optional[str] = attrs.field(default=None, repr=True)
+    url: Optional[str] = field(default=None, repr=True)
     """The URL that the author's name should act as a hyperlink to.
 
     This may be `None` if no hyperlink on the author's name is specified.
     """
 
-    icon_url: typing.Optional[str] = attrs.field(default=None, repr=False)
+    icon_url: Optional[str] = field(default=None, repr=False)
     """The author's icon, or `None` if not present."""
 
     @property
@@ -95,31 +91,18 @@ class EmbedAuthor:
         return self.name is None and self.url is None and self.icon_url is None
 
 
-@attrs.define(hash=False, kw_only=True, weakref_slot=False)
+@dataclass()
 class EmbedField:
     """Represents a field in a embed."""
 
-    name: str = attrs.field(repr=True)
+    name: str = field(repr=True)
     """The name of the field."""
 
-    value: str = attrs.field(repr=True)
+    value: str = field(repr=True)
     """The value of the field."""
 
-    _inline: bool = attrs.field(alias="inline", default=False, repr=True)
+    inline: Optional[bool] = field(default=False, repr=True)
 
-    # Use a property since we then keep the consistency of not using `is_`
-    # in the constructor for `_inline`.
-    @property
-    def is_inline(self) -> bool:
-        """Return `True` if the field should display inline.
-
-        Defaults to `False`.
-        """
-        return self._inline
-
-    @is_inline.setter
-    def is_inline(self, value: bool) -> None:
-        self._inline = value
 
 
 class Embed:
@@ -128,12 +111,12 @@ class Embed:
     def __init__(
         self,
         *,
-        title: typing.Any = None,
-        description: typing.Any = None,
-        color: typing.Optional[int] = None, # TODO real color
+        title: Any = None,
+        description: Any = None,
+        color: Optional[int] = None,  # TODO real color
         type: EmbedType = "rich",
-        url: typing.Optional[str] = None,
-        timestamp: typing.Optional[datetime] = None,
+        url: Optional[str] = None,
+        timestamp: Optional[Union[datetime, str]] = None,
     ) -> None:
         self.title = title
         self.description = description
@@ -147,19 +130,7 @@ class Embed:
         self._image: EmbedAttachment = EmbedAttachment()
         self._thumbnail: EmbedAttachment = EmbedAttachment()
         self._video: EmbedAttachment = EmbedAttachment()
-        self._fields: typing.MutableSequence[EmbedField] = list()
-
-    @classmethod
-    def from_dict(cls, data: EmbedData) -> Self:
-        embed = cls(
-            title=data.get('title'),
-            description=data.get('description'),
-            color=data.get('color'),
-            type=data.get('type') or 'rich',
-            url=data.get('url'),
-            # timestamp= TODO
-        )
-        return embed
+        self._fields: MutableSequence[EmbedField] = list()
 
     @property
     def author(self) -> EmbedAuthor:
@@ -182,53 +153,102 @@ class Embed:
         return self._video
 
     @property
-    def fields(self) -> typing.MutableSequence[EmbedField]:
+    def fields(self) -> MutableSequence[EmbedField]:
         return self._fields
+
+    @classmethod
+    def from_dict(cls, data: EmbedData) -> Self:
+        embed = cls(
+            title=data.get("title"),
+            description=data.get("description"),
+            color=data.get("color"),
+            type=data.get("type") or "rich",
+            url=data.get("url"),
+            timestamp=data.get("timestamp"),
+        )
+        if (author := data.get("author")) is not None:
+            embed.set_author(
+                name=author.get("name"),
+                url=author.get("url"),
+                icon_url=author.get("icon_url"),
+            )
+
+        if (footer := data.get("footer")) is not None:
+            embed.set_footer(
+                text=footer.get("text"),
+                icon_url=data.get("icon_url"),
+            )
+
+        if (image := data.get("image")) is not None:
+            embed.set_image(
+                url=image.get("url"),
+                height=image.get("height"),
+                width=image.get("width"),
+            )
+
+        if (thumbnail := data.get("thumbnail")) is not None:
+            embed.set_thumbnail(
+                url=thumbnail.get("url"),
+                height=thumbnail.get("height"),
+                width=thumbnail.get("width"),
+            )
+
+        if (video := data.get("video")) is not None:
+            embed.set_video(
+                url=video.get("url"),
+                height=video.get("height"),
+                width=video.get("width"),
+            )
+        
+        if (fields := data.get('fields')) is not None:
+            for field in fields:
+                embed.add_field(name=field['name'], value=field['value'], inline=field.get('inline'))
+        return embed
 
     def set_author(
         self,
-        name: typing.Optional[str] = None,
+        name: Optional[str] = None,
         *,
-        icon_url: typing.Optional[str] = None,
-        url: typing.Optional[str] = None,
+        icon_url: Optional[str] = None,
+        url: Optional[str] = None,
     ) -> Self:
         self._author = EmbedAuthor(name=name, icon_url=icon_url, url=url)
         return self
 
     def set_footer(
-        self, text: typing.Optional[str] = None, icon_url: typing.Optional[str] = None
+        self, text: Optional[str] = None, icon_url: Optional[str] = None
     ) -> Self:
         self._footer = EmbedFooter(text=text, icon_url=icon_url)
         return self
 
     def set_image(
         self,
-        url: typing.Optional[str] = None,
-        height: typing.Optional[int] = None,
-        width: typing.Optional[int] = None,
+        url: Optional[str] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
     ) -> Self:
         self._image = EmbedAttachment(url=url, height=height, width=width)
         return self
 
     def set_thumbnail(
         self,
-        url: typing.Optional[str] = None,
-        height: typing.Optional[int] = None,
-        width: typing.Optional[int] = None,
+        url: Optional[str] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
     ) -> Self:
         self._thumbnail = EmbedAttachment(url=url, height=height, width=width)
         return self
 
     def set_video(
         self,
-        url: typing.Optional[str] = None,
-        height: typing.Optional[int] = None,
-        width: typing.Optional[int] = None,
+        url: Optional[str] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
     ) -> Self:
         self._video = EmbedAttachment(url=url, height=height, width=width)
         return self
 
-    def add_field(self, name: str, value: str, inline: bool = False) -> Self:
+    def add_field(self, name: str, value: str, inline: Optional[bool] = None) -> Self:
         self._fields.append(EmbedField(name=name, value=value, inline=inline))
         return self
 
@@ -248,20 +268,20 @@ class Embed:
     def to_dict(self) -> EmbedData:
         base: EmbedData = {"type": str(self.type)}
         if self.title:
-            base['title'] = str(self.title)
-        
+            base["title"] = str(self.title)
+
         if self.description is not None:
-            base['description'] = str(self.description)
-        
+            base["description"] = str(self.description)
+
         if self.color is not None:
-            base['color'] = int(self.color)
-        
+            base["color"] = int(self.color)
+
         if self.url is not None:
-            base['url'] = self.url
-        
+            base["url"] = self.url
+
         if self.timestamp is not None:
-            base['timestamp'] = str(self.timestamp)
-        
+            base["timestamp"] = str(self.timestamp)
+
         # if not self.author.is_none:
         #     base['author'] = {'name': self.author.name}
         #     if self.author.icon_url is not None:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import List, Literal, Optional, Sequence, TypeAlias, TypedDict, Union
-from typing_extensions import NotRequired
+from typing import List, Literal, Sequence, TypedDict, Union
+from typing_extensions import NotRequired, TypeAlias
 
 
 __all__: Sequence[str] = (
@@ -22,61 +22,59 @@ EmbedType: TypeAlias = Union[
 
 
 class EmbedFooterData(TypedDict):
-    text: Optional[str]
-    icon_url: Optional[str]
-    proxy_icon_url: Optional[str]
+    text: str
+    icon_url: NotRequired[str]
+    proxy_icon_url: NotRequired[str]
 
-
-class EmbedImageData(TypedDict):
+class _EmbedAttachment(TypedDict):
     url: str
-    proxy_url: Optional[str]
-    height: Optional[int]
-    width: Optional[int]
+    proxy_url: NotRequired[str]
+    height: NotRequired[int]
+    width: NotRequired[int]
 
+class EmbedImageData(_EmbedAttachment):
+    pass
 
-class EmbedThumbnailData(TypedDict):
-    url: str
-    proxy_url: Optional[str]
-    height: Optional[int]
-    width: Optional[int]
+class EmbedThumbnailData(_EmbedAttachment):
+    pass
 
 
 class EmbedVideoData(TypedDict):
-    url: Optional[str]
-    proxy_url: Optional[str]
-    height: Optional[int]
-    width: Optional[int]
+    url: NotRequired[str]
+    proxy_url: NotRequired[str]
+    height: NotRequired[int]
+    width: NotRequired[int]
 
 
 class EmbedProviderData(TypedDict):
-    name: Optional[str]
-    url: Optional[str]
+    name: NotRequired[str]
+    url: NotRequired[str]
 
 
 class EmbedAuthorData(TypedDict):
     name: str
-    url: NotRequired[Optional[str]]
-    icon_url: NotRequired[Optional[str]]
-    proxy_icon_url: NotRequired[Optional[str]]
+    url: NotRequired[str]
+    icon_url: NotRequired[str]
+    proxy_icon_url: NotRequired[str]
 
 
 class EmbedFieldData(TypedDict):
     name: str
     value: str
-    inline: Optional[bool]
+    inline: NotRequired[bool]
 
 
 class EmbedData(TypedDict):
-    title: NotRequired[Optional[str]]
+    title: NotRequired[str]
     type: EmbedType
-    description: NotRequired[Optional[str]]
-    url: NotRequired[Optional[str]]
-    timestamp: NotRequired[Optional[str]]
-    color: NotRequired[Optional[int]]
-    footer: NotRequired[Optional[EmbedFooterData]]
-    image: NotRequired[Optional[EmbedImageData]]
-    thumbnail: NotRequired[Optional[EmbedThumbnailData]]
-    video: NotRequired[Optional[EmbedVideoData]]
-    provider: NotRequired[Optional[EmbedProviderData]]
-    author: NotRequired[Optional[EmbedAuthorData]]
-    fields: NotRequired[Optional[List[EmbedFieldData]]]
+    description: NotRequired[str]
+    url: NotRequired[str]
+    timestamp: NotRequired[str]
+    color: NotRequired[int]
+    footer: NotRequired[EmbedFooterData]
+    image: NotRequired[EmbedImageData]
+    thumbnail: NotRequired[EmbedThumbnailData]
+    video: NotRequired[EmbedVideoData]
+    provider: NotRequired[EmbedProviderData]
+    author: NotRequired[EmbedAuthorData]
+    fields: NotRequired[List[EmbedFieldData]]
