@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, MutableSequence, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, List, MutableSequence, Optional, Sequence, Union
 from dataclasses import dataclass, field
 
 if TYPE_CHECKING:
@@ -20,6 +20,11 @@ class EmbedFooter:
 
     icon_url: Optional[str] = field(default=None, repr=True)
     """The URL of the footer icon, or `None` if not present."""
+
+    @property
+    def is_none(self) -> bool:
+        # TODO
+        return self.text is None and self.icon_url is None
 
 
 @dataclass()
@@ -102,7 +107,6 @@ class EmbedField:
     """The value of the field."""
 
     inline: Optional[bool] = field(default=False, repr=True)
-
 
 
 class Embed:
@@ -199,10 +203,12 @@ class Embed:
                 height=video.get("height"),
                 width=video.get("width"),
             )
-        
-        if (fields := data.get('fields')) is not None:
+
+        if (fields := data.get("fields")) is not None:
             for field in fields:
-                embed.add_field(name=field['name'], value=field['value'], inline=field.get('inline'))
+                embed.add_field(
+                    name=field["name"], value=field["value"], inline=field.get("inline")
+                )
         return embed
 
     def set_author(
@@ -266,8 +272,8 @@ class Embed:
         return self
 
     def to_dict(self) -> EmbedData:
-        base: EmbedData = {"type": str(self.type)}
-        if self.title:
+        base: EmbedData = {"type": self.type}
+        if self.title is not None:
             base["title"] = str(self.title)
 
         if self.description is not None:
@@ -282,8 +288,54 @@ class Embed:
         if self.timestamp is not None:
             base["timestamp"] = str(self.timestamp)
 
-        # if not self.author.is_none:
-        #     base['author'] = {'name': self.author.name}
-        #     if self.author.icon_url is not None:
-        #         base['author']['icon_url'] = self.author.icon_url
+        if self.author.name is not None:
+            base["author"] = {
+                "name": self.author.name,
+            }
+            if self.author.icon_url is not None:
+                base["author"]["icon_url"] = self.author.icon_url
+
+            if self.author.icon_url is not None:
+                base["author"]["icon_url"] = self.author.icon_url
+
+        if not self.footer.is_none and self.footer.text is not None:
+            base["footer"] = {
+                "text": self.footer.text,
+            }
+            if self.footer.icon_url is not None:
+                base["footer"]["icon_url"] = self.footer.icon_url
+
+        if self.image.url is not None:
+            base["image"] = {"url": self.image.url}
+            if self.image.height is not None:
+                base["image"]["height"] = self.image.height
+
+            if self.image.width is not None:
+                base["image"]["width"] = self.image.width
+            
+        if self.thumbnail.url is not None:
+            base["thumbnail"] = {"url": self.thumbnail.url}
+            if self.thumbnail.height is not None:
+                base["thumbnail"]["height"] = self.thumbnail.height
+
+            if self.thumbnail.width is not None:
+                base["thumbnail"]["width"] = self.thumbnail.width
+
+        
+        if self.video.url is not None:
+            base["video"] = {"url": self.video.url}
+            if self.video.height is not None:
+                base["video"]["height"] = self.video.height
+
+            if self.video.width is not None:
+                base["video"]["width"] = self.video.width
+        
+        _fields: List[Any] = list()
+        for field in self.fields:
+            _fields.append({
+                "name": field.name,
+                "value": field.value,
+                "inline": field.inline
+            })
+        
         return base
