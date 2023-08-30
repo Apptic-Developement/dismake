@@ -1,30 +1,28 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Optional, TypedDict
 
-import typing
-
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from .snowflake import Snowflake
-    from typing_extensions import NotRequired
 
 
 __all__ = ("UserData",)
 
 
-class UserData(typing.TypedDict):
+class UserData(TypedDict):
     id: Snowflake
     username: str
     discriminator: str
-    global_name: typing.Optional[str]
-    avatar: typing.Optional[str]
+    global_name: Optional[str]
+    avatar: Optional[str]
     bot: bool
-    system: NotRequired[bool]
-    mfa_enabled: NotRequired[bool]
-    banner: NotRequired[typing.Optional[str]]
-    accent_color: NotRequired[typing.Optional[int]]
-    locale: NotRequired[str]
-    verified: NotRequired[bool]
-    email: NotRequired[typing.Optional[str]]
-    flags: NotRequired[int]
-    premium_type: NotRequired[int]
-    public_flags: NotRequired[int]
-    avatar_decoration: NotRequired[str]
+    system: bool
+    mfa_enabled: bool
+    banner: Optional[str]
+    accent_color: Optional[int]
+    locale: str
+    verified: bool
+    email: Optional[str]
+    flags: int
+    premium_type: int
+    public_flags: int
+    avatar_decoration: str

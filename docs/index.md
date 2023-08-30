@@ -1,17 +1,35 @@
-# Welcome to MkDocs
+<div class="home__logo">
+<img src="assets/images/logo.png">
+</div>
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+<h1 class="home__heading">
+Welcome to the Dismake Documentation
+</h1>
 
-## Commands
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Dismake is a powerful Discord HTTP interactions API wrapper designed for Python developers. Whether you're using Flask, Django, or any other Python web framework, Dismake has you covered.
 
-## Project layout
+## Key Features
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- **Framework Independent**: Dismake supports all Python web frameworks, ensuring flexibility in your project.
+- **Command Handler Included**: Take advantage of Dismake's built-in command handler for streamlined bot development.
+- **Active Community Support**: Join our vibrant community for help, discussions, and updates.
+- **CLI for Project Generation**: Use our CLI tool to kickstart your projects with ease.
+
+## Getting Started
+
+Explore the extensive documentation to get started with Dismake:
+
+- [Installation](installation.md)
+- [Quick Start Guide](quick-start.md)
+- [API Reference](api-reference.md)
+- [Examples](examples.md)
+
+## Join the Community
+
+Have questions or need assistance? Join our community:
+
+- [Discord Server](https://dismake.pages.dev/support)
+- [GitHub Repository](https://dismake.pages.dev/github)
+
+Start building awesome Discord bots with Dismake today!

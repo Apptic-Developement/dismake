@@ -1,110 +1,126 @@
 from __future__ import annotations
 
-import attrs
-import typing
+from typing import TYPE_CHECKING, List, Sequence, Optional
 
-from .user import User, UserFlag, PremiumType
+from dismake.models.permissions import Permissions
 
-if typing.TYPE_CHECKING:
-    from dismake import Client
-    from typing_extensions import Self
+from .user import User
+from enum import IntEnum
+
+if TYPE_CHECKING:
     from dismake.types import MemberData, Snowflake
+    from dismake import Client
     from datetime import datetime
 
 
-__all__: typing.Sequence[str] = ("Member",)
+__all__: Sequence[str] = ("Member",)
 
 
-@attrs.define(kw_only=True, hash=True, weakref_slot=False)
+class MemberFlags(IntEnum):
+    """The known guild member flags that represent various member states."""
+
+    DID_REJOIN = 1 << 0
+    """Member has left and rejoined the guild (false)"""
+    COMPLETED_ONBOARDING = 1 << 1
+    """Member has completed onboarding (false)"""
+    BYPASSES_VERIFICATION = 1 << 2
+    """Member is exempt from guild verification requirements (true)"""
+    STARTED_ONBOARDING = 1 << 3
+    """Member has started onboarding (false)"""
+
+
 class Member(User):
-    """Represents a guild member."""
+    """Represents a guild member within a Discord server.
 
-    guild_id: Snowflake = attrs.field(repr=True)
-    """The ID of the guild this member belongs to."""
+    Parameters
+    ----------
+    client: Client
+        The client application that manages this member.
+    data: MemberData
+        The data payload containing member information.
 
-    is_deaf: bool = attrs.field(repr=False)
-    """`True` if this member is deafened in the current voice channel"""
+    Attributes
+    ----------
+    username: str
+        The username of the member.
+    id: int
+        The unique ID of the member.
+    discriminator: str
+        The discriminator of the member. (Legacy concept)
+    global_name: Optional[str]
+        The member's global nickname, taking precedence over the username in display.
+    avatar: Optional[str]
+        The hash of the member's avatar if present; otherwise, None.
+    bot: bool
+        Indicates whether the member is a bot account.
+    system: bool
+        Indicates whether the member represents Discord officially (system user).
+    mfa_enabled: bool
+        Indicates whether two-factor authentication is enabled for the member.
+    banner: Optional[str]
+        The hash of the member's banner if present; otherwise, None.
+    accent_color: Optional[int]
+        The member's accent color if present; otherwise, None.
+    locale: str
+        The member's locale.
+    verified: bool
+        Indicates whether the member is verified.
+    email: Optional[str]
+        The member's email address, if available.
+    flags: int
+        Flags associated with the member.
+    premium_type: int
+        The member's premium type.
+    public_flags: int
+        Public flags associated with the member.
+    avatar_decoration: str
+        The hash of the member's avatar decoration.
+    nickname: Optional[str]
+        The nickname of the member within the guild.
+    roles: List[Snowflake]
+        List of role IDs that the member has.
+    joined_at: datetime
+        The date and time when the member joined the guild.
+    premium_since: Optional[datetime]
+        The date and time when the member became a premium subscriber.
+    deaf: bool
+        Indicates whether the member is deafened in voice channels.
+    mute: bool
+        Indicates whether the member is muted in voice channels.
+    pending: bool
+        Indicates whether the member has a pending invitation to the guild.
+    permissions: Permissions
+        The member's permissions within the guild.
+    communication_disabled_until: datetime
+        The date and time until which the member's communication is disabled.
+    flags: MemberFlags
+        Flags representing various member states.
 
-    is_mute: bool = attrs.field(repr=False)
-    """`True` if this member is muted in the current voice channel."""
+    Operations
+    ----------
+    - ``x == y``:
+        Checks if two users are equal.
 
-    is_pending: bool = attrs.field(repr=False)
-    """Whether the user has passed the guild's membership screening requirements"""
+    - ``x != y``:
+        Checks if two users are not equal.
 
-    joined_at: datetime = attrs.field(repr=True)
-    """The datetime of when this member joined the guild they belong to."""
+    - ``str(x)``:
+        Returns the username.
 
-    nickname: typing.Optional[str] = attrs.field(repr=True)
-    """This member's nickname.
-
-    This will be `None` if not set.
     """
 
-    premium_since: typing.Optional[datetime] = attrs.field(repr=False)
-    """The datetime of when this member started "boosting" this guild.
-
-    Will be `None` if the member is not a premium user.
-    """
-
-    raw_communication_disabled_until: typing.Optional[datetime] = attrs.field(
-        repr=False
-    )
-    """The datetime when this member's timeout will expire.
-
-     Will be `None` if the member is not timed out.
-
-     .. note::
-        The datetime might be in the past, so it is recommended to use
-        `communication_disabled_until` method to check if the member is timed
-        out at the time of the call.
-     """
-
-    role_ids: typing.Sequence[Snowflake] = attrs.field(repr=False)
-    """A sequence of the IDs of the member's current roles."""
-
-    guild_avatar_hash: typing.Optional[str] = attrs.field(
-        eq=False, hash=False, repr=False
-    )
-    """Hash of the member's guild avatar guild if set, else `None`.
-
-    .. note::
-        This takes precedence over `Member.avatar_hash`.
-    """
-
-    @property
-    def communication_disabled_until(self) -> datetime:
-        raise NotImplementedError
-
-    @classmethod
-    def deserialize_member(
-        cls, client: Client, guild_id: Snowflake, data: MemberData
-    ) -> Self:
-        user = data["user"]
-        return cls(
-            client=client,
-            id=user["id"],
-            username=user["username"],
-            global_name=user.get("global_name"),
-            avatar_hash=user.get("avatar"),
-            is_bot=user.get("bot", False),
-            is_system=user.get("system", False),
-            is_mfa_enabled=user.get("mfa_enabled", False),
-            is_verified=user.get("verified", False),
-            banner_hash=user.get("banner"),
-            accent_color=user.get("accent_color"),
-            locale=user.get("locale"),
-            email=user.get("email"),
-            flags=UserFlag(int(user.get("flags", 0))),
-            premium_type=PremiumType(int(user.get("premium_type", 0))),
-            avatar_decoration=user.get("avatar_decoration"),
-            guild_id=guild_id,
-            nickname=data.get("nick"),
-            guild_avatar_hash=data.get("avatar"),
-            joined_at=data["joined_at"],
-            premium_since=data["premium_since"],
-            is_deaf=data.get("deaf", False),
-            is_mute=data.get("mute", False),
-            is_pending=data.get("pending", False),
-            role_ids=data.get("roles") or list(),
-            raw_communication_disabled_until=data["communication_disabled_until"],
-        )
+    def __init__(self, client: Client, data: MemberData) -> None:
+        super().__init__(client=client, data=data["user"])
+        self.nickname: Optional[str] = data.get("nick")
+        self.avatar: Optional[str] = data.get("avatar")
+        self.roles: List[Snowflake] = data.get("roles") or []
+        self.joined_at: datetime = data["joined_at"]
+        self.premium_since: Optional[datetime] = data.get("premium_since")
+        self.deaf: bool = data["deaf"]
+        self.mute: bool = data["mute"]
+        self.pending: bool = data["pending"]
+        self.permissions: Permissions = Permissions(int(data["permissions"]))
+        self.communication_disabled_until: datetime = data[
+            "communication_disabled_until"
+        ]
+        self.flags: MemberFlags = MemberFlags(int(data.get("flags", 0)))

@@ -1,21 +1,18 @@
 from __future__ import annotations
 
-import typing
-import attrs
+from typing import TYPE_CHECKING, Any, Sequence, Optional
 
-from enum import IntEnum, IntFlag
+from enum import IntFlag, IntEnum
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
+    from dismake.types import UserData
     from dismake import Client
-    from typing_extensions import Self
-    from dismake.types import Snowflake, UserData
 
 
-__all__: typing.Sequence[str] = ("PartialUser", "User")
+__all__: Sequence[str] = ("PartialUser", "User")
 
 
-@typing.final
-class UserFlag(IntFlag):
+class PublicUserFlags(IntFlag):
     """The known user flags that represent account badges."""
 
     NONE = 0
@@ -70,7 +67,6 @@ class UserFlag(IntFlag):
     """User is an active bot developer."""
 
 
-@typing.final
 class PremiumType(IntEnum):
     """The types of Nitro."""
 
@@ -84,91 +80,116 @@ class PremiumType(IntEnum):
     """Premium including all perks (e.g. 2 server boosts)."""
 
 
-@attrs.define(kw_only=True, hash=True, weakref_slot=False)
 class PartialUser:
-    """Represents a partial discord user object."""
+    """Represents a Partial User
 
-    client: Client = attrs.field(repr=False, eq=False, hash=False)
-    """Client application that models may use for procedures."""
+    Parameters
+    ----------
+    client: Client
+        Client application that models may use for procedures.
+    id: int
+        The unique ID of the user.
 
-    id: Snowflake = attrs.field(hash=True)
-    """The ID of this entity."""
+    Attributes
+    ----------
+    client: Client
+        Client application that models may use for procedures.
+    id: int
+        The unique ID of the user.
+    """
+
+    def __init__(self, client: Client, id: int) -> None:
+        self.client = client
+        self.id = id
 
     @property
     def mention(self) -> str:
-        """Return a raw mention string for the given user."""
+        """Return a raw mention string for the user."""
         return f"<@{self.id}>"
 
 
-@attrs.define(kw_only=True, hash=True, weakref_slot=False)
 class User(PartialUser):
-    """Represents a discord user object."""
+    """Represents a Discord user.
 
-    username: str = attrs.field(hash=True)
-    """Username of the user."""
+    Parameters
+    ----------
+    client: Client
+        Client application that models may use for procedures.
+    data: UserData
+        The data payload containing user information.
 
-    global_name: typing.Optional[str] = attrs.field(hash=True)
-    """Global name for the user, if they have one, otherwise `None`."""
+    Attributes
+    ----------
+    username: str
+        The username of the user.
+    discriminator: str
+        The discriminator of the user. (Legacy concept)
+    global_name: Optional[str]
+        The user's global nickname, taking precedence over the username in display.
+    avatar: Optional[str]
+        The hash of the user's avatar if present; otherwise, None.
+    bot: bool
+        Indicates whether the user is a bot account.
+    system: bool
+        Indicates whether the user represents Discord officially (system user).
+    mfa_enabled: bool
+        Indicates whether two-factor authentication is enabled for the user.
+    banner: Optional[str]
+        The hash of the user's banner if present; otherwise, None.
+    accent_color: Optional[int]
+        The user's accent color if present; otherwise, None.
+    locale: str
+        The user's locale.
+    verified: bool
+        Indicates whether the user is verified.
+    email: Optional[str]
+        The user's email address, if available.
+    flags: UserFlag
+        Flags associated with the user.
+    premium_type: PremiumType
+        The user's premium type.
+    avatar_decoration: str
+        The hash of the user's avatar decoration.
 
-    avatar_hash: typing.Optional[str] = attrs.field(eq=False, hash=False, repr=False)
-    """Hash of the user's avatar, if available."""
+    Operations
+    ----------
+    - ``x == y``:
+        Checks if two users are equal.
 
-    is_bot: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Indicates whether the user is a bot."""
+    - ``x != y``:
+        Checks if two users are not equal.
 
-    is_system: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Indicates whether the user is a system user."""
+    - ``str(x)``:
+        Returns the username.
 
-    is_mfa_enabled: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Indicates whether the user has two-factor authentication enabled."""
+    """
 
-    is_verified: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Indicates whether the user is verified."""
+    def __init__(self, client: Client, data: UserData) -> None:
+        super().__init__(client=client, id=int(data["id"]))
+        self.username: str = data["username"]
+        self.discriminator: str = data["discriminator"]
+        self.global_name: Optional[str] = data.get("global_name")
+        self.avatar: Optional[str] = data.get("avatar")
+        self.bot: bool = data["bot"]
+        self.system: bool = data["system"]
+        self.mfa_enabled: bool = data["mfa_enabled"]
+        self.banner: Optional[str] = data.get("banner")
+        self.accent_color: Optional[int] = data.get("accent_color")
+        self.locale: str = data["locale"]
+        self.verified: bool = data["verified"]
+        self.email: Optional[str] = data.get("email")
+        self.public_flags: PublicUserFlags = PublicUserFlags(int(data.get('flags', 0)))
+        self.premium_type: PremiumType = PremiumType(int(data["premium_type"]))
+        self.avatar_decoration: str = data["avatar_decoration"]
 
-    banner_hash: typing.Optional[str] = attrs.field(eq=False, hash=False, repr=False)
-    """Hash of the user's banner, if available."""
+    def __str__(self) -> str:
+        return self.username
 
-    accent_color: typing.Optional[int] = attrs.field(eq=False, hash=False, repr=False)
-    """The user's accent color."""
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, username={self.username})"
 
-    locale: typing.Optional[typing.Any] = attrs.field(eq=False, hash=False, repr=False)
-    """The user's locale."""
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, User) and self.id == other.id
 
-    email: typing.Optional[str] = attrs.field(eq=False, hash=False, repr=False)
-    """The user's email address, if available."""
-
-    flags: UserFlag = attrs.field(eq=False, hash=False, repr=True)
-    """Flags associated with the user."""
-
-    premium_type: PremiumType = attrs.field(eq=False, hash=False, repr=True)
-    """The user's premium type."""
-
-    # public_flags: typing.Optional[int]
-    # """Public flags associated with the user."""
-
-    avatar_decoration: typing.Optional[str] = attrs.field(
-        eq=False, hash=False, repr=False
-    )
-    """The user avatar decoration hash."""
-
-    @classmethod
-    def deserialize_user(cls, client: Client, data: UserData) -> Self:
-
-        return cls(
-            client=client,
-            id=data["id"],
-            username=data["username"],
-            global_name=data.get("global_name"),
-            avatar_hash=data.get("avatar"),
-            is_bot=data.get("bot", False),
-            is_system=data.get("system", False),
-            is_mfa_enabled=data.get("mfa_enabled", False),
-            is_verified=data.get("verified", False),
-            banner_hash=data.get("banner"),
-            accent_color=data.get("accent_color"),
-            locale=data.get("locale"),
-            email=data.get("email"),
-            flags=UserFlag(int(data.get("flags", 0))),
-            premium_type=PremiumType(int(data.get("premium_type", 0))),
-            avatar_decoration=data.get("avatar_decoration"),
-        )
+    def __ne__(self, other: Any) -> bool:
+        return not self.__eq__(other)

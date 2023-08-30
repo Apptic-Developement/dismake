@@ -1,7 +1,4 @@
-## ::: dismake.models.member.Member
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+::: dismake.models.member.Member
+::: dismake.models.member.MemberFlags
 
 

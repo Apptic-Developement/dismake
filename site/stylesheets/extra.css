@@ -3,3 +3,13 @@
     --md-primary-fg-color: #5865F2;
 
 }
+
+.home__heading{
+    text-align: center;
+    font-weight: bold !important;
+}
+.home_logo img{
+    display: block !important;
+    margin: 0 auto !important;
+
+}

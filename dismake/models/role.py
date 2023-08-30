@@ -1,138 +1,146 @@
 from __future__ import annotations
 
-import typing
-import attrs
+from typing import TYPE_CHECKING, Any, Sequence, Optional
 
 from .permissions import Permissions
 
-if typing.TYPE_CHECKING:
+
+if TYPE_CHECKING:
+    from dismake.types import RoleData
     from dismake import Client
-    from typing_extensions import Self
-    from dismake.types import Snowflake, RoleData
 
-__all__: typing.Sequence[str] = ("PartialRole", "Role")
+__all__: Sequence[str] = ("PartialRole", "Role")
 
 
-@attrs.define(kw_only=True, hash=True, weakref_slot=False)
 class PartialRole:
-    """Represents a partial guild bound role object."""
+    """Represents a Partial Role
 
-    client: Client = attrs.field(repr=False, eq=False, hash=False)
-    """Client application that models may use for procedures."""
+    Parameters
+    ----------
+    client: Client
+        Client application that models may use for procedures.
+    id: int
+        The unique ID of the role.
 
-    id: Snowflake = attrs.field(hash=True)
-    """The ID of this entity."""
+    Attributes
+    ----------
+    client: Client
+        Client application that models may use for procedures.
+    id: int
+        The unique ID of the role.
+    """
+
+    def __init__(self, client: Client, id: int) -> None:
+        self.client = client
+        self.id = id
 
     @property
     def mention(self) -> str:
         """Return a raw mention string for the role."""
-        return f"<@&{self.id}>"
+        return f"<&@{self.id}>"
 
 
-@attrs.define(kw_only=True, hash=True, weakref_slot=False)
 class Role(PartialRole):
-    name: str = attrs.field(eq=False, hash=False, repr=True)
-    """The role's name."""
+    """Represents a Role.
 
-    color: int = attrs.field(eq=False, hash=False, repr=True)
-    """The color of this Role."""
+    Parameters
+    ----------
+    client: Client
+        The client application that models may use for procedures.
+    data: RoleData
+        The data payload containing role information.
 
-    guild_id: Snowflake = attrs.field(eq=False, hash=False, repr=True)
-    """The ID of the guild this role belongs to."""
+    Attributes
+    ----------
+    name: str
+        The name of the role.
+    color: int
+        The color code of the role.
+    hoist: bool
+        Whether the role is hoisted.
+    icon: Optional[str]
+        The icon URL of the role.
+    unicode_emoji: Optional[str]
+        The Unicode emoji associated with the role.
+    position: int
+        The position of the role.
+    permissions: Permissions
+        The permissions granted to the role.
+    managed: bool
+        Whether the role is managed.
+    mentionable: bool
+        Whether the role is mentionable.
 
-    is_hoisted: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Whether this role is hoisting the members it's attached to in the member list."""
+    Operations
+    ----------
+    - ``x == y``:
+        Checks if two roles are equal.
 
-    icon_hash: typing.Optional[str] = attrs.field(eq=False, hash=False, repr=False)
-    """Hash of the role's icon if set, else `None`."""
+    - ``x != y``:
+        Checks if two roles are not equal.
 
-    unicode_emoji: typing.Any = attrs.field(eq=False, hash=False, repr=False)
-    """Role's icon as an unicode emoji if set, else `None`."""
+    - ``str(x)``:
+        Returns the role's name.
 
-    position: int = attrs.field(eq=False, hash=False, repr=True)
-    """The position of this role in the role hierarchy."""
-
-    permissions: Permissions = attrs.field(eq=False, hash=False, repr=False)
-    """The guild wide permissions this role gives to the members it's attached to."""
-
-    is_managed: bool = attrs.field(eq=False, hash=False, repr=False)
-    """Whether this role is managed by an integration."""
-
-    is_mentionable: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Whether this role can be mentioned by all regardless of permissions."""
-
-    bot_id: typing.Optional[Snowflake] = attrs.field(eq=False, hash=False, repr=True)
-    """The ID of the bot this role belongs to.
-
-    If `None`, this is not a bot role.
     """
 
-    integration_id: typing.Optional[Snowflake] = attrs.field(
-        eq=False, hash=False, repr=True
-    )
-    """The ID of the integration this role belongs to.
+    def __init__(self, client: Client, data: RoleData) -> None:
+        super().__init__(client=client, id=int(data["id"]))
+        self.name: str = data["name"]
+        self.color: int = data["color"]
+        self.hoist: bool = data["hoist"]
+        self.icon: Optional[str] = data.get("icon")
+        self.unicode_emoji: Optional[str] = data.get("unicode_emoji")
+        self.position: int = data["position"]
+        self.permissions: Permissions = Permissions(int(data["permissions"]))
+        self.managed: bool = data["managed"]
+        self.mentionable: bool = data["mentionable"]
+        self.guild_id: int
+        # self.flags: int = data["flags"]
+        self._tags = data.get("tags") or {}
 
-    If `None`, this is not a integration role.
-    """
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Role) and self.id == other.id
 
-    is_premium_subscriber: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Whether this role is the guild's nitro subscriber role."""
-
-    subscription_listing_id: typing.Optional[Snowflake] = attrs.field(
-        eq=False, hash=False, repr=True
-    )
-    """The ID of this role's subscription SKU and listing.
-
-    If `None`, this is not a purchasable role.
-    """
-
-    is_available_for_purchase: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Whether this role is available for purchase."""
-
-    is_guild_linked_role: bool = attrs.field(eq=False, hash=False, repr=True)
-    """Whether this role is a linked role in the guild."""
+    def __ne__(self, other: Any) -> bool:
+        return not self.__eq__(other)
 
     def __str__(self) -> str:
-        return self.name
+        return f"Role(id={self.id}, name={self.name})"
 
     @property
-    def colour(self) -> typing.Any:
-        return self.color
+    def bot_id(self) -> Optional[int]:
+        """The ID of the bot this role belongs to."""
+        bot_id = self._tags.get("bot_id")
+        return int(bot_id) if bot_id is not None else None
 
     @property
-    def mention(self) -> str:
-        """Return a raw mention string for the role.
+    def integration_id(self) -> Optional[int]:
+        """The ID of the integration this role belongs to."""
+        integration_id = self._tags.get("integration_id")
+        return int(integration_id) if integration_id is not None else None
 
-        When this role represents @everyone mentions will only work if
-        `mentions_everyone` is `True`.
-        """
-        if self.guild_id == self.id:
-            return "@everyone"
+    @property
+    def is_premium_subscriber(self) -> bool:
+        """Whether this role is the guild's nitro subscriber role."""
+        return "premium_subscriber" in self._tags
 
-        return super().mention
+    @property
+    def is_available_for_purchase(self) -> bool:
+        """Whether this role is available for purchase."""
+        return "available_for_purchase" in self._tags
 
-    @classmethod
-    def deserialize_role(
-        cls, client: Client, guild_id: Snowflake, data: RoleData
-    ) -> Self:
-        tags = data.get("tags", {})
-        return cls(
-            client=client,
-            id=data["id"],
-            name=data["name"],
-            guild_id=guild_id,
-            color=data["color"],
-            is_hoisted=data["hoist"],
-            is_mentionable=data["mentionable"],
-            is_managed=data["managed"],
-            icon_hash=data.get("icon"),
-            unicode_emoji=data.get("unicode_emoji"),
-            position=data["position"],
-            permissions=Permissions(int(data.get("permissions", 0))),
-            bot_id=tags.get("bot_id"),
-            integration_id=tags.get("integration_id"),
-            is_premium_subscriber=tags.get("premium_subscriber") or False,
-            subscription_listing_id=tags.get("subscription_listing_id") or False,
-            is_available_for_purchase=tags.get("available_for_purchase") or False,
-            is_guild_linked_role=tags.get("guild_connections") or False,
+    @property
+    def is_guild_linked_role(self) -> bool:
+        """Whether this role is a linked role in the guild."""
+        return "guild_connections" in self._tags
+
+    @property
+    def subscription_listing_id(self) -> Optional[int]:
+        """The ID of this role's subscription SKU and listing."""
+        subscription_listing_id = self._tags.get("subscription_listing_id")
+        return (
+            int(subscription_listing_id)
+            if subscription_listing_id is not None
+            else None
         )

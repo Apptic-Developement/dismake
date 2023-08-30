@@ -1,7 +1,9 @@
-site_name: My Docs
+site_name: Dismake
 
 theme:
   name: material
+  # logo:
+  #   icon: assets/images/logo.svg
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -36,6 +38,12 @@ plugins:
           show_signature_annotations: true
           signature_crossrefs: false
           show_if_no_docstring: false
+          docstring_style: numpy
+          show_source: true
+          show_root_full_path: false
+          show_root_heading: true
+
+
 nav:
   - "Home": index.md
   - "Api Reference":

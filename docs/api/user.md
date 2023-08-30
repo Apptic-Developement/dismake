@@ -1,7 +1,6 @@
-## ::: dismake.models.user.User
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+::: dismake.models.user.PartialUser
+::: dismake.models.user.User
 
+::: dismake.models.user.PublicUserFlags
+::: dismake.models.user.PremiumType
 
