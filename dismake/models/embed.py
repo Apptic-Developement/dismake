@@ -4,16 +4,13 @@ import typing
 import attrs
 
 if typing.TYPE_CHECKING:
-    from typing_extensions import TypeAlias, Self
-    from dismake.types import EmbedData
+    from typing_extensions import Self
+    from dismake.types import EmbedData, EmbedType
     from datetime import datetime
 
 __all__: typing.Sequence[str] = ("Embed",)
 
 
-EmbedType: TypeAlias = typing.Literal[
-    "rich", "image", "video", "gifv", "article", "link"
-]
 
 
 @attrs.define(hash=False, kw_only=True, weakref_slot=False)
@@ -154,7 +151,15 @@ class Embed:
 
     @classmethod
     def from_dict(cls, data: EmbedData) -> Self:
-        raise NotImplementedError
+        embed = cls(
+            title=data.get('title'),
+            description=data.get('description'),
+            color=data.get('color'),
+            type=data.get('type') or 'rich',
+            url=data.get('url'),
+            # timestamp= TODO
+        )
+        return embed
 
     @property
     def author(self) -> EmbedAuthor:
@@ -241,7 +246,7 @@ class Embed:
         return self
 
     def to_dict(self) -> EmbedData:
-        base: EmbedData = {"type": self.type}
+        base: EmbedData = {"type": str(self.type)}
         if self.title:
             base['title'] = str(self.title)
         
