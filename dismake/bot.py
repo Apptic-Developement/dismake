@@ -1,37 +1,40 @@
 from __future__ import annotations
 
-import logging
-import typing
+from typing import TYPE_CHECKING, Any, Sequence, Tuple
+from logging import getLogger
 
 from aiohttp import web
-from dismake.client import Client
-from dismake.enums import InteractionResponseType, InteractionType
-from dismake.utils import setup_logging
+from .client import Client
+from .enums import InteractionResponseType, InteractionType
+from .utils import setup_logging
 
-log = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from .client import Client
+    from .types import InteractionData
 
-__all__: typing.Sequence[str] = ("Bot",)
+log = getLogger(__name__)
+
+__all__: Sequence[str] = ("Bot",)
 
 
 class Bot(Client):
-    __slots__: typing.Tuple[str, ...] = (
+    __slots__: Tuple[str, ...] = (
         "app",
         "_startup_callbacks",
     )
 
     def __init__(
         self,
-        token: str,
-        application_id: int,
-        public_key: str,
         route: str = "/interactions",
+        *args: Any,
+        **kwargs: Any
     ) -> None:
-        super().__init__(token, application_id, public_key)
+        super().__init__(*args, **kwargs)
         self.app: web.Application = web.Application()
         self.app.add_routes([web.post(path=route, handler=self.handle_interactions)])
         self.route = route
 
-    async def on_ready(self) -> typing.Any:
+    async def on_ready(self) -> Any:
         pass
 
     async def handle_interactions(self, request: web.Request) -> web.Response:
@@ -47,15 +50,15 @@ class Bot(Client):
             log.error("Bad signature.")
             return web.json_response({"message": "Invalid interaction."})
 
-        body = await request.json()
+        body: InteractionData = await request.json()
 
-        if body["type"] == InteractionType.PING.value:
+        if body['type'] == InteractionType.PING.value:
             return web.json_response({"type": InteractionResponseType.PONG.value})
 
-        await self.parse_interactions(await request.json())
+        await self.parse_interaction_create(body)
         return web.json_response({"ack": InteractionResponseType.PONG.value})
 
-    def run(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         setup_logging()
         if kwargs.get("print") is None:
 
