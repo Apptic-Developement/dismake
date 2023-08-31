@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, Optional
+from typing import TYPE_CHECKING, Any, Sequence, Optional, Tuple
 
 from enum import IntFlag, IntEnum
 
@@ -163,6 +163,23 @@ class User(PartialUser):
         Returns the username.
 
     """
+    __slots__: Tuple[str, ...] = (
+        'username',
+        'discriminator',
+        'global_name',
+        'avatar',
+        'bot',
+        'system',
+        'mfa_enabled',
+        'banner',
+        'accent_color',
+        'locale',
+        'verified',
+        'email',
+        'public_flags',
+        'premium_type',
+        'avatar_decoration',
+    )
 
     def __init__(self, client: Client, data: UserData) -> None:
         super().__init__(client=client, id=int(data["id"]))

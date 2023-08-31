@@ -1,9 +1,28 @@
 site_name: Dismake
+repo_url: https://github.com/Apptic-Developement/dismake
+repo_name: Apptic-Developement/dismake
+copyright: Copyright &copy; 2023 - Present Pranoy – <a href="#__consent">Change cookie settings</a>
+docs_dir: docs/
+site_url: https://dismake.pages.dev/
 
 theme:
   name: material
   # logo:
   #   icon: assets/images/logo.svg
+
+  features:
+    - header.autohide
+    - navigation.instant
+    - navigation.top
+    - navigation.tabs
+    - search.suggest
+    - search.share
+    - navigation.indexes
+    - navigation.prune
+    - toc.follow
+    - content.tooltips
+    - content.code.annotate
+    - content.action.edit
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -30,18 +49,21 @@ extra_css:
 
 
 plugins:
-- mkdocstrings:
-    handlers:
-      python:
-        options:
-          separate_signature: true
-          show_signature_annotations: true
-          signature_crossrefs: false
-          show_if_no_docstring: false
-          docstring_style: numpy
-          show_source: true
-          show_root_full_path: false
-          show_root_heading: true
+  - search
+  - awesome-pages
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: false
+            show_if_no_docstring: false
+            docstring_style: numpy
+            show_source: true
+            show_root_full_path: false
+            show_root_heading: true
 
 
 nav:

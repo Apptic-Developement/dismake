@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Sequence, Optional
+from typing import TYPE_CHECKING, List, Sequence, Optional, Tuple
 
 
 from .permissions import Permissions
@@ -8,7 +8,7 @@ from .user import User
 from enum import IntEnum
 
 if TYPE_CHECKING:
-    from dismake.types import MemberWithUserData, Snowflake
+    from dismake.types import MemberData, Snowflake
     from dismake import Client
 
 
@@ -108,7 +108,21 @@ class Member(User):
 
     """
 
-    def __init__(self, client: Client, data: MemberWithUserData) -> None:
+    __slots__: Tuple[str, ...] = (
+        'nickname',
+        'avatar',
+        'roles',
+        'joined_at',
+        'premium_since',
+        'deaf',
+        'mute',
+        'pending',
+        'permissions',
+        'communication_disabled_until',
+        'flags',
+    )
+
+    def __init__(self, client: Client, data: MemberData) -> None:
         super().__init__(client=client, data=data["user"])
         self.nickname: Optional[str] = data.get("nick")
         self.avatar: Optional[str] = data.get("avatar")

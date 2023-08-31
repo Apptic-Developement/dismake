@@ -39,6 +39,8 @@ mkdocs = "^1.5.2"
 mkdocs-material = "^9.2.5"
 mkdocstrings = {extras = ["python"], version = "^0.22.0"}
 mypy = "^1.5.1"
+mkdocs-awesome-pages-plugin = "^2.9.2"
+mkdocs-minify-plugin = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core"]

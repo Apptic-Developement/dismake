@@ -1,7 +1,3 @@
-<div class="home__logo">
-<img src="assets/images/logo.png">
-</div>
-
 <h1 class="home__heading">
 Welcome to the Dismake Documentation
 </h1>
@@ -22,7 +18,7 @@ Explore the extensive documentation to get started with Dismake:
 
 - [Installation](installation.md)
 - [Quick Start Guide](quick-start.md)
-- [API Reference](api-reference.md)
+- [API Reference](api-reference/)
 - [Examples](examples.md)
 
 ## Join the Community

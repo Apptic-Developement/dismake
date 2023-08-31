@@ -8,10 +8,11 @@ if TYPE_CHECKING:
     from .snowflake import Snowflake
     from typing_extensions import NotRequired
 
-__all__ = ("MemberData", "MemberWithUserData")
+__all__ = ("MemberData",)
 
 
 class MemberData(TypedDict):
+    user: UserData
     nick: NotRequired[Optional[str]]
     avatar: NotRequired[Optional[str]]
     roles: List[Snowflake]
@@ -23,6 +24,3 @@ class MemberData(TypedDict):
     pending: NotRequired[bool]
     permissions: NotRequired[str]
     communication_disabled_until: str
-
-class MemberWithUserData(MemberData):
-    user: UserData
