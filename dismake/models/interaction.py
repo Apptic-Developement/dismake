@@ -6,7 +6,6 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
-    TypeVar,
     Union,
 )
 
@@ -14,7 +13,7 @@ from dismake.utils import get_as_snowflake
 from .member import Member
 from .user import User
 from .message import Message
-from .._types import ClientT
+from ..types import ClientT
 if TYPE_CHECKING:
     from ..client import Client
     from ..types import InteractionData, Snowflake

@@ -6,6 +6,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://dismake.pages.dev/api/client/</loc>
+         <lastmod>2023-08-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://dismake.pages.dev/api/interaction/</loc>
          <lastmod>2023-08-31</lastmod>
          <changefreq>daily</changefreq>
