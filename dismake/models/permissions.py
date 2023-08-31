@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from enum import IntFlag
+from typing import TYPE_CHECKING, Optional, Union
 
+if TYPE_CHECKING:
+    from typing_extensions import Self
 __all__ = ("Permissions",)
 
 
@@ -51,3 +54,13 @@ class Permissions(IntFlag):
     USE_SOUNDBOARD = 1 << 42
     USE_EXTERNAL_SOUNDS = 1 << 45
     SEND_VOICE_MESSAGES = 1 << 46
+
+    @classmethod
+    def from_value(cls, value: Optional[Union[str, int]]) -> Self:
+        if isinstance(value, str):
+            return cls(int(value))
+        if isinstance(value, int):
+            return cls(value)
+        
+        if value is None:
+            return cls(0)

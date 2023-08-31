@@ -584,8 +584,9 @@
 
 
 
+
 <h2 id="dismake.models.role.PartialRole" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">PartialRole</span>
+          <span class="doc doc-object-name doc-class-name">PartialRole</span>
 
 
 </h2>
@@ -595,6 +596,8 @@
 
   
       <p>Represents a Partial Role</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -614,7 +617,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Client application that models may use for procedures.</p>
+              <p>The client application that models may use for procedures.</p>
             </div>
           </td>
           <td>
@@ -637,6 +640,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -655,7 +660,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Client application that models may use for procedures.</p>
+              <p>The client application that models may use for procedures.</p>
             </div>
           </td>
         </tr>
@@ -673,10 +678,9 @@
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/role.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/role.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -707,14 +711,14 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    client: Client</span>
-<span class="sd">        Client application that models may use for procedures.</span>
+<span class="sd">        The client application that models may use for procedures.</span>
 <span class="sd">    id: int</span>
 <span class="sd">        The unique ID of the role.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    client: Client</span>
-<span class="sd">        Client application that models may use for procedures.</span>
+<span class="sd">        The client application that models may use for procedures.</span>
 <span class="sd">    id: int</span>
 <span class="sd">        The unique ID of the role.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -728,7 +732,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a raw mention string for the role.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;&amp;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -744,8 +748,9 @@
 
 
 
+
 <h3 id="dismake.models.role.PartialRole.mention" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">mention</span>
+          <span class="doc doc-object-name doc-attribute-name">mention</span>
 
   
   <span class="doc doc-labels">
@@ -753,7 +758,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">mention</span><span class="p">:</span> <span class="nb">str</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">mention</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -777,19 +782,22 @@
 
 
 
+
 <h2 id="dismake.models.role.Role" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">Role</span>
+          <span class="doc doc-object-name doc-class-name">Role</span>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="dismake.models.role.PartialRole" href="#dismake.models.role.PartialRole">PartialRole</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="dismake.models.role.PartialRole" href="#dismake.models.role.PartialRole">PartialRole</a></code></p>
 
   
       <p>Represents a Role.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -832,6 +840,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -960,10 +970,9 @@
 </li>
 </ul>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/role.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/role.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -1123,7 +1132,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mentionable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mentionable&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span>
         <span class="c1"># self.flags: int = data[&quot;flags&quot;]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RoleTagsData</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Role</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span>
@@ -1171,7 +1180,7 @@
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1187,8 +1196,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.bot_id" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">bot_id</span>
+          <span class="doc doc-object-name doc-attribute-name">bot_id</span>
 
   
   <span class="doc doc-labels">
@@ -1196,7 +1206,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">bot_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">bot_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1210,8 +1220,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.integration_id" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">integration_id</span>
+          <span class="doc doc-object-name doc-attribute-name">integration_id</span>
 
   
   <span class="doc doc-labels">
@@ -1219,7 +1230,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">integration_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">integration_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1233,8 +1244,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.is_available_for_purchase" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">is_available_for_purchase</span>
+          <span class="doc doc-object-name doc-attribute-name">is_available_for_purchase</span>
 
   
   <span class="doc doc-labels">
@@ -1242,7 +1254,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">is_available_for_purchase</span><span class="p">:</span> <span class="nb">bool</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">is_available_for_purchase</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1256,8 +1268,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.is_guild_linked_role" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">is_guild_linked_role</span>
+          <span class="doc doc-object-name doc-attribute-name">is_guild_linked_role</span>
 
   
   <span class="doc doc-labels">
@@ -1265,7 +1278,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">is_guild_linked_role</span><span class="p">:</span> <span class="nb">bool</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">is_guild_linked_role</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1279,8 +1292,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.is_premium_subscriber" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">is_premium_subscriber</span>
+          <span class="doc doc-object-name doc-attribute-name">is_premium_subscriber</span>
 
   
   <span class="doc doc-labels">
@@ -1288,7 +1302,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">is_premium_subscriber</span><span class="p">:</span> <span class="nb">bool</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">is_premium_subscriber</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1302,8 +1316,9 @@
 
 
 
+
 <h3 id="dismake.models.role.Role.subscription_listing_id" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">subscription_listing_id</span>
+          <span class="doc doc-object-name doc-attribute-name">subscription_listing_id</span>
 
   
   <span class="doc doc-labels">
@@ -1311,7 +1326,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">subscription_listing_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">subscription_listing_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">

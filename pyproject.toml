@@ -5,6 +5,26 @@ description = "Dismake is a powerful Discord HTTP interactions API wrapper desig
 authors = ["Pranoy Majumdar <officialpranoy@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+classifiers = [
+        'Development Status :: 1 - Beta',
+        'License :: OSI Approved :: MIT License',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Framework :: AsyncIO',
+        'Framework :: aiohttp',
+        'Topic :: Communications :: Chat',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Utilities',
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -18,6 +38,7 @@ typing-extensions = "^4.7.1"
 mkdocs = "^1.5.2"
 mkdocs-material = "^9.2.5"
 mkdocstrings = {extras = ["python"], version = "^0.22.0"}
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -25,4 +46,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
 homepage = "https://github.com/Apptic-Development/dismake"
-

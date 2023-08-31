@@ -4,3 +4,4 @@ from .member import *
 from .role import *
 from .message import *
 from .embed import *
+from .interaction import *

@@ -818,8 +818,9 @@
 
 
 
+
 <h2 id="dismake.models.user.PartialUser" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">PartialUser</span>
+          <span class="doc doc-object-name doc-class-name">PartialUser</span>
 
 
 </h2>
@@ -829,6 +830,8 @@
 
   
       <p>Represents a Partial User</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -848,7 +851,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Client application that models may use for procedures.</p>
+              <p>The client application that models may use for procedures.</p>
             </div>
           </td>
           <td>
@@ -871,6 +874,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -889,7 +894,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Client application that models may use for procedures.</p>
+              <p>The client application that models may use for procedures.</p>
             </div>
           </td>
         </tr>
@@ -907,10 +912,9 @@
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/user.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/user.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
 <span class="normal"> 86</span>
@@ -941,14 +945,14 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    client: Client</span>
-<span class="sd">        Client application that models may use for procedures.</span>
+<span class="sd">        The client application that models may use for procedures.</span>
 <span class="sd">    id: int</span>
 <span class="sd">        The unique ID of the user.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    client: Client</span>
-<span class="sd">        Client application that models may use for procedures.</span>
+<span class="sd">        The client application that models may use for procedures.</span>
 <span class="sd">    id: int</span>
 <span class="sd">        The unique ID of the user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -962,7 +966,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a raw mention string for the user.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -978,8 +982,9 @@
 
 
 
+
 <h3 id="dismake.models.user.PartialUser.mention" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">mention</span>
+          <span class="doc doc-object-name doc-attribute-name">mention</span>
 
   
   <span class="doc doc-labels">
@@ -987,7 +992,7 @@
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">mention</span><span class="p">:</span> <span class="nb">str</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">mention</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1011,19 +1016,22 @@
 
 
 
+
 <h2 id="dismake.models.user.User" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">User</span>
+          <span class="doc doc-object-name doc-class-name">User</span>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="dismake.models.user.PartialUser" href="#dismake.models.user.PartialUser">PartialUser</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="dismake.models.user.PartialUser" href="#dismake.models.user.PartialUser">PartialUser</a></code></p>
 
   
       <p>Represents a Discord user.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1043,7 +1051,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Client application that models may use for procedures.</p>
+              <p>The client application that models may use for procedures.</p>
             </div>
           </td>
           <td>
@@ -1066,6 +1074,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -1260,10 +1270,9 @@
 </li>
 </ul>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/user.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/user.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
@@ -1353,7 +1362,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    client: Client</span>
-<span class="sd">        Client application that models may use for procedures.</span>
+<span class="sd">        The client application that models may use for procedures.</span>
 <span class="sd">    data: UserData</span>
 <span class="sd">        The data payload containing user information.</span>
 
@@ -1433,7 +1442,7 @@
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1459,24 +1468,24 @@
 
 
 
+
 <h2 id="dismake.models.user.PublicUserFlags" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">PublicUserFlags</span>
+          <span class="doc doc-object-name doc-class-name">PublicUserFlags</span>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="enum.IntFlag">IntFlag</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.IntFlag">IntFlag</span></code></p>
 
   
       <p>The known user flags that represent account badges.</p>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/user.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/user.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -1582,7 +1591,7 @@
     <span class="n">ACTIVE_DEVELOPER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">22</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User is an active bot developer.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1598,17 +1607,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.ACTIVE_DEVELOPER" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">ACTIVE_DEVELOPER</span>
+          <span class="doc doc-object-name doc-attribute-name">ACTIVE_DEVELOPER</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">ACTIVE_DEVELOPER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">22</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ACTIVE_DEVELOPER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">22</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1622,17 +1632,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.BOT_HTTP_INTERACTIONS" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">BOT_HTTP_INTERACTIONS</span>
+          <span class="doc doc-object-name doc-attribute-name">BOT_HTTP_INTERACTIONS</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">BOT_HTTP_INTERACTIONS</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">19</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BOT_HTTP_INTERACTIONS</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">19</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1646,17 +1657,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.BUG_HUNTER_LEVEL_1" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">BUG_HUNTER_LEVEL_1</span>
+          <span class="doc doc-object-name doc-attribute-name">BUG_HUNTER_LEVEL_1</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">BUG_HUNTER_LEVEL_1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BUG_HUNTER_LEVEL_1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1670,17 +1682,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.BUG_HUNTER_LEVEL_2" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">BUG_HUNTER_LEVEL_2</span>
+          <span class="doc doc-object-name doc-attribute-name">BUG_HUNTER_LEVEL_2</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">BUG_HUNTER_LEVEL_2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">14</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BUG_HUNTER_LEVEL_2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">14</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1694,17 +1707,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.DISCORD_CERTIFIED_MODERATOR" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">DISCORD_CERTIFIED_MODERATOR</span>
+          <span class="doc doc-object-name doc-attribute-name">DISCORD_CERTIFIED_MODERATOR</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">DISCORD_CERTIFIED_MODERATOR</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">18</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DISCORD_CERTIFIED_MODERATOR</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">18</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1718,17 +1732,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.DISCORD_EMPLOYEE" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">DISCORD_EMPLOYEE</span>
+          <span class="doc doc-object-name doc-attribute-name">DISCORD_EMPLOYEE</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">DISCORD_EMPLOYEE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DISCORD_EMPLOYEE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1742,17 +1757,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.EARLY_SUPPORTER" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">EARLY_SUPPORTER</span>
+          <span class="doc doc-object-name doc-attribute-name">EARLY_SUPPORTER</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">EARLY_SUPPORTER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">9</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EARLY_SUPPORTER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">9</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1766,17 +1782,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.EARLY_VERIFIED_DEVELOPER" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">EARLY_VERIFIED_DEVELOPER</span>
+          <span class="doc doc-object-name doc-attribute-name">EARLY_VERIFIED_DEVELOPER</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">EARLY_VERIFIED_DEVELOPER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">17</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EARLY_VERIFIED_DEVELOPER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">17</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1791,17 +1808,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.HYPESQUAD_BALANCE" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BALANCE</span>
+          <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BALANCE</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">HYPESQUAD_BALANCE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">HYPESQUAD_BALANCE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1815,17 +1833,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.HYPESQUAD_BRAVERY" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BRAVERY</span>
+          <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BRAVERY</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">HYPESQUAD_BRAVERY</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">HYPESQUAD_BRAVERY</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1839,17 +1858,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.HYPESQUAD_BRILLIANCE" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BRILLIANCE</span>
+          <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_BRILLIANCE</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">HYPESQUAD_BRILLIANCE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">HYPESQUAD_BRILLIANCE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1863,17 +1883,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.HYPESQUAD_EVENTS" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_EVENTS</span>
+          <span class="doc doc-object-name doc-attribute-name">HYPESQUAD_EVENTS</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">HYPESQUAD_EVENTS</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">HYPESQUAD_EVENTS</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1887,17 +1908,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.NONE" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">NONE</span>
+          <span class="doc doc-object-name doc-attribute-name">NONE</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1911,17 +1933,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.PARTNERED_SERVER_OWNER" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">PARTNERED_SERVER_OWNER</span>
+          <span class="doc doc-object-name doc-attribute-name">PARTNERED_SERVER_OWNER</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">PARTNERED_SERVER_OWNER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">PARTNERED_SERVER_OWNER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1935,17 +1958,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.TEAM_USER" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">TEAM_USER</span>
+          <span class="doc doc-object-name doc-attribute-name">TEAM_USER</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">TEAM_USER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">10</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">TEAM_USER</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">10</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1959,17 +1983,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PublicUserFlags.VERIFIED_BOT" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">VERIFIED_BOT</span>
+          <span class="doc doc-object-name doc-attribute-name">VERIFIED_BOT</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">VERIFIED_BOT</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">VERIFIED_BOT</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1993,24 +2018,24 @@
 
 
 
+
 <h2 id="dismake.models.user.PremiumType" class="doc doc-heading">
-        <span class="doc doc-object-name doc-class-name">PremiumType</span>
+          <span class="doc doc-object-name doc-class-name">PremiumType</span>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="enum.IntEnum">IntEnum</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.IntEnum">IntEnum</span></code></p>
 
   
       <p>The types of Nitro.</p>
 
-
-        <details class="quote">
-          <summary>Source code in <code>dismake/models/user.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
+            <details class="quote">
+              <summary>Source code in <code>dismake/models/user.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
@@ -2032,7 +2057,7 @@
     <span class="n">NITRO</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Premium including all perks (e.g. 2 server boosts).&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -2048,17 +2073,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PremiumType.NITRO" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">NITRO</span>
+          <span class="doc doc-object-name doc-attribute-name">NITRO</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">NITRO</span> <span class="o">=</span> <span class="mi">2</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">NITRO</span> <span class="o">=</span> <span class="mi">2</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -2072,17 +2098,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PremiumType.NITRO_CLASSIC" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">NITRO_CLASSIC</span>
+          <span class="doc doc-object-name doc-attribute-name">NITRO_CLASSIC</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">NITRO_CLASSIC</span> <span class="o">=</span> <span class="mi">1</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">NITRO_CLASSIC</span> <span class="o">=</span> <span class="mi">1</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -2096,17 +2123,18 @@
 
 
 
+
 <h3 id="dismake.models.user.PremiumType.NONE" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">NONE</span>
+          <span class="doc doc-object-name doc-attribute-name">NONE</span>
 
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
 </h3>
-<div class="highlight"><pre><span></span><code><span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">

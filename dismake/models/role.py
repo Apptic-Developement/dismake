@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, Optional
+from typing import TYPE_CHECKING, Any, Dict, Sequence, Optional, Union
 
 from .permissions import Permissions
 
 
 if TYPE_CHECKING:
-    from dismake.types import RoleData
+    from ..types import RoleData, RoleTagsData
     from dismake import Client
 
 __all__: Sequence[str] = ("PartialRole", "Role")
@@ -18,14 +18,14 @@ class PartialRole:
     Parameters
     ----------
     client: Client
-        Client application that models may use for procedures.
+        The client application that models may use for procedures.
     id: int
         The unique ID of the role.
 
     Attributes
     ----------
     client: Client
-        Client application that models may use for procedures.
+        The client application that models may use for procedures.
     id: int
         The unique ID of the role.
     """
@@ -97,7 +97,7 @@ class Role(PartialRole):
         self.mentionable: bool = data["mentionable"]
         self.guild_id: int
         # self.flags: int = data["flags"]
-        self._tags = data.get("tags") or {}
+        self._tags: Union[RoleTagsData, Dict[Any, Any]] = data.get("tags") or {}
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Role) and self.id == other.id

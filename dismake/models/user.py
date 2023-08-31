@@ -86,14 +86,14 @@ class PartialUser:
     Parameters
     ----------
     client: Client
-        Client application that models may use for procedures.
+        The client application that models may use for procedures.
     id: int
         The unique ID of the user.
 
     Attributes
     ----------
     client: Client
-        Client application that models may use for procedures.
+        The client application that models may use for procedures.
     id: int
         The unique ID of the user.
     """
@@ -114,7 +114,7 @@ class User(PartialUser):
     Parameters
     ----------
     client: Client
-        Client application that models may use for procedures.
+        The client application that models may use for procedures.
     data: UserData
         The data payload containing user information.
 

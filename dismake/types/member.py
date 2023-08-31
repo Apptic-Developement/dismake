@@ -5,22 +5,24 @@ from typing import TYPE_CHECKING, List, Optional, TypedDict
 
 if TYPE_CHECKING:
     from .user import UserData
-    from datetime import datetime
     from .snowflake import Snowflake
+    from typing_extensions import NotRequired
 
-__all__ = ("MemberData",)
+__all__ = ("MemberData", "MemberWithUserData")
 
 
 class MemberData(TypedDict):
-    user: UserData
-    nick: Optional[str]
-    avatar: Optional[str]
-    roles: Optional[List[Snowflake]]
-    joined_at: datetime
-    premium_since: Optional[datetime]
+    nick: NotRequired[Optional[str]]
+    avatar: NotRequired[Optional[str]]
+    roles: List[Snowflake]
+    joined_at: str
+    premium_since: NotRequired[Optional[str]]
     deaf: bool
     mute: bool
     flags: str
-    pending: bool
-    permissions: str
-    communication_disabled_until: datetime
+    pending: NotRequired[bool]
+    permissions: NotRequired[str]
+    communication_disabled_until: str
+
+class MemberWithUserData(MemberData):
+    user: UserData

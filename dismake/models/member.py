@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Sequence, Optional
 
-from dismake.models.permissions import Permissions
 
+from .permissions import Permissions
 from .user import User
 from enum import IntEnum
 
 if TYPE_CHECKING:
-    from dismake.types import MemberData, Snowflake
+    from dismake.types import MemberWithUserData, Snowflake
     from dismake import Client
-    from datetime import datetime
 
 
 __all__: Sequence[str] = ("Member",)
@@ -109,18 +108,16 @@ class Member(User):
 
     """
 
-    def __init__(self, client: Client, data: MemberData) -> None:
+    def __init__(self, client: Client, data: MemberWithUserData) -> None:
         super().__init__(client=client, data=data["user"])
         self.nickname: Optional[str] = data.get("nick")
         self.avatar: Optional[str] = data.get("avatar")
         self.roles: List[Snowflake] = data.get("roles") or []
-        self.joined_at: datetime = data["joined_at"]
-        self.premium_since: Optional[datetime] = data.get("premium_since")
+        self.joined_at: str = data["joined_at"]
+        self.premium_since: Optional[str] = data.get("premium_since")
         self.deaf: bool = data["deaf"]
         self.mute: bool = data["mute"]
-        self.pending: bool = data["pending"]
-        self.permissions: Permissions = Permissions(int(data["permissions"]))
-        self.communication_disabled_until: datetime = data[
-            "communication_disabled_until"
-        ]
+        self.pending: bool = data.get("pending", False)
+        self.permissions: Permissions = Permissions.from_value(data.get("permissions"))
+        self.communication_disabled_until: str = data["communication_disabled_until"]
         self.flags: MemberFlags = MemberFlags(int(data.get("flags", 0)))
