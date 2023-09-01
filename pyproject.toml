@@ -42,6 +42,10 @@ mypy = "^1.5.1"
 mkdocs-awesome-pages-plugin = "^2.9.2"
 mkdocs-minify-plugin = "^0.7.1"
 
+
+[tool.poetry.group.test.dependencies]
+py-cord = "^2.4.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
