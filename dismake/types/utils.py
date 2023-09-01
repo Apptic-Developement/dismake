@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from ..client import Client
     
     ClientT = TypeVar("ClientT", covariant=True, bound=Client)
-    AsyncFunction = Callable[..., Coroutine[Any, Any, Any]]
 else:
-    ClientT = TypeVar("ClientT", covariant == True)
+    ClientT = TypeVar("ClientT", covariant=True)
+
+AsyncFunction = Callable[..., Coroutine[Any, Any, Any]]

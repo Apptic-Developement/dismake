@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import IntEnum
 from typing import (
     TYPE_CHECKING,
@@ -14,9 +16,10 @@ from .member import Member
 from .user import User
 from .message import Message
 from ..types import ClientT
+
 if TYPE_CHECKING:
-    from ..client import Client
     from ..types import InteractionData, Snowflake
+    from ..client import Client
 
 __all__: Sequence[str] = ("Interaction",)
 
