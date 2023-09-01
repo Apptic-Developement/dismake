@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, Type
+from typing import TYPE_CHECKING, Sequence
 from logging import getLogger
 
 from nacl.signing import VerifyKey
@@ -11,7 +11,6 @@ from .models import Interaction
 
 if TYPE_CHECKING:
     from .types import InteractionData
-    from typing_extensions import Self
 
 
 log = getLogger(__name__)
@@ -31,8 +30,6 @@ class Client:
         The ID of the application that the bot is associated with.
     public_key: str
         The public key of the application.
-    interaction_class: Type[Interaction[Self]]
-        The class that will be used to represent interactions.
 
     Attributes
     ----------
@@ -45,15 +42,9 @@ class Client:
         token: str,
         application_id: int,
         public_key: str,
-        *,
-        interaction_class: Type[Interaction[Self]],
     ) -> None:
         self.http: HttpClient = HttpClient(token=token, application_id=application_id)
         self._verify_key = VerifyKey(key=bytes.fromhex(public_key))
-        self._interaction_class = interaction_class
-
-    def create_interaction(self, data: InteractionData) -> Interaction[Self]:
-        return self._interaction_class(client=self, data=data)
 
     def verify(self, signature: str, timestamp: str, body: bytes) -> bool:
         """Verify the incoming signature from Discord.
@@ -89,8 +80,8 @@ class Client:
         data: InteractionData
             The incoming interaction data.
         """
-        interaction = self.create_interaction(data)
-        
+        interaction = Interaction(client=self, data=data)
+
         if interaction.is_application_command:
             ...
         if interaction.is_message_component:

@@ -19,7 +19,7 @@ from ..types import ClientT
 
 if TYPE_CHECKING:
     from ..types import InteractionData, Snowflake
-    from ..client import Client
+
 
 __all__: Sequence[str] = ("Interaction",)
 
@@ -86,7 +86,7 @@ class Interaction(Generic[ClientT]):
         "_responded",
     )
 
-    def __init__(self, client: Client, data: InteractionData) -> None:
+    def __init__(self, client: ClientT, data: InteractionData) -> None:
         self._client = client
         self.data = data
         self.id: int = int(data["id"])
