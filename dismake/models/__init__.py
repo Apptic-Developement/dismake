@@ -5,3 +5,4 @@ from .role import *
 from .permissions import *
 from .message import *
 from .interaction import *
+from .color import *
