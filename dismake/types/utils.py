@@ -8,7 +8,7 @@ __all__: Sequence[str] = ("ClientT", "AsyncFunction")
 
 if TYPE_CHECKING:
     from ..client import Client
-    
+
     ClientT = TypeVar("ClientT", covariant=True, bound=Client)
 else:
     ClientT = TypeVar("ClientT", covariant=True)

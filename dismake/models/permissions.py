@@ -61,6 +61,6 @@ class Permissions(IntFlag):
             return cls(int(value))
         if isinstance(value, int):
             return cls(value)
-        
+
         if value is None:
             return cls(0)

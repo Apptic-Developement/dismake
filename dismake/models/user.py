@@ -163,22 +163,23 @@ class User(PartialUser):
         Returns the username.
 
     """
+
     __slots__: Tuple[str, ...] = (
-        'username',
-        'discriminator',
-        'global_name',
-        'avatar',
-        'bot',
-        'system',
-        'mfa_enabled',
-        'banner',
-        'accent_color',
-        'locale',
-        'verified',
-        'email',
-        'public_flags',
-        'premium_type',
-        'avatar_decoration',
+        "username",
+        "discriminator",
+        "global_name",
+        "avatar",
+        "bot",
+        "system",
+        "mfa_enabled",
+        "banner",
+        "accent_color",
+        "locale",
+        "verified",
+        "email",
+        "public_flags",
+        "premium_type",
+        "avatar_decoration",
     )
 
     def __init__(self, client: Client, data: UserData) -> None:
@@ -195,7 +196,7 @@ class User(PartialUser):
         self.locale: str = data["locale"]
         self.verified: bool = data["verified"]
         self.email: Optional[str] = data.get("email")
-        self.public_flags: PublicUserFlags = PublicUserFlags(int(data.get('flags', 0)))
+        self.public_flags: PublicUserFlags = PublicUserFlags(int(data.get("flags", 0)))
         self.premium_type: PremiumType = PremiumType(int(data["premium_type"]))
         self.avatar_decoration: str = data["avatar_decoration"]
 

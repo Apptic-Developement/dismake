@@ -24,6 +24,8 @@ if TYPE_CHECKING:
 __all__: Sequence[str] = ("InteractionData",)
 
 InteractionType = Literal[1, 2, 3, 4, 5]
+
+
 class MessageInteraction(TypedDict):
     id: Snowflake
     type: InteractionData

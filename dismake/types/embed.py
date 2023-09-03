@@ -26,24 +26,23 @@ class EmbedFooterData(TypedDict):
     icon_url: NotRequired[str]
     proxy_icon_url: NotRequired[str]
 
+
 class _EmbedAttachment(TypedDict):
-    url: str
     proxy_url: NotRequired[str]
     height: NotRequired[int]
     width: NotRequired[int]
+
 
 class EmbedImageData(_EmbedAttachment):
-    pass
+    url: str
+
 
 class EmbedThumbnailData(_EmbedAttachment):
-    pass
+    url: str
 
 
-class EmbedVideoData(TypedDict):
+class EmbedVideoData(_EmbedAttachment):
     url: NotRequired[str]
-    proxy_url: NotRequired[str]
-    height: NotRequired[int]
-    width: NotRequired[int]
 
 
 class EmbedProviderData(TypedDict):

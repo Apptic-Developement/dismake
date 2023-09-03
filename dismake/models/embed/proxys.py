@@ -1,15 +1,23 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, Optional
+from typing import TYPE_CHECKING, Sequence, Optional, Union
 
 from dataclasses import dataclass, field
 
 
 if TYPE_CHECKING:
     from typing_extensions import Self
-    from ...types import EmbedAuthorData, EmbedFooterData, EmbedFieldData
+    from ...types import (
+        EmbedAuthorData,
+        EmbedFooterData,
+        EmbedFieldData,
+        EmbedVideoData,
+        EmbedImageData,
+        EmbedThumbnailData,
+        EmbedProviderData
+    )
 
-__all__: Sequence[str] = ("EmbedAuthor", "EmbedFooter", "EmbedField")
+__all__: Sequence[str] = ("EmbedAuthor", "EmbedFooter", "EmbedField", "EmbedProvider", "EmbedAttachment")
 
 
 @dataclass
@@ -37,9 +45,6 @@ class EmbedAuthor:
             if self.url is not None:
                 base["url"] = self.url
 
-            if self.proxy_icon_url is not None:
-                base["proxy_icon_url"] = self.proxy_icon_url
-
             return base
         return None
 
@@ -57,18 +62,52 @@ class EmbedFooter:
             icon_url=data.get("icon_url"),
             proxy_icon_url=data.get("proxy_icon_url"),
         )
+
     def to_dict(self) -> Optional[EmbedFooterData]:
         if self.text is not None:
             base: EmbedFooterData = {"text": self.text}
             if self.icon_url is not None:
                 base["icon_url"] = self.icon_url
 
-            if self.proxy_icon_url is not None:
-                base["proxy_icon_url"] = self.proxy_icon_url
-
             return base
         return None
 
+
+@dataclass
+class EmbedAttachment:
+    url: Optional[str] = field(default=None)
+    proxy_url: Optional[str] = field(default=None)
+    height: Optional[int] = field(default=None)
+    width: Optional[int] = field(default=None)
+
+    @classmethod
+    def from_dict(cls, data: Union[EmbedImageData, EmbedThumbnailData, EmbedVideoData]) -> Self:
+        return cls(
+            url=data.get("url"),
+            proxy_url=data.get("proxy_url"),
+            height=data.get("height"),
+            width=data.get("width"),
+        )
+
+    def to_dict(self) -> Optional[Union[EmbedImageData, EmbedThumbnailData]]:
+        if self.url is None:
+            return None
+        base: Union[EmbedImageData, EmbedThumbnailData] = {"url": self.url}
+        return base
+
+
+
+@dataclass
+class EmbedProvider:
+    name: Optional[str] = field(default=None, hash=True)
+    url: Optional[str] = field(default=None, hash=True)
+
+    @classmethod
+    def from_dict(cls, data: EmbedProviderData) -> Self:
+        return cls(
+            name=data.get('name'),
+            url=data.get('url')
+        )
 
 @dataclass
 class EmbedField:

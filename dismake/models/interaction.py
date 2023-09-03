@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 __all__: Sequence[str] = ("Interaction",)
 
 
-
 class InteractionType(IntEnum):
     PING = 1
     APPLICATION_COMMAND = 2

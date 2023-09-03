@@ -109,17 +109,17 @@ class Member(User):
     """
 
     __slots__: Tuple[str, ...] = (
-        'nickname',
-        'avatar',
-        'roles',
-        'joined_at',
-        'premium_since',
-        'deaf',
-        'mute',
-        'pending',
-        'permissions',
-        'communication_disabled_until',
-        'flags',
+        "nickname",
+        "avatar",
+        "roles",
+        "joined_at",
+        "premium_since",
+        "deaf",
+        "mute",
+        "pending",
+        "permissions",
+        "communication_disabled_until",
+        "flags",
     )
 
     def __init__(self, client: Client, data: MemberData) -> None:

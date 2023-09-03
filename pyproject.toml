@@ -41,10 +41,8 @@ mkdocstrings = {extras = ["python"], version = "^0.22.0"}
 mypy = "^1.5.1"
 mkdocs-awesome-pages-plugin = "^2.9.2"
 mkdocs-minify-plugin = "^0.7.1"
+black = "^23.7.0"
 
-
-[tool.poetry.group.test.dependencies]
-py-cord = "^2.4.1"
 
 [build-system]
 requires = ["poetry-core"]

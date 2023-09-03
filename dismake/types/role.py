@@ -6,10 +6,9 @@ from typing_extensions import NotRequired
 if TYPE_CHECKING:
     from .snowflake import Snowflake
 
-__all__: Sequence[str] = (
-    "RoleTagsData",
-    "RoleData"
-)
+__all__: Sequence[str] = ("RoleTagsData", "RoleData")
+
+
 class RoleTagsData(TypedDict):
     bot_id: Optional[Snowflake]
     integration_id: Optional[Snowflake]

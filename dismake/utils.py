@@ -1,12 +1,14 @@
 from __future__ import annotations
-import typing
 import logging
-import colorlog
 
-__all__: typing.Sequence[str] = ("get_as_snowflake", "setup_logging")
+from typing import Any, Optional, Sequence, overload
+from colorlog import ColoredFormatter, StreamHandler
+from datetime import datetime
+
+__all__: Sequence[str] = ("get_as_snowflake", "setup_logging", "parse_time")
 
 
-def get_as_snowflake(data: typing.Any, key: str) -> typing.Optional[int]:
+def get_as_snowflake(data: Any, key: str) -> Optional[int]:
     try:
         value = data[key]
     except KeyError:
@@ -20,7 +22,7 @@ def _get_color_formatter(
     show_name: bool = True,
     show_level: bool = True,
     show_message: bool = True,
-) -> colorlog.ColoredFormatter:
+) -> ColoredFormatter:
     message = ""
     if show_time:
         message += "%(time_log_color)s%(asctime)s%(reset)-5s"
@@ -33,7 +35,7 @@ def _get_color_formatter(
 
     if show_message:
         message += "%(message_log_color)s%(message)s%(reset)-5s"
-    return colorlog.ColoredFormatter(
+    return ColoredFormatter(
         message,
         log_colors={
             "DEBUG": "cyan",
@@ -72,6 +74,23 @@ def _get_color_formatter(
 def setup_logging() -> None:
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    handler = colorlog.StreamHandler()
+    handler = StreamHandler()
     handler.setFormatter(_get_color_formatter())
     logger.addHandler(handler)
+
+
+@overload
+def parse_time(timestamp: None) -> None:
+    ...
+
+
+@overload
+def parse_time(timestamp: Optional[str]) -> Optional[datetime]:
+    ...
+
+
+def parse_time(timestamp: Optional[str]) -> Optional[datetime]:
+    if timestamp:
+        datetime.fromisoformat(timestamp)
+
+    return None

@@ -23,6 +23,8 @@ theme:
     - content.tooltips
     - content.code.annotate
     - content.action.edit
+  icon:
+    repo: fontawesome/brands/github-alt
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -69,7 +71,10 @@ plugins:
 nav:
   - "Home": index.md
   - "Api Reference":
-    - "Member": api/member.md
-    - "User": api/user.md
-    - "Role": api/role.md
-    - "Interaction": api/interaction.md
+    - "Client": api/client.md
+    - "Models":
+        - "Member": api/member.md
+        - "User": api/user.md
+        - "Role": api/role.md
+        - "Interaction": api/interaction.md
+        - "Embed": api/embed.md

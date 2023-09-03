@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 import typing
 
-__all__: typing.Sequence[str] = ("InteractionType","InteractionResponseType")
+__all__: typing.Sequence[str] = ("InteractionType", "InteractionResponseType")
 
 
 class InteractionType(Enum):
@@ -12,6 +12,7 @@ class InteractionType(Enum):
     MESSAGE_COMPONENT = 3
     APPLICATION_COMMAND_AUTOCOMPLETE = 4
     MODAL_SUBMIT = 5
+
 
 class InteractionResponseType(Enum):
     PONG = 1

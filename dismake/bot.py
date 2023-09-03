@@ -23,12 +23,7 @@ class Bot(Client):
         "_startup_callbacks",
     )
 
-    def __init__(
-        self,
-        route: str = "/interactions",
-        *args: Any,
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, route: str = "/interactions", *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.app: web.Application = web.Application()
         self.app.add_routes([web.post(path=route, handler=self.handle_interactions)])
@@ -52,7 +47,7 @@ class Bot(Client):
 
         body: InteractionData = await request.json()
 
-        if body['type'] == InteractionType.PING.value:
+        if body["type"] == InteractionType.PING.value:
             return web.json_response({"type": InteractionResponseType.PONG.value})
 
         await self.parse_interaction_create(body)
