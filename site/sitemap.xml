@@ -11,27 +11,32 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dismake.pages.dev/api/embed/</loc>
+         <loc>https://dismake.pages.dev/api/models/color/</loc>
          <lastmod>2023-09-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dismake.pages.dev/api/interaction/</loc>
+         <loc>https://dismake.pages.dev/api/models/embed/</loc>
          <lastmod>2023-09-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dismake.pages.dev/api/member/</loc>
+         <loc>https://dismake.pages.dev/api/models/interaction/</loc>
          <lastmod>2023-09-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dismake.pages.dev/api/role/</loc>
+         <loc>https://dismake.pages.dev/api/models/member/</loc>
          <lastmod>2023-09-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dismake.pages.dev/api/user/</loc>
+         <loc>https://dismake.pages.dev/api/models/role/</loc>
+         <lastmod>2023-09-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://dismake.pages.dev/api/models/user/</loc>
          <lastmod>2023-09-03</lastmod>
          <changefreq>daily</changefreq>
     </url>

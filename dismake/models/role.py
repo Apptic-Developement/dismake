@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, Sequence, Optional, Union
 
 from .permissions import Permissions
 
-
+from .color import Color
 if TYPE_CHECKING:
     from ..types import RoleData, RoleTagsData
     from dismake import Client
@@ -87,7 +87,7 @@ class Role(PartialRole):
     def __init__(self, client: Client, data: RoleData) -> None:
         super().__init__(client=client, id=int(data["id"]))
         self.name: str = data["name"]
-        self.color: int = data["color"]
+        self.color: Color = Color(data["color"])
         self.hoist: bool = data["hoist"]
         self.icon: Optional[str] = data.get("icon")
         self.unicode_emoji: Optional[str] = data.get("unicode_emoji")

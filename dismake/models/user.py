@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Sequence, Optional, Tuple
 
 from enum import IntFlag, IntEnum
 
+from .color import Color
 if TYPE_CHECKING:
     from dismake.types import UserData
     from dismake import Client
@@ -192,7 +193,7 @@ class User(PartialUser):
         self.system: bool = data["system"]
         self.mfa_enabled: bool = data["mfa_enabled"]
         self.banner: Optional[str] = data.get("banner")
-        self.accent_color: Optional[int] = data.get("accent_color")
+        self.accent_color: Optional[Color] = Color(value) if (value := data.get('accent_color'))  is not None else None
         self.locale: str = data["locale"]
         self.verified: bool = data["verified"]
         self.email: Optional[str] = data.get("email")

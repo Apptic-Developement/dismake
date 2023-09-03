@@ -14,10 +14,16 @@ if TYPE_CHECKING:
         EmbedVideoData,
         EmbedImageData,
         EmbedThumbnailData,
-        EmbedProviderData
+        EmbedProviderData,
     )
 
-__all__: Sequence[str] = ("EmbedAuthor", "EmbedFooter", "EmbedField", "EmbedProvider", "EmbedAttachment")
+__all__: Sequence[str] = (
+    "EmbedAuthor",
+    "EmbedFooter",
+    "EmbedField",
+    "EmbedProvider",
+    "EmbedAttachment",
+)
 
 
 @dataclass
@@ -81,7 +87,9 @@ class EmbedAttachment:
     width: Optional[int] = field(default=None)
 
     @classmethod
-    def from_dict(cls, data: Union[EmbedImageData, EmbedThumbnailData, EmbedVideoData]) -> Self:
+    def from_dict(
+        cls, data: Union[EmbedImageData, EmbedThumbnailData, EmbedVideoData]
+    ) -> Self:
         return cls(
             url=data.get("url"),
             proxy_url=data.get("proxy_url"),
@@ -96,7 +104,6 @@ class EmbedAttachment:
         return base
 
 
-
 @dataclass
 class EmbedProvider:
     name: Optional[str] = field(default=None, hash=True)
@@ -104,10 +111,8 @@ class EmbedProvider:
 
     @classmethod
     def from_dict(cls, data: EmbedProviderData) -> Self:
-        return cls(
-            name=data.get('name'),
-            url=data.get('url')
-        )
+        return cls(name=data.get("name"), url=data.get("url"))
+
 
 @dataclass
 class EmbedField:

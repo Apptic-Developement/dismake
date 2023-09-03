@@ -14,7 +14,7 @@ from typing import (
 from .proxys import EmbedAuthor, EmbedField, EmbedFooter, EmbedAttachment, EmbedProvider
 from datetime import datetime, timezone
 from ...utils import parse_time
-
+from ..color import Color
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -31,18 +31,18 @@ class Embed:
 
     Attributes
     -----------
-    title : str
+    title: str
         The title of the embed. Can be up to 256 characters.
-    type : str
+    type: str
         The type of embed. Usually "rich".
-    description : str
+    description: str
         The description of the embed. Can be up to 4096 characters.
-    url : str
+    url: str
         The URL of the embed.
-    timestamp : Optional[datetime]
+    timestamp: Optional[datetime]
         The timestamp of the embed content, an aware datetime.
         If a naive datetime is passed, it's converted to an aware datetime with the local timezone.
-    color : Any
+    color: Color
         The color code of the embed.
     """
 
@@ -70,7 +70,7 @@ class Embed:
         type: EmbedType = "rich",
         url: Any = None,
         timestamp: Optional[datetime] = None,
-        color: Any = None,
+        color: Optional[Color] = None,
     ) -> None:
         self.title = title
         self.description = description
@@ -105,42 +105,40 @@ class Embed:
         """
         embed = cls.__new__(cls)
 
-        (
-            embed.title,
-            embed.description,
-            embed.type,
-            embed.url,
-            embed.color,
-        ) = (
+        (embed.title, embed.description, embed.type, embed.url) = (
             data.get("title"),
             data.get("description"),
             data["type"],
             data.get("url"),
-            data.get("color"),
         )
 
         try:
             embed.timestamp = parse_time(data["timestamp"])
         except KeyError:
             pass
-        
+
+        try:
+            embed.color = Color(data["color"])
+        except KeyError:
+            pass
+
         if (author_data := data.get("author")) is not None:
-            setattr(embed, '_author', EmbedAuthor.from_dict(author_data))
+            setattr(embed, "_author", EmbedAuthor.from_dict(author_data))
 
         if (footer_data := data.get("footer")) is not None:
-            setattr(embed, '_footer', EmbedFooter.from_dict(footer_data))
+            setattr(embed, "_footer", EmbedFooter.from_dict(footer_data))
 
         if (image_data := data.get("image")) is not None:
-            setattr(embed, '_image', EmbedAttachment.from_dict(image_data))
+            setattr(embed, "_image", EmbedAttachment.from_dict(image_data))
 
         if (thumbnail_data := data.get("thumbnail")) is not None:
-            setattr(embed, '_thumbnail', EmbedAttachment.from_dict(thumbnail_data))
-        
+            setattr(embed, "_thumbnail", EmbedAttachment.from_dict(thumbnail_data))
+
         if (video_data := data.get("video")) is not None:
-            setattr(embed, '_video', EmbedAttachment.from_dict(video_data))
-        
+            setattr(embed, "_video", EmbedAttachment.from_dict(video_data))
+
         if (provider_data := data.get("provider")) is not None:
-            setattr(embed, '_provider', EmbedProvider.from_dict(provider_data))
+            setattr(embed, "_provider", EmbedProvider.from_dict(provider_data))
         if (fields_data := data.get("fields")) is not None:
             temp_fields: List[EmbedField] = list()
             for field_data in fields_data:
@@ -182,7 +180,7 @@ class Embed:
             base["description"] = self.description
 
         if self.color is not None:
-            base["color"] = self.color
+            base["color"] = self.color.value
 
         if self.timestamp is not None:
             if self.timestamp.tzinfo:
@@ -206,6 +204,24 @@ class Embed:
     def copy(self) -> Self:
         """Returns a shallow copy of the embed."""
         return self.from_dict(self.to_dict())
+
+    def __len__(self) -> int:
+        attrs = (
+            len(attr)
+            for attr in (
+                self.title,
+                self.description,
+                self.author.name,
+                self.footer.text,
+            )
+            if attr is not None
+        )
+        fields = (
+            (len(field.name) + len(field.value))
+            for field in self.fields
+            if field.name and field.value
+        )
+        return sum(attrs) + sum(fields)
 
     @property
     def author(self) -> EmbedAuthor:
@@ -382,7 +398,6 @@ class Embed:
         If the attribute has no value, an empty ``EmbedVideo`` will be returned.
         """
         return getattr(self, "_video", EmbedAttachment())
-
 
     @property
     def provider(self) -> EmbedProvider:

@@ -73,8 +73,9 @@ nav:
   - "Api Reference":
     - "Client": api/client.md
     - "Models":
-        - "Member": api/member.md
-        - "User": api/user.md
-        - "Role": api/role.md
-        - "Interaction": api/interaction.md
-        - "Embed": api/embed.md
+        - "Member": api/models/member.md
+        - "User": api/models/user.md
+        - "Role": api/models/role.md
+        - "Interaction": api/models/interaction.md
+        - "Embed": api/models/embed.md
+        - "Color": api/models/color.md
