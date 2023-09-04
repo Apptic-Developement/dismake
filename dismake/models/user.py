@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, Optional, Tuple
-
-from enum import IntFlag, IntEnum
+from enum import IntEnum, IntFlag
+from typing import TYPE_CHECKING, Any, Optional, Sequence, Tuple
 
 from .color import Color
+
 if TYPE_CHECKING:
-    from dismake.types import UserData
     from dismake import Client
+    from dismake.types import UserData
 
 
 __all__: Sequence[str] = ("PartialUser", "User")
@@ -193,7 +193,9 @@ class User(PartialUser):
         self.system: bool = data["system"]
         self.mfa_enabled: bool = data["mfa_enabled"]
         self.banner: Optional[str] = data.get("banner")
-        self.accent_color: Optional[Color] = Color(value) if (value := data.get('accent_color'))  is not None else None
+        self.accent_color: Optional[Color] = (
+            Color(value) if (value := data.get("accent_color")) is not None else None
+        )
         self.locale: str = data["locale"]
         self.verified: bool = data["verified"]
         self.email: Optional[str] = data.get("email")

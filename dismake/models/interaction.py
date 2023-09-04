@@ -11,11 +11,11 @@ from typing import (
     Union,
 )
 
-from dismake.utils import get_as_snowflake
-from .member import Member
-from .user import User
-from .message import Message
 from ..types import ClientT
+from ..utils import get_as_snowflake
+from .member import Member
+from .message import Message
+from .user import User
 
 if TYPE_CHECKING:
     from ..types import InteractionData, Snowflake

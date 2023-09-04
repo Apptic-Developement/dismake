@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence
 from logging import getLogger
+from typing import TYPE_CHECKING, Dict, List, Sequence
 
-from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+from nacl.signing import VerifyKey
 
 from .http import HttpClient
 from .models import Interaction
 
 if TYPE_CHECKING:
-    from .types import InteractionData
+    from .types import AsyncFunction, InteractionData
 
 
 log = getLogger(__name__)
@@ -45,6 +45,7 @@ class Client:
     ) -> None:
         self.http: HttpClient = HttpClient(token=token, application_id=application_id)
         self._verify_key = VerifyKey(key=bytes.fromhex(public_key))
+        self.__events: Dict[str, List[AsyncFunction]] = {}
 
     def verify(self, signature: str, timestamp: str, body: bytes) -> bool:
         """Verify the incoming signature from Discord.

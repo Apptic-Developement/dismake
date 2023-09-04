@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, Optional, Union
-
 from dataclasses import dataclass, field
-
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
     from ...types import (
         EmbedAuthorData,
-        EmbedFooterData,
         EmbedFieldData,
-        EmbedVideoData,
+        EmbedFooterData,
         EmbedImageData,
-        EmbedThumbnailData,
         EmbedProviderData,
+        EmbedThumbnailData,
+        EmbedVideoData,
     )
 
 __all__: Sequence[str] = (

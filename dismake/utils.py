@@ -1,9 +1,10 @@
 from __future__ import annotations
-import logging
 
-from typing import Any, Optional, Sequence, overload
-from colorlog import ColoredFormatter, StreamHandler
+import logging
 from datetime import datetime
+from typing import Any, Optional, Sequence, overload
+
+from colorlog import ColoredFormatter, StreamHandler
 
 __all__: Sequence[str] = ("get_as_snowflake", "setup_logging", "parse_time")
 
@@ -71,9 +72,9 @@ def _get_color_formatter(
     )
 
 
-def setup_logging() -> None:
+def setup_logging(level: int = logging.INFO) -> None:
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
     handler = StreamHandler()
     handler.setFormatter(_get_color_formatter())
     logger.addHandler(handler)

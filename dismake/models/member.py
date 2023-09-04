@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Sequence, Optional, Tuple
-
+from enum import IntEnum
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple
 
 from .permissions import Permissions
 from .user import User
-from enum import IntEnum
 
 if TYPE_CHECKING:
-    from dismake.types import MemberData, Snowflake
     from dismake import Client
+    from dismake.types import MemberData, Snowflake
 
 
 __all__: Sequence[str] = ("Member",)

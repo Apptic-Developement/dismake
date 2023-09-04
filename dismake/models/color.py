@@ -5,8 +5,7 @@ from __future__ import annotations
 import colorsys
 import re
 from random import Random, random
-from typing import Any, Optional, Sequence, Tuple, Type, Union, TypeVar
-
+from typing import Any, Optional, Sequence, Tuple, Type, TypeVar, Union
 
 __all__: Sequence[str] = ("Color",)
 

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Sequence, Optional, Union
-
-from .permissions import Permissions
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, Union
 
 from .color import Color
+from .permissions import Permissions
+
 if TYPE_CHECKING:
-    from ..types import RoleData, RoleTagsData
     from dismake import Client
+
+    from ..types import RoleData, RoleTagsData
 
 __all__: Sequence[str] = ("PartialRole", "Role")
 

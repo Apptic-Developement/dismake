@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-
+from datetime import datetime, timezone
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -10,15 +10,14 @@ from typing import (
     Tuple,
 )
 
-
-from .proxys import EmbedAuthor, EmbedField, EmbedFooter, EmbedAttachment, EmbedProvider
-from datetime import datetime, timezone
 from ...utils import parse_time
 from ..color import Color
+from .proxys import EmbedAttachment, EmbedAuthor, EmbedField, EmbedFooter, EmbedProvider
 
 if TYPE_CHECKING:
     from typing_extensions import Self
-    from ...types import EmbedData, EmbedType, EmbedFieldData
+
+    from ...types import EmbedData, EmbedFieldData, EmbedType
 
 
 __all__: Sequence[str] = ("Embed",)

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
-from .user import User
-from .role import PartialRole
+
 from .embed import Embed
+from .role import PartialRole
+from .user import User
 
 if TYPE_CHECKING:
     from dismake import Client

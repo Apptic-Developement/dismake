@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import Sequence
-from aiohttp import ClientSession
 
+from aiohttp import ClientSession
 from yarl import URL
 
 __all__: Sequence[str] = ("HttpClient",)

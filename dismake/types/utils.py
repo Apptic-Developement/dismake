@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Sequence, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Coroutine,
+    Literal,
+    Sequence,
+    TypeVar,
+    Union,
+)
 
 
 __all__: Sequence[str] = ("ClientT", "AsyncFunction")
