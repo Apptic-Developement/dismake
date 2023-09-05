@@ -7,6 +7,7 @@ from .color import Color
 from .permissions import Permissions
 from .asset import Asset
 from ..utils import snowflake_time
+
 if TYPE_CHECKING:
     from dismake import Client
     from datetime import datetime
@@ -113,14 +114,20 @@ class Role(PartialRole):
     def created_at(self) -> datetime:
         """Returns the role's creation time in UTC."""
         return snowflake_time(self.id)
+
     @property
     def icon(self) -> Optional[Asset]:
         """Returns the role's icon asset, if available.
-        
+
         If this is ``None``, the role might instead have unicode emoji as its icon
         If you want the icon that a role has displayed, consider using ``Role.display_icon``.
         """
-        return Asset.from_icon(self.id, self._icon, path='role') if self._icon is not None else None
+        return (
+            Asset.from_icon(self.id, self._icon, path="role")
+            if self._icon is not None
+            else None
+        )
+
     @property
     def display_icon(self) -> Optional[Union[Asset, str]]:
         """Returns the role's display icon, if available."""

@@ -6,6 +6,7 @@ from .embed import Embed
 from .role import PartialRole
 from .user import User
 from ..utils import parse_time, snowflake_time
+
 if TYPE_CHECKING:
     from dismake import Client
     from dismake.types import MessageData
@@ -29,7 +30,9 @@ class Message(PartialMessage):
         self.channel_id: int = int(data["channel_id"])
         self.author: User = User(client=client, data=data["author"])
         self.content: Optional[str] = data.get("content")
-        self.edited_timestamp: Optional[datetime] = parse_time(data.get("edited_timestamp"))
+        self.edited_timestamp: Optional[datetime] = parse_time(
+            data.get("edited_timestamp")
+        )
         self.tts: bool = data["tts"]
         self.mention_everyone: bool = data["mention_everyone"]
         self.mentions: List[User] = [

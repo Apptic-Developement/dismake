@@ -8,7 +8,7 @@ __all__: Sequence[str] = (
     "InteractionResponseType",
     "ApplicationCommandOptionType",
     "ChannelType",
-    "DefaultAvatar"
+    "DefaultAvatar",
 )
 
 
@@ -58,6 +58,7 @@ class ChannelType(Enum):
     GUILD_DIRECTORY = 14
     GUILD_FORUM = 15
     GUILD_MEDIA = 16
+
 
 class DefaultAvatar(Enum):
     blurple = 0

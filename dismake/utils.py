@@ -6,10 +6,16 @@ from typing import Any, Optional, Sequence, overload
 
 from colorlog import ColoredFormatter, StreamHandler
 
-__all__: Sequence[str] = ("get_as_snowflake", "setup_logging", "parse_time", "snowflake_time")
+__all__: Sequence[str] = (
+    "get_as_snowflake",
+    "setup_logging",
+    "parse_time",
+    "snowflake_time",
+)
 
 
 DISCORD_EPOCH = 1420070400000
+
 
 def get_as_snowflake(data: Any, key: str) -> Optional[int]:
     try:

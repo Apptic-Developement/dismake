@@ -222,10 +222,11 @@ class User(PartialUser):
         if self._avatar is not None:
             return Asset.from_avatar(self.id, self._avatar)
         return None
+
     @property
     def default_avatar(self) -> Asset:
         """Returns the default avatar for a given user."""
-        if self.discriminator == '0':
+        if self.discriminator == "0":
             avatar_id = (self.id >> 22) % len(DefaultAvatar)
         else:
             avatar_id = int(self.discriminator) % 5
@@ -238,8 +239,8 @@ class User(PartialUser):
 
         For regular users this is just their default avatar or uploaded avatar.
         """
-        return self.avatar or self.default_avatar   
-    
+        return self.avatar or self.default_avatar
+
     @property
     def banner(self) -> Optional[Asset]:
         """Returns the user's banner asset, if available."""
