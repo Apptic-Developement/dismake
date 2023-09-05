@@ -105,7 +105,7 @@ class Interaction(Generic[ClientT]):
         )
 
         self.user: Optional[Union[User, Member]] = (
-            Member(client=client, data=data["member"])
+            Member(client=client, guild_id=self.guild_id, data=data["member"])
             if self.guild_id is not None and "member" in data
             else User(client=client, data=data["user"])
             if "user" in data

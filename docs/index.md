@@ -1,7 +1,8 @@
-<h1 class="home__heading">
-Welcome to the Dismake Documentation
-</h1>
+# 
 
+<p align="center">
+  <a href="https://dismake.pages.dev"><img src="assets/images/logo.svg" alt="Dismake"></a>
+</p>
 
 Dismake is a powerful Discord HTTP interactions API wrapper designed for Python developers. Whether you're using Flask, Django, or any other Python web framework, Dismake has you covered.
 

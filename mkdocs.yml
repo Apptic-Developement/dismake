@@ -1,14 +1,15 @@
 site_name: Dismake
 repo_url: https://github.com/Apptic-Developement/dismake
-repo_name: Apptic-Developement/dismake
+repo_name: Dismake
 copyright: Copyright &copy; 2023 - Apptic Developement
 docs_dir: docs/
 site_url: https://dismake.pages.dev/
 
 theme:
   name: material
-  # logo:
-  #   icon: assets/images/logo.svg
+  logo: assets/images/logo-white.png
+  favicon: assets/images/logo.png
+  language: en
 
   features:
     - header.autohide
@@ -22,19 +23,15 @@ theme:
     - toc.follow
     - content.tooltips
     - content.code.annotate
-    - content.action.edit
-  icon:
-    repo: fontawesome/brands/github-alt
-  palette:
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
 
+  icon:
+    repo: fontawesome/brands/github
+  palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: black
+      accent: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -45,7 +42,7 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
+    
 extra_css:
   - stylesheets/extra.css
 
@@ -53,7 +50,6 @@ extra_css:
 plugins:
   - search
   - awesome-pages
-  - autorefs
   - mkdocstrings:
       handlers:
         python:
@@ -69,7 +65,7 @@ plugins:
 
 
 nav:
-  - "Home": index.md
+  - Dismake: index.md
   - "Api Reference":
     - "Client": api/client.md
     - "Models":
@@ -80,3 +76,4 @@ nav:
         - "Interaction": api/models/interaction.md
         - "Embed": api/models/embed.md
         - "Color": api/models/color.md
+

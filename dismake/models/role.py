@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, Union
 
+
 from .color import Color
 from .permissions import Permissions
-
+from .asset import Asset
+from ..utils import snowflake_time
 if TYPE_CHECKING:
     from dismake import Client
-
+    from datetime import datetime
     from ..types import RoleData, RoleTagsData
 
 __all__: Sequence[str] = ("PartialRole", "Role")
@@ -59,8 +61,6 @@ class Role(PartialRole):
         The color code of the role.
     hoist: bool
         Whether the role is hoisted.
-    icon: Optional[str]
-        The icon URL of the role.
     unicode_emoji: Optional[str]
         The Unicode emoji associated with the role.
     position: int
@@ -90,7 +90,7 @@ class Role(PartialRole):
         self.name: str = data["name"]
         self.color: Color = Color(data["color"])
         self.hoist: bool = data["hoist"]
-        self.icon: Optional[str] = data.get("icon")
+        self._icon: Optional[str] = data.get("icon")
         self.unicode_emoji: Optional[str] = data.get("unicode_emoji")
         self.position: int = data["position"]
         self.permissions: Permissions = Permissions(int(data["permissions"]))
@@ -108,6 +108,23 @@ class Role(PartialRole):
 
     def __str__(self) -> str:
         return f"Role(id={self.id}, name={self.name})"
+
+    @property
+    def created_at(self) -> datetime:
+        """Returns the role's creation time in UTC."""
+        return snowflake_time(self.id)
+    @property
+    def icon(self) -> Optional[Asset]:
+        """Returns the role's icon asset, if available.
+        
+        If this is ``None``, the role might instead have unicode emoji as its icon
+        If you want the icon that a role has displayed, consider using ``Role.display_icon``.
+        """
+        return Asset.from_icon(self.id, self._icon, path='role') if self._icon is not None else None
+    @property
+    def display_icon(self) -> Optional[Union[Asset, str]]:
+        """Returns the role's display icon, if available."""
+        return self.icon or self.unicode_emoji
 
     @property
     def bot_id(self) -> Optional[int]:
