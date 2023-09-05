@@ -4,6 +4,8 @@ from enum import IntEnum, IntFlag
 from typing import TYPE_CHECKING, Any, Optional, Sequence, Tuple
 
 from .color import Color
+from .asset import Asset
+from ..enums import DefaultAvatar
 
 if TYPE_CHECKING:
     from dismake import Client
@@ -127,17 +129,13 @@ class User(PartialUser):
         The discriminator of the user. (Legacy concept)
     global_name: Optional[str]
         The user's global nickname, taking precedence over the username in display.
-    avatar: Optional[str]
-        The hash of the user's avatar if present; otherwise, None.
     bot: bool
         Indicates whether the user is a bot account.
     system: bool
         Indicates whether the user represents Discord officially (system user).
     mfa_enabled: bool
         Indicates whether two-factor authentication is enabled for the user.
-    banner: Optional[str]
-        The hash of the user's banner if present; otherwise, None.
-    accent_color: Optional[int]
+    accent_color: Optional[Colortfgv]
         The user's accent color if present; otherwise, None.
     locale: str
         The user's locale.
@@ -169,11 +167,11 @@ class User(PartialUser):
         "username",
         "discriminator",
         "global_name",
-        "avatar",
+        "_avatar",
         "bot",
         "system",
         "mfa_enabled",
-        "banner",
+        "_banner",
         "accent_color",
         "locale",
         "verified",
@@ -188,11 +186,11 @@ class User(PartialUser):
         self.username: str = data["username"]
         self.discriminator: str = data["discriminator"]
         self.global_name: Optional[str] = data.get("global_name")
-        self.avatar: Optional[str] = data.get("avatar")
+        self._avatar: Optional[str] = data.get("avatar")
         self.bot: bool = data["bot"]
         self.system: bool = data["system"]
         self.mfa_enabled: bool = data["mfa_enabled"]
-        self.banner: Optional[str] = data.get("banner")
+        self._banner: Optional[str] = data.get("banner")
         self.accent_color: Optional[Color] = (
             Color(value) if (value := data.get("accent_color")) is not None else None
         )
@@ -214,3 +212,37 @@ class User(PartialUser):
 
     def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
+
+    @property
+    def avatar(self) -> Optional[Asset]:
+        """Returns an ``Asset`` for the avatar the user has.
+
+        If the user has not uploaded a global avatar, ``None`` is returned.
+        """
+        if self._avatar is not None:
+            return Asset.from_avatar(self.id, self._avatar)
+        return None
+    @property
+    def default_avatar(self) -> Asset:
+        """Returns the default avatar for a given user."""
+        if self.discriminator == '0':
+            avatar_id = (self.id >> 22) % len(DefaultAvatar)
+        else:
+            avatar_id = int(self.discriminator) % 5
+
+        return Asset.from_default_avatar(avatar_id)
+
+    @property
+    def display_avatar(self) -> Asset:
+        """Returns the user's display avatar.
+
+        For regular users this is just their default avatar or uploaded avatar.
+        """
+        return self.avatar or self.default_avatar   
+    
+    @property
+    def banner(self) -> Optional[Asset]:
+        """Returns the user's banner asset, if available."""
+        if self._banner is None:
+            return None
+        return Asset.from_user_banner(self.id, self._banner)

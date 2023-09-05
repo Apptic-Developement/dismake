@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 from .embed import Embed
 from .role import PartialRole
 from .user import User
-
+from ..utils import parse_time, snowflake_time
 if TYPE_CHECKING:
     from dismake import Client
     from dismake.types import MessageData
+    from datetime import datetime
 
 __all__: Sequence[str] = (
     "PartialMessage",
@@ -28,8 +29,7 @@ class Message(PartialMessage):
         self.channel_id: int = int(data["channel_id"])
         self.author: User = User(client=client, data=data["author"])
         self.content: Optional[str] = data.get("content")
-        # self.timestamp: str = data["timestamp"]
-        # self.edited_timestamp: Optional[str] = data.get("edited_timestamp")
+        self.edited_timestamp: Optional[datetime] = parse_time(data.get("edited_timestamp"))
         self.tts: bool = data["tts"]
         self.mention_everyone: bool = data["mention_everyone"]
         self.mentions: List[User] = [
@@ -59,3 +59,8 @@ class Message(PartialMessage):
         self.stickers: Optional[List[Dict[Any, Any]]]
         self.position: Optional[int]
         self.role_subscription_data: Optional[Dict[Any, Any]]
+
+    @property
+    def created_at(self) -> datetime:
+        """The message's creation time in UTC."""
+        return snowflake_time(self.id)

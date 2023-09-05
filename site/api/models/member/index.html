@@ -11,14 +11,14 @@
         <link rel="canonical" href="https://dismake.pages.dev/api/models/member/">
       
       
-        <link rel="prev" href="../../client/">
+        <link rel="prev" href="../asset/">
       
       
         <link rel="next" href="../user/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.7">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -418,6 +418,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -445,6 +447,26 @@
             Models
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../asset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -504,6 +526,20 @@
           <li class="md-nav__item">
   <a href="#dismake.models.member.Member--operations" class="md-nav__link">
     Operations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.member.Member.display_avatar" class="md-nav__link">
+    display_avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.member.Member.guild_avatar" class="md-nav__link">
+    guild_avatar
   </a>
   
 </li>
@@ -717,6 +753,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#dismake.models.member.Member.display_avatar" class="md-nav__link">
+    display_avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.member.Member.guild_avatar" class="md-nav__link">
+    guild_avatar
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -908,17 +958,6 @@
           </td>
         </tr>
         <tr>
-          <td><code>avatar</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[str]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The hash of the member's avatar if present; otherwise, None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
           <td><code>bot</code></td>
           <td>
                 <code>bool</code>
@@ -952,20 +991,9 @@
           </td>
         </tr>
         <tr>
-          <td><code>banner</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[str]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The hash of the member's banner if present; otherwise, None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
           <td><code>accent_color</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[int]</code>
+                <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="dismake.models.color.Color" href="../color/#dismake.models.color.Color">Color</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1075,7 +1103,7 @@
         <tr>
           <td><code>joined_at</code></td>
           <td>
-                <code>datetime</code>
+                <code><span title="datetime.datetime">datetime</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1086,7 +1114,7 @@
         <tr>
           <td><code>premium_since</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[datetime]</code>
+                <code><span title="typing.Optional">Optional</span>[<span title="datetime.datetime">datetime</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1141,7 +1169,7 @@
         <tr>
           <td><code>communication_disabled_until</code></td>
           <td>
-                <code>datetime</code>
+                <code><span title="datetime.datetime">datetime</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1180,10 +1208,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/member.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
 <span class="normal"> 37</span>
@@ -1286,7 +1311,26 @@
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Member</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Member</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a guild member within a Discord server.</span>
 
 <span class="sd">    Parameters</span>
@@ -1306,17 +1350,13 @@
 <span class="sd">        The discriminator of the member. (Legacy concept)</span>
 <span class="sd">    global_name: Optional[str]</span>
 <span class="sd">        The member&#39;s global nickname, taking precedence over the username in display.</span>
-<span class="sd">    avatar: Optional[str]</span>
-<span class="sd">        The hash of the member&#39;s avatar if present; otherwise, None.</span>
 <span class="sd">    bot: bool</span>
 <span class="sd">        Indicates whether the member is a bot account.</span>
 <span class="sd">    system: bool</span>
 <span class="sd">        Indicates whether the member represents Discord officially (system user).</span>
 <span class="sd">    mfa_enabled: bool</span>
 <span class="sd">        Indicates whether two-factor authentication is enabled for the member.</span>
-<span class="sd">    banner: Optional[str]</span>
-<span class="sd">        The hash of the member&#39;s banner if present; otherwise, None.</span>
-<span class="sd">    accent_color: Optional[int]</span>
+<span class="sd">    accent_color: Optional[Color]</span>
 <span class="sd">        The member&#39;s accent color if present; otherwise, None.</span>
 <span class="sd">    locale: str</span>
 <span class="sd">        The member&#39;s locale.</span>
@@ -1368,7 +1408,7 @@
 
     <span class="vm">__slots__</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;nickname&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;avatar&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_avatar&quot;</span><span class="p">,</span>
         <span class="s2">&quot;roles&quot;</span><span class="p">,</span>
         <span class="s2">&quot;joined_at&quot;</span><span class="p">,</span>
         <span class="s2">&quot;premium_since&quot;</span><span class="p">,</span>
@@ -1380,19 +1420,39 @@
         <span class="s2">&quot;flags&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">MemberData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">MemberData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild</span> <span class="o">=</span> <span class="n">PartialGuild</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">guild_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nickname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nick&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Snowflake</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;roles&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">joined_at</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;joined_at&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">premium_since</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;premium_since&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">premium_since</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;premium_since&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deaf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;deaf&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mute&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="p">:</span> <span class="n">Permissions</span> <span class="o">=</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">from_value</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">communication_disabled_until</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;communication_disabled_until&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">communication_disabled_until</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;communication_disabled_until&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">:</span> <span class="n">MemberFlags</span> <span class="o">=</span> <span class="n">MemberFlags</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;flags&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">guild_avatar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an ``Asset`` for the guild avatar the member has.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">Asset</span><span class="o">.</span><span class="n">from_guild_avatar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_avatar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Asset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the member&#39;s display avatar.</span>
+
+<span class="sd">        For regular members this is just their avatar, but</span>
+<span class="sd">        if they have a guild specific avatar then that</span>
+<span class="sd">        is returned instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guild_avatar</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_avatar</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1405,6 +1465,57 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.member.Member.display_avatar" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">display_avatar</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">display_avatar</span><span class="p">:</span> <span class="n">Asset</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the member's display avatar.</p>
+<p>For regular members this is just their avatar, but
+if they have a guild specific avatar then that
+is returned instead.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.member.Member.guild_avatar" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">guild_avatar</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">guild_avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns an <code>Asset</code> for the guild avatar the member has.</p>
+  </div>
+
+</div>
 
 
 
@@ -1437,17 +1548,17 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/member.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MemberFlags</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MemberFlags</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The known guild member flags that represent various member states.&quot;&quot;&quot;</span>
 
     <span class="n">DID_REJOIN</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span>
@@ -1607,7 +1718,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2023 - Present Pranoy – <a href="#__consent">Change cookie settings</a>
+      Copyright &copy; 2023 - Apptic Developement
     </div>
   
   
@@ -1630,7 +1741,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "search.suggest", "search.share", "navigation.indexes", "navigation.prune", "toc.follow", "content.tooltips", "content.code.annotate", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
     
   </body>

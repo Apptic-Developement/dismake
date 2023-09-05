@@ -2,42 +2,47 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://dismake.pages.dev/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/client/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://dismake.pages.dev/api/models/asset/</loc>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/color/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/embed/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/interaction/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/member/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/role/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dismake.pages.dev/api/models/user/</loc>
-         <lastmod>2023-09-03</lastmod>
+         <lastmod>2023-09-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

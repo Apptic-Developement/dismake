@@ -5,10 +5,14 @@ from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple
 
 from .permissions import Permissions
 from .user import User
+from ..utils import parse_time
+from .asset import Asset
+from .guild import PartialGuild
 
 if TYPE_CHECKING:
     from dismake import Client
     from dismake.types import MemberData, Snowflake
+    from datetime import datetime
 
 
 __all__: Sequence[str] = ("Member",)
@@ -47,17 +51,13 @@ class Member(User):
         The discriminator of the member. (Legacy concept)
     global_name: Optional[str]
         The member's global nickname, taking precedence over the username in display.
-    avatar: Optional[str]
-        The hash of the member's avatar if present; otherwise, None.
     bot: bool
         Indicates whether the member is a bot account.
     system: bool
         Indicates whether the member represents Discord officially (system user).
     mfa_enabled: bool
         Indicates whether two-factor authentication is enabled for the member.
-    banner: Optional[str]
-        The hash of the member's banner if present; otherwise, None.
-    accent_color: Optional[int]
+    accent_color: Optional[Color]
         The member's accent color if present; otherwise, None.
     locale: str
         The member's locale.
@@ -109,7 +109,7 @@ class Member(User):
 
     __slots__: Tuple[str, ...] = (
         "nickname",
-        "avatar",
+        "_avatar",
         "roles",
         "joined_at",
         "premium_since",
@@ -121,16 +121,36 @@ class Member(User):
         "flags",
     )
 
-    def __init__(self, client: Client, data: MemberData) -> None:
+    def __init__(self, client: Client, guild_id: int, data: MemberData) -> None:
         super().__init__(client=client, data=data["user"])
+        self.guild = PartialGuild(client=client, id=guild_id)
         self.nickname: Optional[str] = data.get("nick")
-        self.avatar: Optional[str] = data.get("avatar")
+        self._avatar: Optional[str] = data.get("avatar")
         self.roles: List[Snowflake] = data.get("roles") or []
         self.joined_at: str = data["joined_at"]
-        self.premium_since: Optional[str] = data.get("premium_since")
+        self.premium_since: Optional[datetime] = parse_time(data.get("premium_since"))
         self.deaf: bool = data["deaf"]
         self.mute: bool = data["mute"]
         self.pending: bool = data.get("pending", False)
         self.permissions: Permissions = Permissions.from_value(data.get("permissions"))
-        self.communication_disabled_until: str = data["communication_disabled_until"]
+        self.communication_disabled_until: Optional[datetime] = parse_time(
+            data.get("communication_disabled_until")
+        )
         self.flags: MemberFlags = MemberFlags(int(data.get("flags", 0)))
+
+    @property
+    def guild_avatar(self) -> Optional[Asset]:
+        """Returns an ``Asset`` for the guild avatar the member has."""
+        if self._avatar is None:
+            return None
+        return Asset.from_guild_avatar(self.guild.id, self.id, self._avatar)
+
+    @property
+    def display_avatar(self) -> Asset:
+        """Returns the member's display avatar.
+
+        For regular members this is just their avatar, but
+        if they have a guild specific avatar then that
+        is returned instead.
+        """
+        return self.guild_avatar or self.avatar or self.default_avatar

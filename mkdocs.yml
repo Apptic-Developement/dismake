@@ -1,7 +1,7 @@
 site_name: Dismake
 repo_url: https://github.com/Apptic-Developement/dismake
 repo_name: Apptic-Developement/dismake
-copyright: Copyright &copy; 2023 - Present Pranoy – <a href="#__consent">Change cookie settings</a>
+copyright: Copyright &copy; 2023 - Apptic Developement
 docs_dir: docs/
 site_url: https://dismake.pages.dev/
 
@@ -73,6 +73,7 @@ nav:
   - "Api Reference":
     - "Client": api/client.md
     - "Models":
+        - "Asset": api/models/asset.md
         - "Member": api/models/member.md
         - "User": api/models/user.md
         - "Role": api/models/role.md

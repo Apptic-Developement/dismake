@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.7">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -418,6 +418,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -445,6 +447,26 @@
             Models
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../asset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -544,6 +566,34 @@
           <li class="md-nav__item">
   <a href="#dismake.models.user.User--operations" class="md-nav__link">
     Operations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.avatar" class="md-nav__link">
+    avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.banner" class="md-nav__link">
+    banner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.default_avatar" class="md-nav__link">
+    default_avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.display_avatar" class="md-nav__link">
+    display_avatar
   </a>
   
 </li>
@@ -875,6 +925,34 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.avatar" class="md-nav__link">
+    avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.banner" class="md-nav__link">
+    banner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.default_avatar" class="md-nav__link">
+    default_avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dismake.models.user.User.display_avatar" class="md-nav__link">
+    display_avatar
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1164,9 +1242,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/user.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
 <span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
@@ -1189,7 +1265,9 @@
 <span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
-<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PartialUser</span><span class="p">:</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PartialUser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Partial User</span>
 
 <span class="sd">    Parameters</span>
@@ -1371,17 +1449,6 @@
           </td>
         </tr>
         <tr>
-          <td><code>avatar</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[str]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The hash of the user's avatar if present; otherwise, None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
           <td><code>bot</code></td>
           <td>
                 <code>bool</code>
@@ -1415,20 +1482,9 @@
           </td>
         </tr>
         <tr>
-          <td><code>banner</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[str]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The hash of the user's banner if present; otherwise, None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
           <td><code>accent_color</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[int]</code>
+                <code><span title="typing.Optional">Optional</span>[Colortfgv]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1522,9 +1578,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/user.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
@@ -1624,7 +1678,41 @@
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">PartialUser</span><span class="p">):</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">PartialUser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Discord user.</span>
 
 <span class="sd">    Parameters</span>
@@ -1642,17 +1730,13 @@
 <span class="sd">        The discriminator of the user. (Legacy concept)</span>
 <span class="sd">    global_name: Optional[str]</span>
 <span class="sd">        The user&#39;s global nickname, taking precedence over the username in display.</span>
-<span class="sd">    avatar: Optional[str]</span>
-<span class="sd">        The hash of the user&#39;s avatar if present; otherwise, None.</span>
 <span class="sd">    bot: bool</span>
 <span class="sd">        Indicates whether the user is a bot account.</span>
 <span class="sd">    system: bool</span>
 <span class="sd">        Indicates whether the user represents Discord officially (system user).</span>
 <span class="sd">    mfa_enabled: bool</span>
 <span class="sd">        Indicates whether two-factor authentication is enabled for the user.</span>
-<span class="sd">    banner: Optional[str]</span>
-<span class="sd">        The hash of the user&#39;s banner if present; otherwise, None.</span>
-<span class="sd">    accent_color: Optional[int]</span>
+<span class="sd">    accent_color: Optional[Colortfgv]</span>
 <span class="sd">        The user&#39;s accent color if present; otherwise, None.</span>
 <span class="sd">    locale: str</span>
 <span class="sd">        The user&#39;s locale.</span>
@@ -1684,11 +1768,11 @@
         <span class="s2">&quot;username&quot;</span><span class="p">,</span>
         <span class="s2">&quot;discriminator&quot;</span><span class="p">,</span>
         <span class="s2">&quot;global_name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;avatar&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_avatar&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bot&quot;</span><span class="p">,</span>
         <span class="s2">&quot;system&quot;</span><span class="p">,</span>
         <span class="s2">&quot;mfa_enabled&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;banner&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_banner&quot;</span><span class="p">,</span>
         <span class="s2">&quot;accent_color&quot;</span><span class="p">,</span>
         <span class="s2">&quot;locale&quot;</span><span class="p">,</span>
         <span class="s2">&quot;verified&quot;</span><span class="p">,</span>
@@ -1703,12 +1787,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;discriminator&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_name&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bot&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mfa_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mfa_enabled&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">banner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;banner&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Color</span><span class="p">]</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">:=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;accent_color&#39;</span><span class="p">))</span>  <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_banner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;banner&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Color</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Color</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">:=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;accent_color&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;locale&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;verified&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
@@ -1727,6 +1813,40 @@
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">avatar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an ``Asset`` for the avatar the user has.</span>
+
+<span class="sd">        If the user has not uploaded a global avatar, ``None`` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Asset</span><span class="o">.</span><span class="n">from_avatar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avatar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_avatar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Asset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the default avatar for a given user.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">avatar_id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">&gt;&gt;</span> <span class="mi">22</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">DefaultAvatar</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">avatar_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span><span class="p">)</span> <span class="o">%</span> <span class="mi">5</span>
+
+        <span class="k">return</span> <span class="n">Asset</span><span class="o">.</span><span class="n">from_default_avatar</span><span class="p">(</span><span class="n">avatar_id</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_avatar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Asset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the user&#39;s display avatar.</span>
+
+<span class="sd">        For regular users this is just their default avatar or uploaded avatar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">avatar</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_avatar</span>   
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">banner</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the user&#39;s banner asset, if available.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_banner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">Asset</span><span class="o">.</span><span class="n">from_user_banner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_banner</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1739,6 +1859,104 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.user.User.avatar" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">avatar</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">avatar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns an <code>Asset</code> for the avatar the user has.</p>
+<p>If the user has not uploaded a global avatar, <code>None</code> is returned.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.user.User.banner" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">banner</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">banner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the user's banner asset, if available.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.user.User.default_avatar" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">default_avatar</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">default_avatar</span><span class="p">:</span> <span class="n">Asset</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the default avatar for a given user.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+
+<h3 id="dismake.models.user.User.display_avatar" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">display_avatar</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">display_avatar</span><span class="p">:</span> <span class="n">Asset</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the user's display avatar.</p>
+<p>For regular users this is just their default avatar or uploaded avatar.</p>
+  </div>
+
+</div>
 
 
 
@@ -1771,9 +1989,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/user.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -1823,7 +2039,9 @@
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PublicUserFlags</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PublicUserFlags</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The known user flags that represent account badges.&quot;&quot;&quot;</span>
 
     <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2321,9 +2539,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dismake/models/user.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span>
@@ -2331,7 +2547,9 @@
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PremiumType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PremiumType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The types of Nitro.&quot;&quot;&quot;</span>
 
     <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2466,7 +2684,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2023 - Present Pranoy – <a href="#__consent">Change cookie settings</a>
+      Copyright &copy; 2023 - Apptic Developement
     </div>
   
   
@@ -2489,7 +2707,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.instant", "navigation.top", "navigation.tabs", "search.suggest", "search.share", "navigation.indexes", "navigation.prune", "toc.follow", "content.tooltips", "content.code.annotate", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
     
   </body>

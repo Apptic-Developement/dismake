@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional, Sequence, overload
 
 from colorlog import ColoredFormatter, StreamHandler
 
-__all__: Sequence[str] = ("get_as_snowflake", "setup_logging", "parse_time")
+__all__: Sequence[str] = ("get_as_snowflake", "setup_logging", "parse_time", "snowflake_time")
 
+
+DISCORD_EPOCH = 1420070400000
 
 def get_as_snowflake(data: Any, key: str) -> Optional[int]:
     try:
@@ -95,3 +97,21 @@ def parse_time(timestamp: Optional[str]) -> Optional[datetime]:
         datetime.fromisoformat(timestamp)
 
     return None
+
+
+def snowflake_time(id: int, /) -> datetime:
+    """Returns the creation time of the given snowflake.
+
+
+    Parameters
+    -----------
+    id: int
+        The snowflake ID.
+
+    Returns
+    --------
+    datetime
+        An aware datetime in UTC representing the creation time of the snowflake.
+    """
+    timestamp = ((id >> 22) + DISCORD_EPOCH) / 1000
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc)
