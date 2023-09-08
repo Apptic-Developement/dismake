@@ -10,7 +10,7 @@ __all__: Sequence[str] = (
     "CommandInvokeException",
     "PluginException",
     "ViewException",
-    "HttpException"
+    "HttpException",
 )
 
 

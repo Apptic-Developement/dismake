@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Sequence, Type, Union
+from functools import wraps
 from logging import getLogger
-from typing import TYPE_CHECKING, Sequence
+
 from nacl.exceptions import BadSignatureError
 from nacl.signing import VerifyKey
+
+from .commands import Command, Group
 from .http import HttpClient
 from .models import Interaction
 
 if TYPE_CHECKING:
-    from .types import InteractionData
+    from typing_extensions import Self
+
+    from .enums import Locale
+    from .models import Permissions
+    from .types import AsyncFunction, InteractionData
 
 
 log = getLogger(__name__)
@@ -43,6 +51,7 @@ class Client:
     ) -> None:
         self.http: HttpClient = HttpClient(token=token, application_id=application_id)
         self._verify_key = VerifyKey(key=bytes.fromhex(public_key))
+        self._application_commands: Dict[str, Union[Command[Self], Group[Self]]] = {}
 
     def verify(self, signature: str, timestamp: str, body: bytes) -> bool:
         """Verify the incoming signature from Discord.
@@ -86,3 +95,37 @@ class Client:
             ...
         if interaction.is_modal_submit:
             ...
+
+    def command(
+        self,
+        name: str,
+        description: str,
+        name_localizations: Optional[Dict[Locale, str]] = None,
+        description_localizations: Optional[Dict[Locale, str]] = None,
+        default_member_permissions: Optional[Permissions] = None,
+        guild_only: Optional[bool] = None,
+        guild_id: Optional[int] = None,
+        nsfw: Optional[bool] = None,
+        cls: Type[Command[Self]] = Command,
+    ) -> Callable[[AsyncFunction], Command[Self]]:
+        def decorator(func: AsyncFunction) -> Command[Self]:
+            @wraps(func)
+            def wrapper(*_: Any, **__: Any) -> Command[Self]:
+                command = cls(
+                    callback=func,
+                    client=self,
+                    name=name,
+                    description=description,
+                    name_localizations=name_localizations,
+                    description_localizations=description_localizations,
+                    default_member_permissions=default_member_permissions,
+                    guild_only=guild_only,
+                    guild_id=guild_id,
+                    nsfw=nsfw,
+                )
+
+                return command
+
+            return wrapper()
+
+        return decorator

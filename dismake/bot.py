@@ -28,7 +28,7 @@ class Bot(Client):
     def __init__(
         self,
         token: str,
-        application_id: int,
+        application_id: str,
         public_key: str,
         route: str = "/interactions",
     ) -> None:
