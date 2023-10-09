@@ -1,1 +1,0 @@
-::: dismake.models.asset.Asset

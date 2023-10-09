@@ -1,0 +1,4 @@
+attrs
+aiohttp
+pynacl
+typing-extensions

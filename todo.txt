@@ -1,2 +1,0 @@
-=> Embed Field Validation
-=> Command And Their Validation

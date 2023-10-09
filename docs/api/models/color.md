@@ -1,2 +1,0 @@
-::: dismake.models.color.Color
-
